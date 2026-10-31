@@ -200,6 +200,9 @@ function ChatLive_Init(chat_number, SkipClear) {
         ChatLive_checkFallow(chat_number, Chat_Id[chat_number]);
         ChatLive_checkSub(chat_number, Chat_Id[chat_number]);
     }
+
+    //YouTube and Kick messages of a multistreaming streamer, history only on a fresh chat
+    ChatMulti_Start(chat_number, Chat_Id[chat_number], !SkipClear);
 }
 
 function ChatLive_Switch() {
@@ -1818,7 +1821,7 @@ function ChatLive_CheckIfSub(message, chat_number) {
 function ChatLive_CheckIfSubSend(message, chat_number, isSub) {
     ChatLive_LineAddCheckDelay(chat_number, {
         chat_number: chat_number,
-        message: '<span class="message">' + message + '</span>',
+        message: '<span class="message">' + ChatMulti_Icon('tw') + message + '</span>',
         sub: isSub,
         mod: !isSub
     });
@@ -1897,6 +1900,9 @@ function ChatLive_loadChatSuccess(message, chat_number, addToStart) {
         div += addToStart && tags.hasOwnProperty('tmi-sent-ts') ? ChatLive_GetTimeStamp(tags['tmi-sent-ts']) + ' ' : Main_clock_H_M + ' ';
     }
 
+    //Platform icon, only visible when the chat has linked YouTube / Kick chats
+    div += ChatMulti_Icon('tw');
+
     //Add badges
     div += ChatLive_GetBadges(tags, chat_number);
 
@@ -1974,7 +1980,8 @@ function ChatLive_loadChatSuccess(message, chat_number, addToStart) {
         hasbits: hasbits && ChatLive_Highlight_Bits,
         extraMessage: extraMessage,
         extraMessageClass: extraMessageClass,
-        addToStart: addToStart
+        addToStart: addToStart,
+        historyTs: addToStart && tags['tmi-sent-ts'] ? parseInt(tags['tmi-sent-ts'], 10) : 0
     };
 
     ChatLive_LineAddCheckDelay(chat_number, messageObj);
@@ -2348,9 +2355,22 @@ function ChatLive_ElementAdd(messageObj) {
         Chat_div[messageObj.chat_number].appendChild(chat_line_holder);
     } else {
         chat_line_holder.className = 'chat_line_holder';
-        Chat_div[messageObj.chat_number].insertBefore(chat_line_holder, Chat_div[messageObj.chat_number].childNodes[0]);
+        ChatLive_HistoryInsert(Chat_div[messageObj.chat_number], chat_line_holder, messageObj.historyTs);
         ChatLive_ElementAddCheckExtra(messageObj);
     }
+}
+
+//History of the platforms arrives at different times: a timed line goes before the
+//first line without time (live lines) or with a later/equal time, an untimed one on top as before
+function ChatLive_HistoryInsert(box, holder, ts) {
+    var child = box.firstChild;
+
+    if (ts) {
+        holder.chatTs = ts;
+        while (child && child.chatTs && child.chatTs < ts) child = child.nextSibling;
+    }
+
+    box.insertBefore(holder, child);
 }
 
 function ChatLive_ElementAddCheckExtra(messageObj) {
@@ -2362,7 +2382,8 @@ function ChatLive_ElementAddCheckExtra(messageObj) {
             message: ChatLive_LineAddSimple(messageObj.extraMessage),
             skip_addline: 1,
             extraClass: messageObj.extraMessageClass,
-            addToStart: messageObj.addToStart
+            addToStart: messageObj.addToStart,
+            historyTs: messageObj.historyTs
         });
     }
 }
@@ -2421,6 +2442,7 @@ function ChatLive_ClearIds(chat_number) {
 }
 
 function ChatLive_Clear(chat_number) {
+    ChatMulti_Stop(chat_number);
     ChatLive_ClearIds(chat_number);
 
     Chat_Id[chat_number] = 0;

@@ -2591,6 +2591,75 @@
                 overflow: hidden;
             }
 
+            /* Merged chat: platform icon of every line (Twitch only inside a chat with linked YouTube / Kick chats) and foreign role badges, sized by .tag */
+            .chat_pi_tw {
+                display: none;
+            }
+
+            .chat_linked .chat_pi_tw {
+                display: inline-block;
+            }
+
+            .chat_pi_tw {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%239146FF' d='M2 0L0 3v11h4v2h2l2-2h3l5-5V0z'/%3E%3Cpath fill='%23fff' d='M14 7l-3 3H8l-2 2v-2H2V2h12z'/%3E%3Cpath fill='%239146FF' d='M6 4h2v4H6zm4 0h2v4h-2z'/%3E%3C/svg%3E");
+            }
+
+            .chat_pi_yt {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect y='2' width='16' height='12' rx='3.5' fill='%23FF0000'/%3E%3Cpath fill='%23fff' d='M6.4 5v6l4.8-3z'/%3E%3C/svg%3E");
+            }
+
+            .chat_pi_kick {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2353FC18'/%3E%3Cpath d='M4 3h3v4h1V5h1V3h3v3h-1v1h-1v2h1v1h1v3H9v-2H8V9H7v4H4z'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_yt_owner {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ffd600'/%3E%3Cpath d='M3 12h10v1.5H3zM3 5l2.7 3L8 3.5 10.3 8 13 5l-.8 6H3.8z'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_yt_mod {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%235e84f1'/%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' d='M4 12l5-5'/%3E%3Ccircle cx='10.5' cy='5.5' r='2.3' fill='none' stroke='%23fff' stroke-width='1.8'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_yt_verified {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7.5' fill='%23aaa'/%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' d='M4.5 8.3l2.3 2.3 4.7-4.9'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_broadcaster {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2353FC18'/%3E%3Crect x='2.5' y='5' width='7.5' height='6' rx='1'/%3E%3Cpath d='M10.5 8l3-2.5v5z'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_moderator {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2300c853'/%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' d='M4.5 11.5l8-8M3.5 9L7 12.5M4 12l-1 1'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_vip {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ff3fa4'/%3E%3Cpath fill='%23fff' d='M8 3l5 5-5 5-5-5z'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_og {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%231a9fff'/%3E%3Ctext x='8' y='11.5' font-family='Arial,sans-serif' font-size='8' font-weight='bold' text-anchor='middle' fill='%23fff'%3EOG%3C/text%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_founder {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23ffa000'/%3E%3Cpath fill='%23fff' d='M8 2.5l1.7 3.6 3.8.4-2.9 2.6.9 3.9L8 11l-3.5 2 .9-3.9-2.9-2.6 3.8-.4z'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_verified {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7.5' fill='%2353FC18'/%3E%3Cpath fill='none' stroke='%23000' stroke-width='2' d='M4.5 8.3l2.3 2.3 4.7-4.9'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_sub_gifter {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%237c4dff'/%3E%3Cpath fill='%23fff' d='M3 6.5h4.3V9H3zm5.7 0H13V9H8.7zM4 10h3.3v3.5H4zm4.7 0H12v3.5H8.7zM8 6L5 3.5V6zm0 0l3-2.5V6z'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_staff {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%23e53935'/%3E%3Cpath fill='%23fff' d='M8 2.5l4.5 1.8v3.5c0 2.8-2 4.6-4.5 5.7-2.5-1.1-4.5-2.9-4.5-5.7V4.3z'/%3E%3C/svg%3E");
+            }
+
+            .chat_b_kick_subscriber {
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%2353FC18'/%3E%3Cpath d='M8 2.5l1.7 3.6 3.8.4-2.9 2.6.9 3.9L8 11l-3.5 2 .9-3.9-2.9-2.6 3.8-.4z'/%3E%3C/svg%3E");
+            }
+
             .emoticon {
                 min-width: 1.75em;
                 height: 1.75em;
@@ -5300,6 +5369,7 @@
         <script src="specific/AddCode.js" defer></script>
         <script src="specific/ChatLive.js" defer></script>
         <script src="specific/ChatLink.js" defer></script>
+        <script src="specific/ChatMulti.js" defer></script>
         <script src="specific/ChatLiveControls.js" defer></script>
         <script src="specific/ChatVod.js" defer></script>
         <script src="thirdparty/irc-message.js" defer></script>

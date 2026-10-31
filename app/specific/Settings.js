@@ -704,6 +704,11 @@ var Settings_value = {
         values: ['no', 'yes'],
         defaultValue: 2
     },
+    chat_multi: {
+        //Migrated to dialog, YouTube and Kick messages of a multistreaming streamer
+        values: ['no', 'yes'],
+        defaultValue: 2
+    },
     chat_timestamp: {
         //Migrated to dialog
         values: ['no', 'yes'],
@@ -1443,7 +1448,13 @@ function Settings_SetDefault(position) {
     else if (position === 'preview_sizes') OSInterface_SetPreviewSize(Settings_Obj_default('preview_sizes'));
     else if (position === 'enable_embed') enable_embed = Settings_value.enable_embed.defaultValue;
     else if (position === 'enable_mature') Settings_checkMature();
-    else if (position === 'global_font_offset') {
+    else if (position === 'chat_multi') {
+        //Turning it off stops the foreign sources and hides the icons, turning it on applies on the next chat start
+        if (!Settings_value.chat_multi.defaultValue) {
+            ChatMulti_Stop(0);
+            ChatMulti_Stop(1);
+        }
+    } else if (position === 'global_font_offset') {
         calculateFontSize();
         AddUser_UpdateSidePanelAfterShow();
         UserLiveFeed_ResetAddCellsize();
@@ -3418,6 +3429,7 @@ function Settings_DialogShowChat(click) {
 
     Settings_value.individual_lines.values = yes_no;
     Settings_value.chat_nickcolor.values = yes_no;
+    Settings_value.chat_multi.values = yes_no;
     Settings_value.chat_line_animation.values = yes_no;
     Settings_value.chat_timestamp.values = yes_no;
     Settings_value.chat_showUserNotice.values = yes_no;
@@ -3478,6 +3490,12 @@ function Settings_DialogShowChat(click) {
             values: Settings_value.chat_nickcolor.values,
             title: STR_CHAT_NICK_COLOR,
             summary: STR_CHAT_NICK_COLOR_SUMMARY
+        },
+        chat_multi: {
+            defaultValue: Settings_value.chat_multi.defaultValue,
+            values: Settings_value.chat_multi.values,
+            title: STR_CHAT_MULTI,
+            summary: STR_CHAT_MULTI_SUMMARY
         },
         highlight_rewards: {
             defaultValue: Settings_value.highlight_rewards.defaultValue,

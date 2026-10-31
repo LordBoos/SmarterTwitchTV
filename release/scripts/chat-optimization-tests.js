@@ -149,6 +149,7 @@ for (const rate of [20, 100]) for (const delay of [0, 5000, 30000]) {
     s.ChatLive_SendStart = noop; s.ChatLive_loadChatters = noop;
     s.ChatLive_Close = noop; s.ChatLive_SendClose = noop; s.ChatLive_CheckClear = noop;
     s.ChatLive_resetChatters = noop; s.Main_emptyWithEle = noop;
+    s.ChatMulti_Start = noop; s.ChatMulti_Stop = noop; //ChatMulti.js is covered by chat-multi-tests.js
     s.Play_data = {data: []}; s.PlayExtra_data = {data: []};
     s.Play_data.data[14] = 'first'; s.Play_data.data[6] = 'First';
     s.PlayExtra_data.data[14] = 'second'; s.PlayExtra_data.data[6] = 'Second';

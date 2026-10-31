@@ -758,6 +758,9 @@ function en_USLang() {
     STR_CHAT_NICK_COLOR = 'Readable nick colors';
     STR_CHAT_NICK_COLOR_SUMMARY =
         "Instead of using the default nick color that sometimes can't be readable on a dark background, use a custom easily visible color.";
+    STR_CHAT_MULTI = 'YouTube and Kick chat';
+    STR_CHAT_MULTI_SUMMARY =
+        'Show YouTube and Kick messages of a streamer who multistreams, with their history (channels from the UnityChat directory, editable in Linked chats)';
     STR_CHAT_CLEAR_MSG = 'Clear chat, delete user messages';
     STR_CHAT_SHOW_BADGES = 'Show user badges (excluding the ones below)';
     STR_CHAT_SHOW_BADGES_MOD = 'Show Moderator badges';

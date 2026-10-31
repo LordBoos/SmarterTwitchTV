@@ -1,4 +1,3 @@
-/* global ChatMulti_OnLinks: false -- defined in ChatMulti.js (added later), remove this line then */
 /*
  * Channel links for merged chat: which YouTube / Kick channel belongs to a Twitch streamer.
  * Source is the UnityChat directory, overridable per streamer by manual values.
