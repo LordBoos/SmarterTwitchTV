@@ -21,11 +21,22 @@
 //Spacing for release maker not trow errors from jshint
 var version = {
     VersionBase: '3.0',
-    publishVersionCode: 394, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
-    ApkUrl: 'https://github.com/YofarDev/SmarterTwitchTV/releases/download/394/SmarterPurpleTV_3_0_394.apk',
-    WebVersion: 'October 29 2026',
-    WebTag: 771, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+    publishVersionCode: 395, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
+    ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/395/SmarterPurpleTV_3_0_395.apk',
+    WebVersion: 'October 31 2026',
+    WebTag: 772, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
     changelog: [
+        {
+            title: 'October 31 2026 (Web 772)',
+            changes: [
+                'Merged YouTube and Kick chat: for streamers who multistream, the chat now also shows their YouTube and Kick messages next to Twitch, with platform icons, badges and own nick colors (respecting "Readable nick colors")',
+                'Super Chats, Super Stickers, memberships, Kick subscriptions and gifts are shown too, history is mixed across platforms, and message deletions and bans are applied',
+                'Channel links come from the UnityChat directory (jouki.cz) and can be overridden per streamer with the new "Linked chats" player button',
+                'The feature can be turned off in Settings > Chat ("YouTube and Kick chat")',
+                'The app now loads its web part from the LordBoos fork\'s GitHub Pages and checks updates there',
+                'Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat'
+            ]
+        },
         {
             title: 'October 29 2026 (Web 771)',
             changes: [

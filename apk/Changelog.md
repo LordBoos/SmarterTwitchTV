@@ -39,6 +39,16 @@ October 25 2026 (3.0.394)
 
 * Phone chat: fix muting on iPhone — long-pressing a message now opens the mute sheet on iOS browsers, which never report a long-press as a context menu (Android and desktop right-click are unchanged).
 
+October 31 2026 (3.0.395)
+==============
+
+* Merged YouTube and Kick chat: for streamers who multistream, the chat now also shows their YouTube and Kick messages next to Twitch, with platform icons, badges and own nick colors (respecting "Readable nick colors").
+* Super Chats, Super Stickers, memberships, Kick subscriptions and gifts are shown too, history is mixed across platforms, and message deletions and bans are applied.
+* Channel links come from the UnityChat directory (jouki.cz) and can be overridden per streamer with the new "Linked chats" player button.
+* The feature can be turned off in Settings > Chat ("YouTube and Kick chat").
+* The app now loads its web part from the LordBoos fork's GitHub Pages and checks updates there.
+* Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat.
+
 October 11 2026 (3.0.390)
 ==============
 

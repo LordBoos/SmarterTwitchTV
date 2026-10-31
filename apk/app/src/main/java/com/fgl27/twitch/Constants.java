@@ -27,10 +27,10 @@ public final class Constants {
 
     static final String PageUrl = LoadFromAssets
         ? "file:///android_asset/app/index.html"
-        : "https://yofardev.github.io/SmarterTwitchTV/release/index.html";
+        : "https://lordboos.github.io/SmarterTwitchTV/release/index.html";
     static final String KeyPageUrl = LoadFromAssets
         ? "file:///android_asset/app/Extrapage/index.html"
-        : "https://yofardev.github.io/SmarterTwitchTV/release/extrapageindex.html";
+        : "https://lordboos.github.io/SmarterTwitchTV/release/extrapageindex.html";
 
     static final String PageUrlBackup = "https://smarttv-client-for-twitch.web.app/index.html";
     static final String KeyPageUrlBackup = "https://smarttv-client-for-twitch.web.app/extrapageindex.html";

@@ -503,6 +503,25 @@
         STR_DARK_MODE,
         STR_CHAT_NICK_COLOR,
         STR_CHAT_NICK_COLOR_SUMMARY,
+        STR_CHAT_MULTI,
+        STR_CHAT_MULTI_SUMMARY,
+        STR_CHAT_KICK_SUB,
+        STR_CHAT_KICK_GIFT,
+        STR_CHAT_YT_SUPERCHAT,
+        STR_CHAT_YT_SUPERSTICKER,
+        STR_CHAT_YT_MEMBERSHIP,
+        STR_CHAT_YT_GIFT,
+        STR_CHAT_LINKED,
+        STR_CHAT_LINK_FROM_DIR,
+        STR_CHAT_LINK_MANUAL,
+        STR_CHAT_LINK_NONE,
+        STR_CHAT_LINK_EDIT,
+        STR_CHAT_LINK_ENABLED,
+        STR_CHAT_LINK_RESET,
+        STR_CHAT_LINK_INVALID,
+        STR_CHAT_LINK_NO_CHANNEL,
+        STR_CHAT_LINK_UNLINKED,
+        STR_CHAT_LINK_ENTER,
         STR_OPEN_HOST_SETTINGS,
         STR_RAID_FOLLOW,
         STR_RAID_FOLLOW_SUMMARY,
@@ -2170,6 +2189,26 @@
         STR_CHAT_NICK_COLOR = 'Readable nick colors';
         STR_CHAT_NICK_COLOR_SUMMARY =
             "Instead of using the default nick color that sometimes can't be readable on a dark background, use a custom easily visible color.";
+        STR_CHAT_MULTI = 'YouTube and Kick chat';
+        STR_CHAT_MULTI_SUMMARY =
+            'Show YouTube and Kick messages of a streamer who multistreams, with their history (channels from the UnityChat directory, editable in Linked chats)';
+        STR_CHAT_KICK_SUB = 'subscribed for %x months';
+        STR_CHAT_KICK_GIFT = 'gifted %x subscriptions';
+        STR_CHAT_YT_SUPERCHAT = 'Super Chat';
+        STR_CHAT_YT_SUPERSTICKER = 'Super Sticker';
+        STR_CHAT_YT_MEMBERSHIP = 'New member';
+        STR_CHAT_YT_GIFT = 'gifted memberships';
+        STR_CHAT_LINKED = 'Linked chats';
+        STR_CHAT_LINK_FROM_DIR = 'from UnityChat';
+        STR_CHAT_LINK_MANUAL = 'manual';
+        STR_CHAT_LINK_NONE = 'not found';
+        STR_CHAT_LINK_EDIT = 'Edit';
+        STR_CHAT_LINK_ENABLED = 'Link this streamer';
+        STR_CHAT_LINK_RESET = 'Back to UnityChat';
+        STR_CHAT_LINK_INVALID = 'Invalid channel, use a YouTube or Kick link, handle or name';
+        STR_CHAT_LINK_NO_CHANNEL = 'No Twitch channel to link';
+        STR_CHAT_LINK_UNLINKED = 'not linked';
+        STR_CHAT_LINK_ENTER = 'Enter';
         STR_CHAT_CLEAR_MSG = 'Clear chat, delete user messages';
         STR_CHAT_SHOW_BADGES = 'Show user badges (excluding the ones below)';
         STR_CHAT_SHOW_BADGES_MOD = 'Show Moderator badges';
@@ -7999,6 +8038,70 @@
             'Якщо встановлено ТАК, додаток синхронізуватиме всі ввімкнені опції нижче між цим пристроєм та іншими, що використовують той самий обліковий запис Google Drive. Щоб перемкнутися між пристроями та продовжити перегляд без проблем, згорніть додаток на поточному пристрої, натиснувши клавішу Home. Потім переконайтеся, що додаток повністю закрито на іншому пристрої, перш ніж відкривати його.';
     }
     /*
+     * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
+     *
+     * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
+     *
+     * SmartTwitchTV is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * SmartTwitchTV is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with SmartTwitchTV.  If not, see <https://github.com/fgl27/SmartTwitchTV/blob/master/LICENSE>.
+     *
+     */
+
+    //Used as based https://kevinfaguiar.github.io/vue-twemoji-picker/docs/emoji-datasets/
+    //https://github.com/kevinfaguiar/vue-twemoji-picker/tree/master/emoji-data/en
+    //https://emojipedia.org/
+    //But removed not working or not needed as is too much
+    var emojis_string =
+        '[{"unicode":"😀","code":"grin","id":"0_grin","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f600.png"},{"unicode":"😃","code":"smile","id":"1_smile","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f603.png"},{"unicode":"😄","code":"smile2","id":"2_smile2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f604.png"},{"unicode":"😁","code":"smile3","id":"3_smile3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f601.png"},{"unicode":"😆","code":"satisfied","id":"4_satisfied","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f606.png"},{"unicode":"😅","code":"sweat","id":"5_sweat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f605.png"},{"unicode":"🤣","code":"rolling","id":"6_rolling","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f923.png"},{"unicode":"😂","code":"tear","id":"7_tear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f602.png"},{"unicode":"🙂","code":"smile4","id":"8_smile4","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f642.png"},{"unicode":"🙃","code":"smile-upside-down","id":"9_smile-upside-down","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f643.png"},{"unicode":"😉","code":"wink","id":"10_wink","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f609.png"},{"unicode":"😊","code":"smile-blush","id":"11_smile-blush","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60a.png"},{"unicode":"😇","code":"angel","id":"12_angel","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f607.png"},{"unicode":"🥰","code":"adore","id":"13_adore","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f970.png"},{"unicode":"😍","code":"smile-love","id":"14_smile-love","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60d.png"},{"unicode":"🤩","code":"smile-star","id":"15_smile-star","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f929.png"},{"unicode":"😘","code":"kiss","id":"16_kiss","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f618.png"},{"unicode":"😗","code":"kiss2","id":"17_kiss2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f617.png"},{"unicode":"☺️","code":"relaxed","id":"18_relaxed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/263a.png"},{"unicode":"😚","code":"kiss3","id":"19_kiss3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61a.png"},{"unicode":"😙","code":"kis4","id":"20_kis4","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f619.png"},{"unicode":"😋","code":"delicious","id":"21_delicious","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60b.png"},{"unicode":"😛","code":"tongue","id":"22_tongue","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61b.png"},{"unicode":"😜","code":"tongue-wink","id":"23_tongue-wink","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61c.png"},{"unicode":"🤪","code":"goofy","id":"24_goofy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92a.png"},{"unicode":"😝","code":"tongue-><","id":"25_tongue-><","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61d.png"},{"unicode":"🤑","code":"face-money","id":"26_face-money","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f911.png"},{"unicode":"🤗","code":"hugging","id":"27_hugging","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f917.png"},{"unicode":"🤭","code":"whoops","id":"28_whoops","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92d.png"},{"unicode":"🤫","code":"quiet","id":"29_quiet","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92b.png"},{"unicode":"🤔","code":"thinking","id":"30_thinking","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f914.png"},{"unicode":"🤐","code":"zipper","id":"31_zipper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f910.png"},{"unicode":"🤨","code":"skeptic","id":"32_skeptic","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f928.png"},{"unicode":"😑","code":"unexpressive","id":"33_unexpressive","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f611.png"},{"unicode":"😶","code":"silent","id":"34_silent","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f636.png"},{"unicode":"😏","code":"smirk","id":"35_smirk","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60f.png"},{"unicode":"😒","code":"unhappy","id":"36_unhappy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f612.png"},{"unicode":"🙄","code":"eyeroll","id":"37_eyeroll","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f644.png"},{"unicode":"😬","code":"grimace","id":"38_grimace","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62c.png"},{"unicode":"🤥","code":"pinocchio","id":"39_pinocchio","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f925.png"},{"unicode":"😌","code":"relieved","id":"40_relieved","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60c.png"},{"unicode":"😔","code":"pensive","id":"41_pensive","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f614.png"},{"unicode":"😪","code":"sleep","id":"42_sleep","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62a.png"},{"unicode":"🤤","code":"drooling-face","id":"43_drooling-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f924.png"},{"unicode":"😴","code":"sleep-face","id":"44_sleep-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f634.png"},{"unicode":"😷","code":"cold-face","id":"45_cold-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f637.png"},{"unicode":"🤒","code":"sick-face","id":"46_sick-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f912.png"},{"unicode":"🤕","code":"bandage-face","id":"47_bandage-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f915.png"},{"unicode":"🤢","code":"nauseated-face","id":"48_nauseated-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f922.png"},{"unicode":"🤮","code":"sick-face","id":"49_sick-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92e.png"},{"unicode":"🤧","code":"sneeze","id":"50_sneeze","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f927.png"},{"unicode":"🥵","code":"feverish","id":"51_feverish","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f975.png"},{"unicode":"🥶","code":"blue-faced","id":"52_blue-faced","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f976.png"},{"unicode":"🥴","code":"intoxicated","id":"53_intoxicated","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f974.png"},{"unicode":"😵","code":"dizzy","id":"54_dizzy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f635.png"},{"unicode":"🤯","code":"mind blown","id":"55_mind blown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92f.png"},{"unicode":"🤠","code":"cowboy","id":"56_cowboy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f920.png"},{"unicode":"🥳","code":"celebration","id":"57_celebration","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f973.png"},{"unicode":"😎","code":"cool-face","id":"58_cool-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60e.png"},{"unicode":"🤓","code":"cool","id":"59_cool","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f913.png"},{"unicode":"🧐","code":"stuffy","id":"60_stuffy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9d0.png"},{"unicode":"😕","code":"confused","id":"61_confused","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f615.png"},{"unicode":"😟","code":"worried","id":"62_worried","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61f.png"},{"unicode":"🙁","code":"frown","id":"63_frown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f641.png"},{"unicode":"☹️","code":"frown","id":"64_frown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2639.png"},{"unicode":"😮","code":"mouth-open","id":"65_mouth-open","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62e.png"},{"unicode":"😯","code":"surprised","id":"66_surprised","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62f.png"},{"unicode":"😲","code":"astonished","id":"67_astonished","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f632.png"},{"unicode":"😳","code":"dazed","id":"68_dazed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f633.png"},{"unicode":"🥺","code":"puppy eyes","id":"69_puppy eyes","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97a.png"},{"unicode":"😦","code":"frown","id":"70_frown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f626.png"},{"unicode":"😧","code":"anguished","id":"71_anguished","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f627.png"},{"unicode":"😨","code":"fearful","id":"72_fearful","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f628.png"},{"unicode":"😰","code":"fearful2","id":"73_fearful2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f630.png"},{"unicode":"😥","code":"disappointed","id":"74_disappointed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f625.png"},{"unicode":"😢","code":"cry-face","id":"75_cry-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f622.png"},{"unicode":"😭","code":"cry-face2","id":"76_cry-face2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62d.png"},{"unicode":"😱","code":"fear-face","id":"77_fear-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f631.png"},{"unicode":"😖","code":"confounded","id":"78_confounded","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f616.png"},{"unicode":"😣","code":"persevere","id":"79_persevere","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f623.png"},{"unicode":"😞","code":"disappointed","id":"80_disappointed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61e.png"},{"unicode":"😓","code":"cold","id":"81_cold","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f613.png"},{"unicode":"😩","code":"weary","id":"82_weary","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f629.png"},{"unicode":"😫","code":"tired","id":"83_tired","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62b.png"},{"unicode":"😤","code":"triumph","id":"84_triumph","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f624.png"},{"unicode":"😡","code":"angry","id":"85_angry","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f621.png"},{"unicode":"😠","code":"mad","id":"86_mad","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f620.png"},{"unicode":"🤬","code":"swearing","id":"87_swearing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92c.png"},{"unicode":"😈","code":"devil","id":"88_devil","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f608.png"},{"unicode":"👿","code":"demon","id":"89_demon","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47f.png"},{"unicode":"💀","code":"death","id":"90_death","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f480.png"},{"unicode":"☠️","code":"crossbones","id":"91_crossbones","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2620.png"},{"unicode":"💩","code":"poop","id":"92_poop","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a9.png"},{"unicode":"🤡","code":"clown","id":"93_clown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f921.png"},{"unicode":"👹","code":"creature","id":"94_creature","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f479.png"},{"unicode":"👺","code":"creature2","id":"95_creature2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47a.png"},{"unicode":"👻","code":"ghost","id":"96_ghost","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47b.png"},{"unicode":"👾","code":"alien","id":"97_alien","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47e.png"},{"unicode":"🤖","code":"robot","id":"98_robot","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f916.png"},{"unicode":"😺","code":"cat-face","id":"99_cat-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63a.png"},{"unicode":"😸","code":"cat-smile","id":"100_cat-smile","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f638.png"},{"unicode":"😹","code":"cat-tear","id":"101_cat-tear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f639.png"},{"unicode":"😻","code":"cat-heart","id":"102_cat-heart","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63b.png"},{"unicode":"😼","code":"cat-ironic","id":"103_cat-ironic","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63c.png"},{"unicode":"😽","code":"cat-kiss","id":"104_cat-kiss","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63d.png"},{"unicode":"🙀","code":"cat-surprised","id":"105_cat-surprised","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f640.png"},{"unicode":"😿","code":"cat-sad","id":"106_cat-sad","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63f.png"},{"unicode":"😾","code":"cat-pouting","id":"107_cat-pouting","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63e.png"},{"unicode":"👋","code":"hand-wave","id":"108_hand-wave","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44b.png"},{"unicode":"🤚","code":"backhand","id":"109_backhand","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91a.png"},{"unicode":"🖐️","code":"hand-open-finger","id":"110_hand-open-finger","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f590.png"},{"unicode":"✋","code":"hand","id":"111_hand","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270b.png"},{"unicode":"🖖","code":"hand-vulcan","id":"112_hand-vulcan","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f596.png"},{"unicode":"👌","code":"hand-ok","id":"113_hand-ok","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44c.png"},{"unicode":"✌️","code":"hand-v","id":"114_hand-v","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270c.png"},{"unicode":"🤞","code":"hand-cross","id":"115_hand-cross","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91e.png"},{"unicode":"🤟","code":"hand-ily","id":"116_hand-ily","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91f.png"},{"unicode":"🤘","code":"hand-horns","id":"117_hand-horns","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f918.png"},{"unicode":"🤙","code":"hand-call","id":"118_hand-call","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f919.png"},{"unicode":"🖕","code":"hand-finger","id":"119_hand-finger","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f595.png"},{"unicode":"👈","code":"hand-point","id":"120_hand-point","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f448.png"},{"unicode":"👇","code":"hand-poin2","id":"121_hand-poin2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f447.png"},{"unicode":"☝️","code":"hand-point3","id":"122_hand-point3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/261d.png"},{"unicode":"👍","code":"hand-thumb-up","id":"123_hand-thumb-up","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44d.png"},{"unicode":"👎","code":"hand-thumb-down","id":"124_hand-thumb-down","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44e.png"},{"unicode":"✊","code":"hand-punch","id":"125_hand-punch","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270a.png"},{"unicode":"👊","code":"hand-punch2","id":"126_hand-punch2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44a.png"},{"unicode":"🤛","code":"hand-punch3","id":"127_hand-punch3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91b.png"},{"unicode":"🤜","code":"hand-punch4","id":"128_hand-punch4","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91c.png"},{"unicode":"👏","code":"hand-clap","id":"129_hand-clap","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44f.png"},{"unicode":"🙌","code":"hand-celebration","id":"130_hand-celebration","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f64c.png"},{"unicode":"👐","code":"hand-open","id":"131_hand-open","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f450.png"},{"unicode":"🤲","code":"hand-prayer","id":"132_hand-prayer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f932.png"},{"unicode":"🤝","code":"hand-agreement","id":"133_hand-agreement","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91d.png"},{"unicode":"🙏","code":"hand-please","id":"134_hand-please","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f64f.png"},{"unicode":"✍️","code":"hand-write","id":"135_hand-write","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270d.png"},{"unicode":"💅","code":"cosmetics","id":"136_cosmetics","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f485.png"},{"unicode":"🤳","code":"self","id":"137_self","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f933.png"},{"unicode":"💪","code":"muscle","id":"138_muscle","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4aa.png"},{"unicode":"🦵","code":"kick","id":"139_kick","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9b5.png"},{"unicode":"🦶","code":"kick2","id":"140_kick2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9b6.png"},{"unicode":"👂","code":"ear","id":"141_ear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f442.png"},{"unicode":"👃","code":"nose","id":"142_nose","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f443.png"},{"unicode":"🧠","code":"brain","id":"143_brain","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e0.png"},{"unicode":"🦷","code":"tooth","id":"144_tooth","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9b7.png"},{"unicode":"👀","code":"eyes","id":"145_eyes","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f440.png"},{"unicode":"👁️","code":"eye","id":"146_eye","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f441.png"},{"unicode":"👅","code":"tongue2","id":"147_tongue2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f445.png"},{"unicode":"👄","code":"lips","id":"148_lips","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f444.png"},{"unicode":"👶","code":"baby","id":"149_baby","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f476.png"},{"unicode":"👨‍🦲","code":"bald","id":"150_bald","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f468-200d-1f9b2.png"},{"unicode":"👴","code":"old-man","id":"151_old-man","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f474.png"},{"unicode":"👵","code":"old-woman","id":"152_old-woman","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f475.png"},{"unicode":"🔥","code":"fire","id":"153_fire","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f525.png"},{"unicode":"👨‍🚒","code":"firefighter","id":"154_firefighter","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f468-200d-1f692.png"},{"unicode":"👩‍🚒","code":"firefighter2","id":"155_firefighter2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f469-200d-1f692.png"},{"unicode":"👮‍♂️","code":"police-officer","id":"156_police-officer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f46e-200d-2642-fe0f.png"},{"unicode":"👮‍♀️","code":"police-officer-woman","id":"157_police-officer-woman","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f46e-200d-2640-fe0f.png"},{"unicode":"👨‍👩‍👧‍👦","code":"family","id":"158_family","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f468-200d-1f469-200d-1f467-200d-1f466.png"},{"unicode":"🙈","code":"monkey-see","id":"159_monkey-see","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f648.png"},{"unicode":"🙉","code":"monkey-hear","id":"160_monkey-hear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f649.png"},{"unicode":"🙊","code":"monkey-speak","id":"161_monkey-speak","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f64a.png"},{"unicode":"💋","code":"kiss-lips","id":"162_kiss-lips","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48b.png"},{"unicode":"💌","code":"heart-letter","id":"163_heart-letter","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48c.png"},{"unicode":"💘","code":"arrow-cupid","id":"164_arrow-cupid","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f498.png"},{"unicode":"💝","code":"valentine","id":"165_valentine","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49d.png"},{"unicode":"💖","code":"sparkle-heart","id":"166_sparkle-heart","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f496.png"},{"unicode":"💗","code":"pulse","id":"167_pulse","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f497.png"},{"unicode":"💓","code":"beating","id":"168_beating","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f493.png"},{"unicode":"💞","code":"revolving","id":"169_revolving","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49e.png"},{"unicode":"💕","code":"love","id":"170_love","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f495.png"},{"unicode":"❣️","code":"exclamation","id":"171_exclamation","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2763.png"},{"unicode":"💔","code":"broken-heart","id":"172_broken-heart","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f494.png"},{"unicode":"💟","code":"heart-Decoration","id":"173_heart-Decoration","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49f.png"},{"unicode":"🖤","code":"heart-black","id":"174_heart-black","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5a4.png"},{"unicode":"🤎","code":"heart-brown","id":"175_heart-brown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f90e.png"},{"unicode":"💙","code":"heart-blue","id":"176_heart-blue","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f499.png"},{"unicode":"💚","code":"heart-green","id":"177_heart-green","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49a.png"},{"unicode":"🧡","code":"heart-orange","id":"178_heart-orange","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e1.png"},{"unicode":"💜","code":"heart-purple","id":"179_heart-purple","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49c.png"},{"unicode":"❤️","code":"heart-red","id":"180_heart-red","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2764.png"},{"unicode":"🤍","code":"black-white","id":"181_black-white","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f90d.png"},{"unicode":"💛","code":"heart-yellow","id":"182_heart-yellow","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49b.png"},{"unicode":"💯","code":"hundred","id":"183_hundred","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4af.png"},{"unicode":"💢","code":"mad","id":"184_mad","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a2.png"},{"unicode":"💥","code":"boom","id":"185_boom","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a5.png"},{"unicode":"💫","code":"stars","id":"186_stars","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ab.png"},{"unicode":"💦","code":"splashing","id":"187_splashing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a6.png"},{"unicode":"💨","code":"comic-dash","id":"188_comic-dash","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a8.png"},{"unicode":"🕳️","code":"hole","id":"189_hole","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f573.png"},{"unicode":"💬","code":"balloon-dialog","id":"190_balloon-dialog","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ac.png"},{"unicode":"🗨️","code":"dialog","id":"191_dialog","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5e8.png"},{"unicode":"🗯️","code":"angry-balloon","id":"192_angry-balloon","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5ef.png"},{"unicode":"💭","code":"balloon-bubble","id":"193_balloon-bubble","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ad.png"},{"unicode":"💤","code":"comic-sleep","id":"194_comic-sleep","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a4.png"},{"unicode":"🕶️","code":"glasses-dark","id":"195_glasses-dark","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f576.png"},{"unicode":"🥽","code":"glasses-swimming","id":"196_glasses-swimming","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97d.png"},{"unicode":"🥼","code":"scientist","id":"197_scientist","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97c.png"},{"unicode":"👔","code":"tie","id":"198_tie","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f454.png"},{"unicode":"👕","code":"tshirt","id":"199_tshirt","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f455.png"},{"unicode":"👖","code":"pants","id":"200_pants","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f456.png"},{"unicode":"🧣","code":"neck","id":"201_neck","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e3.png"},{"unicode":"🧤","code":"hand","id":"202_hand","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e4.png"},{"unicode":"🧥","code":"jacket","id":"203_jacket","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e5.png"},{"unicode":"🧦","code":"stocking","id":"204_stocking","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e6.png"},{"unicode":"👗","code":"clothing","id":"205_clothing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f457.png"},{"unicode":"👘","code":"clothing2","id":"206_clothing2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f458.png"},{"unicode":"👙","code":"swim-clothing","id":"207_swim-clothing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f459.png"},{"unicode":"👚","code":"woman-clothing","id":"208_woman-clothing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45a.png"},{"unicode":"👛","code":"coin-clothing","id":"209_coin-clothing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45b.png"},{"unicode":"👜","code":"purse","id":"210_purse","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45c.png"},{"unicode":"👝","code":"pouch","id":"211_pouch","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45d.png"},{"unicode":"🛍️","code":"shopping-bag","id":"212_shopping-bag","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6cd.png"},{"unicode":"🎒","code":"school-bag","id":"213_school-bag","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f392.png"},{"unicode":"👞","code":"shoe","id":"214_shoe","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45e.png"},{"unicode":"👟","code":"sneaker","id":"215_sneaker","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45f.png"},{"unicode":"🥾","code":"hiking-boot","id":"216_hiking-boot","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97e.png"},{"unicode":"🥿","code":"ballet flat","id":"217_ballet flat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97f.png"},{"unicode":"👠","code":"woman-shoe","id":"218_woman-shoe","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f460.png"},{"unicode":"👡","code":"woman-shoe2","id":"219_woman-shoe2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f461.png"},{"unicode":"👢","code":"woman-boot","id":"220_woman-boot","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f462.png"},{"unicode":"👑","code":"king","id":"221_king","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f451.png"},{"unicode":"👒","code":"hat","id":"222_hat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f452.png"},{"unicode":"🎩","code":"tophat","id":"223_tophat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3a9.png"},{"unicode":"🧢","code":"baseball cap","id":"224_baseball cap","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e2.png"},{"unicode":"⛑️","code":"aid","id":"225_aid","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/26d1.png"},{"unicode":"📿","code":"beads","id":"226_beads","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ff.png"},{"unicode":"💄","code":"lipstick","id":"227_lipstick","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f484.png"},{"unicode":"💍","code":"diamond-ring","id":"228_diamond-ring","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48d.png"},{"unicode":"💎","code":"diamond","id":"229_diamond","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png"},{"unicode":"🔇","code":"mute","id":"230_mute","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f507.png"},{"unicode":"🔉","code":"medium","id":"231_medium","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f509.png"},{"unicode":"🔊","code":"loud","id":"232_loud","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f50a.png"},{"unicode":"📢","code":"loud2","id":"233_loud2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4e2.png"},{"unicode":"📣","code":"cheering","id":"234_cheering","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4e3.png"},{"unicode":"📯","code":"horn","id":"235_horn","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ef.png"},{"unicode":"🔔","code":"bell","id":"236_bell","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f514.png"},{"unicode":"🔕","code":"bell","id":"237_bell","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f515.png"},{"unicode":"🎼","code":"music-score","id":"238_music-score","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3bc.png"},{"unicode":"🎵","code":"music-note","id":"239_music-note","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b5.png"},{"unicode":"🎶","code":"music-notes","id":"240_music-notes","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b6.png"},{"unicode":"🎙️","code":"microphone","id":"241_microphone","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f399.png"},{"unicode":"🎤","code":"microphone2","id":"242_microphone2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3a4.png"},{"unicode":"🎷","code":"sax","id":"243_sax","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b7.png"},{"unicode":"🎸","code":"guitar","id":"244_guitar","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b8.png"},{"unicode":"🎹","code":"piano-keys","id":"245_piano-keys","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b9.png"},{"unicode":"🎺","code":"trumpet","id":"246_trumpet","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3ba.png"},{"unicode":"🎻","code":"violin","id":"247_violin","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3bb.png"},{"unicode":"🥁","code":"drumsticks","id":"248_drumsticks","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f941.png"},{"unicode":"📱","code":"cellphone","id":"249_cellphone","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4f1.png"},{"unicode":"☎️","code":"phone","id":"250_phone","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/260e.png"},{"unicode":"📞","code":"phone2","id":"251_phone2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4de.png"},{"unicode":"📠","code":"fax","id":"252_fax","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4e0.png"},{"unicode":"🔋","code":"battery","id":"253_battery","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f50b.png"},{"unicode":"🔌","code":"plug","id":"254_plug","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f50c.png"},{"unicode":"🖥️","code":"computer-desktop","id":"255_computer-desktop","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5a5.png"},{"unicode":"🖨️","code":"printer","id":"256_printer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5a8.png"},{"unicode":"⌨️","code":"keyboard","id":"257_keyboard","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2328.png"},{"unicode":"🖱️","code":"mouse-computer","id":"258_mouse-computer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5b1.png"},{"unicode":"💽","code":"computer-disk","id":"259_computer-disk","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4bd.png"},{"unicode":"💾","code":"floppy-disk","id":"260_floppy-disk","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4be.png"},{"unicode":"📀","code":"blu-ray","id":"261_blu-ray","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4c0.png"},{"unicode":"🧮","code":"calculation","id":"262_calculation","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9ee.png"},{"unicode":"🎥","code":"camera","id":"263_camera","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3a5.png"},{"unicode":"🎞️","code":"cinema","id":"264_cinema","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f39e.png"},{"unicode":"📽️","code":"cinema2","id":"265_cinema2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4fd.png"},{"unicode":"📸","code":"camera-flash","id":"266_camera-flash","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4f8.png"},{"unicode":"📼","code":"vhs-tape","id":"267_vhs-tape","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4fc.png"},{"unicode":"🔎","code":"magnifying","id":"268_magnifying","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f50e.png"},{"unicode":"🕯️","code":"light","id":"269_light","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f56f.png"},{"unicode":"💡","code":"bulb","id":"270_bulb","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a1.png"},{"unicode":"🔦","code":"electric-torch","id":"271_electric-torch","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f526.png"},{"unicode":"📒","code":"notebook","id":"272_notebook","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4d2.png"},{"unicode":"📃","code":"note","id":"273_note","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4c3.png"},{"unicode":"📰","code":"newspaper","id":"274_newspaper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4f0.png"},{"unicode":"🗞️","code":"newspaper-rolled","id":"275_newspaper-rolled","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5de.png"},{"unicode":"💴","code":"money-rolled","id":"276_money-rolled","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4b4.png"},{"unicode":"💲","code":"dollar-sign","id":"277_dollar-sign","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4b2.png"},{"unicode":"✉️","code":"email","id":"278_email","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2709.png"},{"unicode":"✏️","code":"pencil","id":"279_pencil","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270f.png"},{"unicode":"✒️","code":"pen","id":"280_pen","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2712.png"},{"unicode":"📝","code":"note-pencil","id":"281_note-pencil","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4dd.png"},{"unicode":"💼","code":"briefcase","id":"282_briefcase","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4bc.png"},{"unicode":"🗓️","code":"calendar","id":"283_calendar","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5d3.png"},{"unicode":"📌","code":"pin","id":"284_pin","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4cc.png"},{"unicode":"📍","code":"pin2","id":"285_pin2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4cd.png"},{"unicode":"📎","code":"paperclip","id":"286_paperclip","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ce.png"},{"unicode":"📏","code":"ruler","id":"287_ruler","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4cf.png"},{"unicode":"📐","code":"ruler2","id":"288_ruler2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4d0.png"},{"unicode":"✂️","code":"cutting","id":"289_cutting","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2702.png"},{"unicode":"🗑️","code":"wastebasket","id":"290_wastebasket","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5d1.png"},{"unicode":"🔑","code":"key","id":"291_key","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f511.png"},{"unicode":"🗝️","code":"key-old","id":"292_key-old","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5dd.png"},{"unicode":"🔨","code":"hammer","id":"293_hammer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f528.png"},{"unicode":"⛏️","code":"pickaxe","id":"294_pickaxe","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/26cf.png"},{"unicode":"⚒️","code":"hammer2","id":"295_hammer2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2692.png"},{"unicode":"🛠️","code":"hammer-wrench","id":"296_hammer-wrench","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6e0.png"},{"unicode":"🗡️","code":"knife","id":"297_knife","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5e1.png"},{"unicode":"⚔️","code":"swords","id":"298_swords","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2694.png"},{"unicode":"🔫","code":"gun-tool","id":"299_gun-tool","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f52b.png"},{"unicode":"🏹","code":"archer","id":"300_archer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f9.png"},{"unicode":"🛡️","code":"shield","id":"301_shield","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6e1.png"},{"unicode":"🔧","code":"spanner","id":"302_spanner","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f527.png"},{"unicode":"🔩","code":"bolt","id":"303_bolt","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f529.png"},{"unicode":"⚙️","code":"cog","id":"304_cog","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2699.png"},{"unicode":"⚖️","code":"balance","id":"305_balance","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2696.png"},{"unicode":"🔗","code":"link","id":"306_link","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f517.png"},{"unicode":"🧲","code":"magnetic","id":"307_magnetic","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9f2.png"},{"unicode":"⚗️","code":"chemistry","id":"308_chemistry","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2697.png"},{"unicode":"🧪","code":"chemist","id":"309_chemist","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9ea.png"},{"unicode":"🧬","code":"gene","id":"310_gene","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9ec.png"},{"unicode":"🔬","code":"microscope","id":"311_microscope","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f52c.png"},{"unicode":"🔭","code":"telescope","id":"312_telescope","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f52d.png"},{"unicode":"📡","code":"antenna-dish","id":"313_antenna-dish","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4e1.png"},{"unicode":"💉","code":"medicine","id":"314_medicine","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f489.png"},{"unicode":"💊","code":"medicine","id":"315_medicine","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48a.png"},{"unicode":"🚪","code":"door","id":"316_door","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6aa.png"},{"unicode":"🛏️","code":"hotel-bed","id":"317_hotel-bed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6cf.png"},{"unicode":"🚽","code":"toilet","id":"318_toilet","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6bd.png"},{"unicode":"🚿","code":"shower","id":"319_shower","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6bf.png"},{"unicode":"🛁","code":"bath","id":"320_bath","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6c1.png"},{"unicode":"🧴","code":"lotion","id":"321_lotion","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9f4.png"},{"unicode":"🧷","code":"diaper","id":"322_diaper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9f7.png"},{"unicode":"🧹","code":"sweeping","id":"323_sweeping","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9f9.png"},{"unicode":"🧺","code":"farming","id":"324_farming","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9fa.png"},{"unicode":"🧻","code":"toilet paper","id":"325_toilet paper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9fb.png"},{"unicode":"🧯","code":"extinguisher","id":"326_extinguisher","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9ef.png"},{"unicode":"🛒","code":"shopping-cart","id":"327_shopping-cart","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6d2.png"},{"unicode":"🚬","code":"smoking","id":"328_smoking","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6ac.png"},{"unicode":"✔️","code":"check","id":"329_check","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2714.png"},{"unicode":"⚰️","code":"death","id":"330_death","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/26b0.png"},{"unicode":"🗿","code":"statue-face","id":"331_statue-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5ff.png"},{"unicode":"🐵","code":"monkey-face","id":"332_monkey-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f435.png"},{"unicode":"🐒","code":"monkey","id":"333_monkey","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f412.png"},{"unicode":"🦍","code":"gorilla","id":"334_gorilla","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98d.png"},{"unicode":"🐶","code":"dog-face","id":"335_dog-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png"},{"unicode":"🐩","code":"dog","id":"336_dog","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f429.png"},{"unicode":"🐺","code":"face","id":"337_face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43a.png"},{"unicode":"🦊","code":"face","id":"338_face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98a.png"},{"unicode":"🦝","code":"curious","id":"339_curious","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99d.png"},{"unicode":"🐱","code":"cat","id":"340_cat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png"},{"unicode":"🦁","code":"lion-face","id":"341_lion-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f981.png"},{"unicode":"🐯","code":"tiger-face","id":"342_tiger-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42f.png"},{"unicode":"🐅","code":"tiger","id":"343_tiger","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f405.png"},{"unicode":"🐆","code":"leopard","id":"344_leopard","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f406.png"},{"unicode":"🐴","code":"horse-face","id":"345_horse-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f434.png"},{"unicode":"🐎","code":"racehorse","id":"346_racehorse","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40e.png"},{"unicode":"🦄","code":"unicorn-face","id":"347_unicorn-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f984.png"},{"unicode":"🦓","code":"zebra","id":"348_zebra","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f993.png"},{"unicode":"🦌","code":"deer","id":"349_deer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98c.png"},{"unicode":"🐮","code":"cow","id":"350_cow","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42e.png"},{"unicode":"🐂","code":"bull","id":"351_bull","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f402.png"},{"unicode":"🐃","code":"buffalo","id":"352_buffalo","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f403.png"},{"unicode":"🐄","code":"cow","id":"353_cow","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f404.png"},{"unicode":"🐷","code":"pig-face","id":"354_pig-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f437.png"},{"unicode":"🐖","code":"sow","id":"355_sow","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f416.png"},{"unicode":"🐗","code":"pig","id":"356_pig","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f417.png"},{"unicode":"🐽","code":"pig-nose","id":"357_pig-nose","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43d.png"},{"unicode":"🐏","code":"aries","id":"358_aries","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40f.png"},{"unicode":"🐑","code":"sheep","id":"359_sheep","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f411.png"},{"unicode":"🐐","code":"capricorn","id":"360_capricorn","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f410.png"},{"unicode":"🐪","code":"dromedary","id":"361_dromedary","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42a.png"},{"unicode":"🐫","code":"camel","id":"362_camel","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42b.png"},{"unicode":"🦙","code":"alpaca","id":"363_alpaca","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f999.png"},{"unicode":"🦒","code":"spots","id":"364_spots","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f992.png"},{"unicode":"🐘","code":"elephant","id":"365_elephant","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f418.png"},{"unicode":"🦏","code":"rhinoceros","id":"366_rhinoceros","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98f.png"},{"unicode":"🦛","code":"hippo","id":"367_hippo","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99b.png"},{"unicode":"🐭","code":"mouse-face","id":"368_mouse-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42d.png"},{"unicode":"🐁","code":"mouse","id":"369_mouse","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f401.png"},{"unicode":"🐀","code":"rat","id":"370_rat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f400.png"},{"unicode":"🐹","code":"pet-face","id":"371_pet-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f439.png"},{"unicode":"🐰","code":"bunny-face","id":"372_bunny-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f430.png"},{"unicode":"🐇","code":"bunny","id":"373_bunny","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f407.png"},{"unicode":"🐿️","code":"squirrel","id":"374_squirrel","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43f.png"},{"unicode":"🦔","code":"spiny","id":"375_spiny","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f994.png"},{"unicode":"🦇","code":"vampire","id":"376_vampire","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f987.png"},{"unicode":"🐻","code":"face","id":"377_face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43b.png"},{"unicode":"🐨","code":"bear","id":"378_bear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f428.png"},{"unicode":"🐼","code":"panda-face","id":"379_panda-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43c.png"},{"unicode":"🦘","code":"marsupial","id":"380_marsupial","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f998.png"},{"unicode":"🦡","code":"honey badger","id":"381_honey badger","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9a1.png"},{"unicode":"🐾","code":"paw","id":"382_paw","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43e.png"},{"unicode":"🦃","code":"bird","id":"383_bird","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f983.png"},{"unicode":"🐔","code":"chicken","id":"384_chicken","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f414.png"},{"unicode":"🐓","code":"rooster","id":"385_rooster","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f413.png"},{"unicode":"🐣","code":"baby-bird","id":"386_baby-bird","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f423.png"},{"unicode":"🐤","code":"baby-chick","id":"387_baby-chick","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f424.png"},{"unicode":"🐥","code":"baby-chick2","id":"388_baby-chick2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f425.png"},{"unicode":"🐧","code":"penguin","id":"389_penguin","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f427.png"},{"unicode":"🕊️","code":"bird-fly","id":"390_bird-fly","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f54a.png"},{"unicode":"🦅","code":"eagle","id":"391_eagle","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f985.png"},{"unicode":"🦆","code":"duck","id":"392_duck","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f986.png"},{"unicode":"🦢","code":"swan","id":"393_swan","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9a2.png"},{"unicode":"🦉","code":"owl","id":"394_owl","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f989.png"},{"unicode":"🦚","code":"peahen","id":"395_peahen","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99a.png"},{"unicode":"🦜","code":"macaw","id":"396_macaw","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99c.png"},{"unicode":"🐸","code":"frog-face","id":"397_frog-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f438.png"},{"unicode":"🐊","code":"crocodile","id":"398_crocodile","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40a.png"},{"unicode":"🐢","code":"turtle","id":"399_turtle","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f422.png"},{"unicode":"🦎","code":"reptile","id":"400_reptile","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98e.png"},{"unicode":"🐍","code":"snake","id":"401_snake","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40d.png"},{"unicode":"🐲","code":"dragon-face","id":"402_dragon-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f432.png"},{"unicode":"🐉","code":"dragon","id":"403_dragon","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f409.png"},{"unicode":"🦕","code":"brontosaurus","id":"404_brontosaurus","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f995.png"},{"unicode":"🦖","code":"t-rex","id":"405_t-rex","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f996.png"},{"unicode":"🐳","code":"whale","id":"406_whale","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f433.png"},{"unicode":"🐋","code":"whale2","id":"407_whale2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40b.png"},{"unicode":"🐬","code":"flipper","id":"408_flipper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42c.png"},{"unicode":"🐠","code":"tropical-fish","id":"409_tropical-fish","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f420.png"},{"unicode":"🐡","code":"fish","id":"410_fish","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f421.png"},{"unicode":"🦈","code":"shark","id":"411_shark","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f988.png"},{"unicode":"🐙","code":"octopus","id":"412_octopus","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f419.png"},{"unicode":"🐚","code":"shell","id":"413_shell","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41a.png"},{"unicode":"🐌","code":"snail","id":"414_snail","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40c.png"},{"unicode":"🦋","code":"butterfly","id":"415_butterfly","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98b.png"},{"unicode":"🐛","code":"insect","id":"416_insect","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41b.png"},{"unicode":"🐜","code":"insect","id":"417_insect","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41c.png"},{"unicode":"🐝","code":"bee","id":"418_bee","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41d.png"},{"unicode":"🐞","code":"ladybug","id":"419_ladybug","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41e.png"},{"unicode":"🦗","code":"grasshopper","id":"420_grasshopper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f997.png"},{"unicode":"🕷️","code":"insect","id":"421_insect","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f577.png"},{"unicode":"🕸️","code":"spider-web","id":"422_spider-web","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f578.png"},{"unicode":"🦂","code":"scorpio","id":"423_scorpio","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f982.png"},{"unicode":"🦟","code":"mosquito","id":"424_mosquito","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99f.png"},{"unicode":"🦠","code":"amoeba","id":"425_amoeba","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9a0.png"},{"unicode":"💐","code":"flower","id":"426_flower","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f490.png"},{"unicode":"🌸","code":"blossom","id":"427_blossom","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f338.png"},{"unicode":"🌹","code":"flower","id":"428_flower","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f339.png"},{"unicode":"🥀","code":"flower-wilted","id":"429_flower-wilted","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f940.png"},{"unicode":"🌺","code":"flower2","id":"430_flower2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33a.png"},{"unicode":"🌻","code":"sun-flower","id":"431_sun-flower","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33b.png"},{"unicode":"🌼","code":"flower3","id":"432_flower3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33c.png"},{"unicode":"🌷","code":"flower4","id":"433_flower4","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f337.png"},{"unicode":"🌱","code":"young-tree","id":"434_young-tree","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f331.png"},{"unicode":"🌲","code":"tree","id":"435_tree","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f332.png"},{"unicode":"🌳","code":"big-tree","id":"436_big-tree","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f333.png"},{"unicode":"🌵","code":"plant","id":"437_plant","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f335.png"},{"unicode":"🌿","code":"leaf","id":"438_leaf","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33f.png"},{"unicode":"☘️","code":"three-leaf clover","id":"439_three-leaf clover","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2618.png"},{"unicode":"🍀","code":"four-leaf clover","id":"440_four-leaf clover","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f340.png"},{"unicode":"🍁","code":"falling-leaf","id":"441_falling-leaf","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f341.png"},{"unicode":"🏁","code":"checkered","id":"442_checkered","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3c1.png"},{"unicode":"🚩","code":"post","id":"443_post","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6a9.png"},{"unicode":"🎌","code":"japanese-celebration","id":"444_japanese-celebration","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f38c.png"},{"unicode":"🏴","code":"flag-black","id":"445_flag-black","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f4.png"},{"unicode":"🏳️","code":"flag-white","id":"446_flag-white","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f3.png"},{"unicode":"🏳️‍🌈","code":"flag-pride","id":"447_flag-pride","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f3-fe0f-200d-1f308.png"},{"unicode":"🏴‍☠️","code":"flag-pirate","id":"448_flag-pirate","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f4-200d-2620-fe0f.png"},{"unicode":"🇦🇷","code":"AR","id":"449_AR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e6-1f1f7.png"},{"unicode":"🇦🇺","code":"AU","id":"450_AU","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e6-1f1fa.png"},{"unicode":"🇧🇬","code":"BG","id":"451_BG","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e7-1f1ec.png"},{"unicode":"🇧🇷","code":"BR","id":"452_BR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e7-1f1f7.png"},{"unicode":"🇨🇦","code":"CA","id":"453_CA","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e8-1f1e6.png"},{"unicode":"🇨🇳","code":"CN","id":"454_CN","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e8-1f1f3.png"},{"unicode":"🇨🇿","code":"CZ","id":"455_CZ","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e8-1f1ff.png"},{"unicode":"🇩🇪","code":"DE","id":"456_DE","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1ea.png"},{"unicode":"🇩🇰","code":"DK","id":"457_DK","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1f0.png"},{"unicode":"🇩🇲","code":"DM","id":"458_DM","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1f2.png"},{"unicode":"🇩🇴","code":"DO","id":"459_DO","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1f4.png"},{"unicode":"🇩🇿","code":"DZ","id":"460_DZ","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1ff.png"},{"unicode":"🇪🇦","code":"EA","id":"461_EA","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ea-1f1e6.png"},{"unicode":"🇪🇨","code":"EC","id":"462_EC","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ea-1f1e8.png"},{"unicode":"🇪🇸","code":"ES","id":"463_ES","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ea-1f1f8.png"},{"unicode":"🇫🇮","code":"FI","id":"464_FI","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1eb-1f1ee.png"},{"unicode":"🇫🇷","code":"FR","id":"465_FR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1eb-1f1f7.png"},{"unicode":"🇬🇧","code":"GB","id":"466_GB","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ec-1f1e7.png"},{"unicode":"🇭🇰","code":"HK","id":"467_HK","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ed-1f1f0.png"},{"unicode":"🇮🇱","code":"IL","id":"468_IL","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ee-1f1f1.png"},{"unicode":"🇮🇹","code":"IT","id":"469_IT","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ee-1f1f9.png"},{"unicode":"🇯🇵","code":"JA","id":"470_JA","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ef-1f1f5.png"},{"unicode":"🇰🇵","code":"KP","id":"471_KP","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f0-1f1f5.png"},{"unicode":"🇰🇷","code":"KR","id":"472_KR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f0-1f1f7.png"},{"unicode":"🇳🇱","code":"NL","id":"473_NL","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f3-1f1f1.png"},{"unicode":"🇳🇴","code":"NO","id":"474_NO","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f3-1f1f4.png"},{"unicode":"🇵🇱","code":"PL","id":"475_PL","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f5-1f1f1.png"},{"unicode":"🇵🇹","code":"PT","id":"476_PT","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f5-1f1f9.png"},{"unicode":"🇷🇴","code":"RO","id":"477_RO","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f7-1f1f4.png"},{"unicode":"🇷🇺","code":"RU","id":"478_RU","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f7-1f1fa.png"},{"unicode":"🇸🇰","code":"SK","id":"479_SK","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f8-1f1f0.png"},{"unicode":"🇸🇻","code":"SV","id":"480_SV","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f8-1f1fb.png"},{"unicode":"🇹🇭","code":"TH","id":"481_TH","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f9-1f1ed.png"},{"unicode":"🇹🇷","code":"TR","id":"482_TR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f9-1f1f7.png"},{"unicode":"🇻🇮","code":"VI","id":"483_VI","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1fb-1f1ee.png"}]';
+    /*
+     * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
+     *
+     * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
+     *
+     * SmartTwitchTV is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * SmartTwitchTV is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with SmartTwitchTV.  If not, see <https://github.com/fgl27/SmartTwitchTV/blob/master/LICENSE>.
+     *
+     */
+
+    //Spacing for release maker not trow errors from jshint
+    var IMG_404_GAME =
+        'data:image/png;base64,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';
+
+    var IMG_404_LOGO =
+        'data:image/png;base64,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';
+
+    var IMG_404_VIDEO =
+        'data:image/png;base64,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';
+
+    var IMG_404_VOD =
+        'data:image/png;base64,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';
+
+    var IMG_404_BANNER = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+
+    var IMG_PARTNER =
+        'data:image/png;base64,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';
+    //empty
+    /*
      * Copyright (c) 2017-∞ Felipe de Leon <fglfgl27@gmail.com>
      *
      * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
@@ -8075,148 +8178,6 @@
         sessionRevalidateMs: 60 * 60 * 1000,
         backgroundRevalidateMs: 30 * 60 * 1000
     };
-    /*
-     * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
-     *
-     * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
-     *
-     * SmartTwitchTV is free software: you can redistribute it and/or modify
-     * it under the terms of the GNU General Public License as published by
-     * the Free Software Foundation, either version 3 of the License, or
-     * (at your option) any later version.
-     *
-     * SmartTwitchTV is distributed in the hope that it will be useful,
-     * but WITHOUT ANY WARRANTY; without even the implied warranty of
-     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     * GNU General Public License for more details.
-     *
-     * You should have received a copy of the GNU General Public License
-     * along with SmartTwitchTV.  If not, see <https://github.com/fgl27/SmartTwitchTV/blob/master/LICENSE>.
-     *
-     */
-
-    //https://developer.android.com/reference/android/view/KeyEvent
-    //overwrite from java dispatchKeyEvent()
-    var KEY_PAUSE = 83; //overwrite key S = stop because p = play
-    var KEY_PLAY = 80; //overwrite key P = play
-
-    var KEY_STOP = 178;
-    var KEY_PLAYPAUSE = 179;
-
-    var KEY_LEFT = 37;
-    var KEY_UP = 38;
-    var KEY_RIGHT = 39;
-    var KEY_DOWN = 40;
-    var KEY_ENTER = 13;
-
-    var KEY_PG_DOWN = 34;
-    var KEY_PG_UP = 33;
-
-    var KEY_RETURN = 113; //key #F2
-
-    var KEY_KEYBOARD_BACKSPACE = 8; // http://developer.samsung.com/tv/develop/guides/user-interaction/keyboardime
-    var KEY_KEYBOARD_DONE = 13;
-    var KEY_KEYBOARD_SPACE = 32;
-
-    var KEY_MEDIA_NEXT = 176;
-    var KEY_MEDIA_PREVIOUS = 177;
-
-    var KEY_MEDIA_FAST_FORWARD = 228;
-    var KEY_MEDIA_REWIND = 227;
-
-    var KEY_0 = 48;
-    var KEY_1 = 49;
-    var KEY_2 = 50;
-    var KEY_3 = 51;
-    var KEY_4 = 52;
-    var KEY_5 = 53;
-    var KEY_6 = 54;
-    var KEY_7 = 55;
-    var KEY_8 = 56;
-    var KEY_9 = 57;
-
-    var KEY_NUMPAD_0 = 96;
-    var KEY_NUMPAD_1 = 97;
-    var KEY_NUMPAD_2 = 98;
-    var KEY_NUMPAD_3 = 99;
-    var KEY_NUMPAD_4 = 100;
-    var KEY_NUMPAD_5 = 101;
-    var KEY_NUMPAD_6 = 102;
-    var KEY_NUMPAD_7 = 103;
-    var KEY_NUMPAD_8 = 104;
-    var KEY_NUMPAD_9 = 105;
-
-    var KEY_A = 65;
-    var KEY_C = 67;
-    var KEY_E = 69;
-    var KEY_J = 74;
-    var KEY_K = 75;
-    var KEY_T = 84;
-    var KEY_U = 85;
-    /*
-     * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
-     *
-     * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
-     *
-     * SmartTwitchTV is free software: you can redistribute it and/or modify
-     * it under the terms of the GNU General Public License as published by
-     * the Free Software Foundation, either version 3 of the License, or
-     * (at your option) any later version.
-     *
-     * SmartTwitchTV is distributed in the hope that it will be useful,
-     * but WITHOUT ANY WARRANTY; without even the implied warranty of
-     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     * GNU General Public License for more details.
-     *
-     * You should have received a copy of the GNU General Public License
-     * along with SmartTwitchTV.  If not, see <https://github.com/fgl27/SmartTwitchTV/blob/master/LICENSE>.
-     *
-     */
-
-    //Used as based https://kevinfaguiar.github.io/vue-twemoji-picker/docs/emoji-datasets/
-    //https://github.com/kevinfaguiar/vue-twemoji-picker/tree/master/emoji-data/en
-    //https://emojipedia.org/
-    //But removed not working or not needed as is too much
-    var emojis_string =
-        '[{"unicode":"😀","code":"grin","id":"0_grin","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f600.png"},{"unicode":"😃","code":"smile","id":"1_smile","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f603.png"},{"unicode":"😄","code":"smile2","id":"2_smile2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f604.png"},{"unicode":"😁","code":"smile3","id":"3_smile3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f601.png"},{"unicode":"😆","code":"satisfied","id":"4_satisfied","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f606.png"},{"unicode":"😅","code":"sweat","id":"5_sweat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f605.png"},{"unicode":"🤣","code":"rolling","id":"6_rolling","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f923.png"},{"unicode":"😂","code":"tear","id":"7_tear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f602.png"},{"unicode":"🙂","code":"smile4","id":"8_smile4","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f642.png"},{"unicode":"🙃","code":"smile-upside-down","id":"9_smile-upside-down","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f643.png"},{"unicode":"😉","code":"wink","id":"10_wink","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f609.png"},{"unicode":"😊","code":"smile-blush","id":"11_smile-blush","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60a.png"},{"unicode":"😇","code":"angel","id":"12_angel","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f607.png"},{"unicode":"🥰","code":"adore","id":"13_adore","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f970.png"},{"unicode":"😍","code":"smile-love","id":"14_smile-love","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60d.png"},{"unicode":"🤩","code":"smile-star","id":"15_smile-star","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f929.png"},{"unicode":"😘","code":"kiss","id":"16_kiss","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f618.png"},{"unicode":"😗","code":"kiss2","id":"17_kiss2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f617.png"},{"unicode":"☺️","code":"relaxed","id":"18_relaxed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/263a.png"},{"unicode":"😚","code":"kiss3","id":"19_kiss3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61a.png"},{"unicode":"😙","code":"kis4","id":"20_kis4","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f619.png"},{"unicode":"😋","code":"delicious","id":"21_delicious","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60b.png"},{"unicode":"😛","code":"tongue","id":"22_tongue","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61b.png"},{"unicode":"😜","code":"tongue-wink","id":"23_tongue-wink","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61c.png"},{"unicode":"🤪","code":"goofy","id":"24_goofy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92a.png"},{"unicode":"😝","code":"tongue-><","id":"25_tongue-><","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61d.png"},{"unicode":"🤑","code":"face-money","id":"26_face-money","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f911.png"},{"unicode":"🤗","code":"hugging","id":"27_hugging","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f917.png"},{"unicode":"🤭","code":"whoops","id":"28_whoops","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92d.png"},{"unicode":"🤫","code":"quiet","id":"29_quiet","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92b.png"},{"unicode":"🤔","code":"thinking","id":"30_thinking","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f914.png"},{"unicode":"🤐","code":"zipper","id":"31_zipper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f910.png"},{"unicode":"🤨","code":"skeptic","id":"32_skeptic","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f928.png"},{"unicode":"😑","code":"unexpressive","id":"33_unexpressive","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f611.png"},{"unicode":"😶","code":"silent","id":"34_silent","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f636.png"},{"unicode":"😏","code":"smirk","id":"35_smirk","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60f.png"},{"unicode":"😒","code":"unhappy","id":"36_unhappy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f612.png"},{"unicode":"🙄","code":"eyeroll","id":"37_eyeroll","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f644.png"},{"unicode":"😬","code":"grimace","id":"38_grimace","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62c.png"},{"unicode":"🤥","code":"pinocchio","id":"39_pinocchio","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f925.png"},{"unicode":"😌","code":"relieved","id":"40_relieved","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60c.png"},{"unicode":"😔","code":"pensive","id":"41_pensive","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f614.png"},{"unicode":"😪","code":"sleep","id":"42_sleep","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62a.png"},{"unicode":"🤤","code":"drooling-face","id":"43_drooling-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f924.png"},{"unicode":"😴","code":"sleep-face","id":"44_sleep-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f634.png"},{"unicode":"😷","code":"cold-face","id":"45_cold-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f637.png"},{"unicode":"🤒","code":"sick-face","id":"46_sick-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f912.png"},{"unicode":"🤕","code":"bandage-face","id":"47_bandage-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f915.png"},{"unicode":"🤢","code":"nauseated-face","id":"48_nauseated-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f922.png"},{"unicode":"🤮","code":"sick-face","id":"49_sick-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92e.png"},{"unicode":"🤧","code":"sneeze","id":"50_sneeze","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f927.png"},{"unicode":"🥵","code":"feverish","id":"51_feverish","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f975.png"},{"unicode":"🥶","code":"blue-faced","id":"52_blue-faced","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f976.png"},{"unicode":"🥴","code":"intoxicated","id":"53_intoxicated","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f974.png"},{"unicode":"😵","code":"dizzy","id":"54_dizzy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f635.png"},{"unicode":"🤯","code":"mind blown","id":"55_mind blown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92f.png"},{"unicode":"🤠","code":"cowboy","id":"56_cowboy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f920.png"},{"unicode":"🥳","code":"celebration","id":"57_celebration","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f973.png"},{"unicode":"😎","code":"cool-face","id":"58_cool-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f60e.png"},{"unicode":"🤓","code":"cool","id":"59_cool","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f913.png"},{"unicode":"🧐","code":"stuffy","id":"60_stuffy","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9d0.png"},{"unicode":"😕","code":"confused","id":"61_confused","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f615.png"},{"unicode":"😟","code":"worried","id":"62_worried","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61f.png"},{"unicode":"🙁","code":"frown","id":"63_frown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f641.png"},{"unicode":"☹️","code":"frown","id":"64_frown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2639.png"},{"unicode":"😮","code":"mouth-open","id":"65_mouth-open","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62e.png"},{"unicode":"😯","code":"surprised","id":"66_surprised","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62f.png"},{"unicode":"😲","code":"astonished","id":"67_astonished","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f632.png"},{"unicode":"😳","code":"dazed","id":"68_dazed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f633.png"},{"unicode":"🥺","code":"puppy eyes","id":"69_puppy eyes","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97a.png"},{"unicode":"😦","code":"frown","id":"70_frown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f626.png"},{"unicode":"😧","code":"anguished","id":"71_anguished","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f627.png"},{"unicode":"😨","code":"fearful","id":"72_fearful","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f628.png"},{"unicode":"😰","code":"fearful2","id":"73_fearful2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f630.png"},{"unicode":"😥","code":"disappointed","id":"74_disappointed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f625.png"},{"unicode":"😢","code":"cry-face","id":"75_cry-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f622.png"},{"unicode":"😭","code":"cry-face2","id":"76_cry-face2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62d.png"},{"unicode":"😱","code":"fear-face","id":"77_fear-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f631.png"},{"unicode":"😖","code":"confounded","id":"78_confounded","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f616.png"},{"unicode":"😣","code":"persevere","id":"79_persevere","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f623.png"},{"unicode":"😞","code":"disappointed","id":"80_disappointed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f61e.png"},{"unicode":"😓","code":"cold","id":"81_cold","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f613.png"},{"unicode":"😩","code":"weary","id":"82_weary","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f629.png"},{"unicode":"😫","code":"tired","id":"83_tired","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f62b.png"},{"unicode":"😤","code":"triumph","id":"84_triumph","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f624.png"},{"unicode":"😡","code":"angry","id":"85_angry","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f621.png"},{"unicode":"😠","code":"mad","id":"86_mad","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f620.png"},{"unicode":"🤬","code":"swearing","id":"87_swearing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f92c.png"},{"unicode":"😈","code":"devil","id":"88_devil","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f608.png"},{"unicode":"👿","code":"demon","id":"89_demon","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47f.png"},{"unicode":"💀","code":"death","id":"90_death","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f480.png"},{"unicode":"☠️","code":"crossbones","id":"91_crossbones","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2620.png"},{"unicode":"💩","code":"poop","id":"92_poop","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a9.png"},{"unicode":"🤡","code":"clown","id":"93_clown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f921.png"},{"unicode":"👹","code":"creature","id":"94_creature","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f479.png"},{"unicode":"👺","code":"creature2","id":"95_creature2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47a.png"},{"unicode":"👻","code":"ghost","id":"96_ghost","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47b.png"},{"unicode":"👾","code":"alien","id":"97_alien","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f47e.png"},{"unicode":"🤖","code":"robot","id":"98_robot","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f916.png"},{"unicode":"😺","code":"cat-face","id":"99_cat-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63a.png"},{"unicode":"😸","code":"cat-smile","id":"100_cat-smile","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f638.png"},{"unicode":"😹","code":"cat-tear","id":"101_cat-tear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f639.png"},{"unicode":"😻","code":"cat-heart","id":"102_cat-heart","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63b.png"},{"unicode":"😼","code":"cat-ironic","id":"103_cat-ironic","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63c.png"},{"unicode":"😽","code":"cat-kiss","id":"104_cat-kiss","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63d.png"},{"unicode":"🙀","code":"cat-surprised","id":"105_cat-surprised","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f640.png"},{"unicode":"😿","code":"cat-sad","id":"106_cat-sad","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63f.png"},{"unicode":"😾","code":"cat-pouting","id":"107_cat-pouting","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f63e.png"},{"unicode":"👋","code":"hand-wave","id":"108_hand-wave","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44b.png"},{"unicode":"🤚","code":"backhand","id":"109_backhand","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91a.png"},{"unicode":"🖐️","code":"hand-open-finger","id":"110_hand-open-finger","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f590.png"},{"unicode":"✋","code":"hand","id":"111_hand","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270b.png"},{"unicode":"🖖","code":"hand-vulcan","id":"112_hand-vulcan","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f596.png"},{"unicode":"👌","code":"hand-ok","id":"113_hand-ok","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44c.png"},{"unicode":"✌️","code":"hand-v","id":"114_hand-v","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270c.png"},{"unicode":"🤞","code":"hand-cross","id":"115_hand-cross","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91e.png"},{"unicode":"🤟","code":"hand-ily","id":"116_hand-ily","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91f.png"},{"unicode":"🤘","code":"hand-horns","id":"117_hand-horns","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f918.png"},{"unicode":"🤙","code":"hand-call","id":"118_hand-call","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f919.png"},{"unicode":"🖕","code":"hand-finger","id":"119_hand-finger","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f595.png"},{"unicode":"👈","code":"hand-point","id":"120_hand-point","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f448.png"},{"unicode":"👇","code":"hand-poin2","id":"121_hand-poin2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f447.png"},{"unicode":"☝️","code":"hand-point3","id":"122_hand-point3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/261d.png"},{"unicode":"👍","code":"hand-thumb-up","id":"123_hand-thumb-up","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44d.png"},{"unicode":"👎","code":"hand-thumb-down","id":"124_hand-thumb-down","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44e.png"},{"unicode":"✊","code":"hand-punch","id":"125_hand-punch","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270a.png"},{"unicode":"👊","code":"hand-punch2","id":"126_hand-punch2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44a.png"},{"unicode":"🤛","code":"hand-punch3","id":"127_hand-punch3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91b.png"},{"unicode":"🤜","code":"hand-punch4","id":"128_hand-punch4","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91c.png"},{"unicode":"👏","code":"hand-clap","id":"129_hand-clap","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f44f.png"},{"unicode":"🙌","code":"hand-celebration","id":"130_hand-celebration","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f64c.png"},{"unicode":"👐","code":"hand-open","id":"131_hand-open","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f450.png"},{"unicode":"🤲","code":"hand-prayer","id":"132_hand-prayer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f932.png"},{"unicode":"🤝","code":"hand-agreement","id":"133_hand-agreement","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f91d.png"},{"unicode":"🙏","code":"hand-please","id":"134_hand-please","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f64f.png"},{"unicode":"✍️","code":"hand-write","id":"135_hand-write","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270d.png"},{"unicode":"💅","code":"cosmetics","id":"136_cosmetics","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f485.png"},{"unicode":"🤳","code":"self","id":"137_self","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f933.png"},{"unicode":"💪","code":"muscle","id":"138_muscle","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4aa.png"},{"unicode":"🦵","code":"kick","id":"139_kick","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9b5.png"},{"unicode":"🦶","code":"kick2","id":"140_kick2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9b6.png"},{"unicode":"👂","code":"ear","id":"141_ear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f442.png"},{"unicode":"👃","code":"nose","id":"142_nose","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f443.png"},{"unicode":"🧠","code":"brain","id":"143_brain","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e0.png"},{"unicode":"🦷","code":"tooth","id":"144_tooth","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9b7.png"},{"unicode":"👀","code":"eyes","id":"145_eyes","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f440.png"},{"unicode":"👁️","code":"eye","id":"146_eye","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f441.png"},{"unicode":"👅","code":"tongue2","id":"147_tongue2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f445.png"},{"unicode":"👄","code":"lips","id":"148_lips","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f444.png"},{"unicode":"👶","code":"baby","id":"149_baby","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f476.png"},{"unicode":"👨‍🦲","code":"bald","id":"150_bald","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f468-200d-1f9b2.png"},{"unicode":"👴","code":"old-man","id":"151_old-man","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f474.png"},{"unicode":"👵","code":"old-woman","id":"152_old-woman","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f475.png"},{"unicode":"🔥","code":"fire","id":"153_fire","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f525.png"},{"unicode":"👨‍🚒","code":"firefighter","id":"154_firefighter","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f468-200d-1f692.png"},{"unicode":"👩‍🚒","code":"firefighter2","id":"155_firefighter2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f469-200d-1f692.png"},{"unicode":"👮‍♂️","code":"police-officer","id":"156_police-officer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f46e-200d-2642-fe0f.png"},{"unicode":"👮‍♀️","code":"police-officer-woman","id":"157_police-officer-woman","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f46e-200d-2640-fe0f.png"},{"unicode":"👨‍👩‍👧‍👦","code":"family","id":"158_family","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f468-200d-1f469-200d-1f467-200d-1f466.png"},{"unicode":"🙈","code":"monkey-see","id":"159_monkey-see","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f648.png"},{"unicode":"🙉","code":"monkey-hear","id":"160_monkey-hear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f649.png"},{"unicode":"🙊","code":"monkey-speak","id":"161_monkey-speak","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f64a.png"},{"unicode":"💋","code":"kiss-lips","id":"162_kiss-lips","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48b.png"},{"unicode":"💌","code":"heart-letter","id":"163_heart-letter","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48c.png"},{"unicode":"💘","code":"arrow-cupid","id":"164_arrow-cupid","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f498.png"},{"unicode":"💝","code":"valentine","id":"165_valentine","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49d.png"},{"unicode":"💖","code":"sparkle-heart","id":"166_sparkle-heart","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f496.png"},{"unicode":"💗","code":"pulse","id":"167_pulse","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f497.png"},{"unicode":"💓","code":"beating","id":"168_beating","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f493.png"},{"unicode":"💞","code":"revolving","id":"169_revolving","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49e.png"},{"unicode":"💕","code":"love","id":"170_love","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f495.png"},{"unicode":"❣️","code":"exclamation","id":"171_exclamation","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2763.png"},{"unicode":"💔","code":"broken-heart","id":"172_broken-heart","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f494.png"},{"unicode":"💟","code":"heart-Decoration","id":"173_heart-Decoration","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49f.png"},{"unicode":"🖤","code":"heart-black","id":"174_heart-black","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5a4.png"},{"unicode":"🤎","code":"heart-brown","id":"175_heart-brown","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f90e.png"},{"unicode":"💙","code":"heart-blue","id":"176_heart-blue","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f499.png"},{"unicode":"💚","code":"heart-green","id":"177_heart-green","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49a.png"},{"unicode":"🧡","code":"heart-orange","id":"178_heart-orange","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e1.png"},{"unicode":"💜","code":"heart-purple","id":"179_heart-purple","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49c.png"},{"unicode":"❤️","code":"heart-red","id":"180_heart-red","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2764.png"},{"unicode":"🤍","code":"black-white","id":"181_black-white","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f90d.png"},{"unicode":"💛","code":"heart-yellow","id":"182_heart-yellow","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f49b.png"},{"unicode":"💯","code":"hundred","id":"183_hundred","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4af.png"},{"unicode":"💢","code":"mad","id":"184_mad","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a2.png"},{"unicode":"💥","code":"boom","id":"185_boom","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a5.png"},{"unicode":"💫","code":"stars","id":"186_stars","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ab.png"},{"unicode":"💦","code":"splashing","id":"187_splashing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a6.png"},{"unicode":"💨","code":"comic-dash","id":"188_comic-dash","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a8.png"},{"unicode":"🕳️","code":"hole","id":"189_hole","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f573.png"},{"unicode":"💬","code":"balloon-dialog","id":"190_balloon-dialog","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ac.png"},{"unicode":"🗨️","code":"dialog","id":"191_dialog","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5e8.png"},{"unicode":"🗯️","code":"angry-balloon","id":"192_angry-balloon","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5ef.png"},{"unicode":"💭","code":"balloon-bubble","id":"193_balloon-bubble","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ad.png"},{"unicode":"💤","code":"comic-sleep","id":"194_comic-sleep","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a4.png"},{"unicode":"🕶️","code":"glasses-dark","id":"195_glasses-dark","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f576.png"},{"unicode":"🥽","code":"glasses-swimming","id":"196_glasses-swimming","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97d.png"},{"unicode":"🥼","code":"scientist","id":"197_scientist","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97c.png"},{"unicode":"👔","code":"tie","id":"198_tie","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f454.png"},{"unicode":"👕","code":"tshirt","id":"199_tshirt","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f455.png"},{"unicode":"👖","code":"pants","id":"200_pants","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f456.png"},{"unicode":"🧣","code":"neck","id":"201_neck","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e3.png"},{"unicode":"🧤","code":"hand","id":"202_hand","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e4.png"},{"unicode":"🧥","code":"jacket","id":"203_jacket","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e5.png"},{"unicode":"🧦","code":"stocking","id":"204_stocking","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e6.png"},{"unicode":"👗","code":"clothing","id":"205_clothing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f457.png"},{"unicode":"👘","code":"clothing2","id":"206_clothing2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f458.png"},{"unicode":"👙","code":"swim-clothing","id":"207_swim-clothing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f459.png"},{"unicode":"👚","code":"woman-clothing","id":"208_woman-clothing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45a.png"},{"unicode":"👛","code":"coin-clothing","id":"209_coin-clothing","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45b.png"},{"unicode":"👜","code":"purse","id":"210_purse","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45c.png"},{"unicode":"👝","code":"pouch","id":"211_pouch","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45d.png"},{"unicode":"🛍️","code":"shopping-bag","id":"212_shopping-bag","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6cd.png"},{"unicode":"🎒","code":"school-bag","id":"213_school-bag","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f392.png"},{"unicode":"👞","code":"shoe","id":"214_shoe","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45e.png"},{"unicode":"👟","code":"sneaker","id":"215_sneaker","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f45f.png"},{"unicode":"🥾","code":"hiking-boot","id":"216_hiking-boot","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97e.png"},{"unicode":"🥿","code":"ballet flat","id":"217_ballet flat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f97f.png"},{"unicode":"👠","code":"woman-shoe","id":"218_woman-shoe","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f460.png"},{"unicode":"👡","code":"woman-shoe2","id":"219_woman-shoe2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f461.png"},{"unicode":"👢","code":"woman-boot","id":"220_woman-boot","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f462.png"},{"unicode":"👑","code":"king","id":"221_king","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f451.png"},{"unicode":"👒","code":"hat","id":"222_hat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f452.png"},{"unicode":"🎩","code":"tophat","id":"223_tophat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3a9.png"},{"unicode":"🧢","code":"baseball cap","id":"224_baseball cap","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9e2.png"},{"unicode":"⛑️","code":"aid","id":"225_aid","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/26d1.png"},{"unicode":"📿","code":"beads","id":"226_beads","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ff.png"},{"unicode":"💄","code":"lipstick","id":"227_lipstick","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f484.png"},{"unicode":"💍","code":"diamond-ring","id":"228_diamond-ring","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48d.png"},{"unicode":"💎","code":"diamond","id":"229_diamond","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48e.png"},{"unicode":"🔇","code":"mute","id":"230_mute","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f507.png"},{"unicode":"🔉","code":"medium","id":"231_medium","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f509.png"},{"unicode":"🔊","code":"loud","id":"232_loud","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f50a.png"},{"unicode":"📢","code":"loud2","id":"233_loud2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4e2.png"},{"unicode":"📣","code":"cheering","id":"234_cheering","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4e3.png"},{"unicode":"📯","code":"horn","id":"235_horn","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ef.png"},{"unicode":"🔔","code":"bell","id":"236_bell","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f514.png"},{"unicode":"🔕","code":"bell","id":"237_bell","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f515.png"},{"unicode":"🎼","code":"music-score","id":"238_music-score","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3bc.png"},{"unicode":"🎵","code":"music-note","id":"239_music-note","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b5.png"},{"unicode":"🎶","code":"music-notes","id":"240_music-notes","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b6.png"},{"unicode":"🎙️","code":"microphone","id":"241_microphone","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f399.png"},{"unicode":"🎤","code":"microphone2","id":"242_microphone2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3a4.png"},{"unicode":"🎷","code":"sax","id":"243_sax","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b7.png"},{"unicode":"🎸","code":"guitar","id":"244_guitar","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b8.png"},{"unicode":"🎹","code":"piano-keys","id":"245_piano-keys","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3b9.png"},{"unicode":"🎺","code":"trumpet","id":"246_trumpet","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3ba.png"},{"unicode":"🎻","code":"violin","id":"247_violin","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3bb.png"},{"unicode":"🥁","code":"drumsticks","id":"248_drumsticks","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f941.png"},{"unicode":"📱","code":"cellphone","id":"249_cellphone","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4f1.png"},{"unicode":"☎️","code":"phone","id":"250_phone","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/260e.png"},{"unicode":"📞","code":"phone2","id":"251_phone2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4de.png"},{"unicode":"📠","code":"fax","id":"252_fax","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4e0.png"},{"unicode":"🔋","code":"battery","id":"253_battery","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f50b.png"},{"unicode":"🔌","code":"plug","id":"254_plug","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f50c.png"},{"unicode":"🖥️","code":"computer-desktop","id":"255_computer-desktop","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5a5.png"},{"unicode":"🖨️","code":"printer","id":"256_printer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5a8.png"},{"unicode":"⌨️","code":"keyboard","id":"257_keyboard","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2328.png"},{"unicode":"🖱️","code":"mouse-computer","id":"258_mouse-computer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5b1.png"},{"unicode":"💽","code":"computer-disk","id":"259_computer-disk","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4bd.png"},{"unicode":"💾","code":"floppy-disk","id":"260_floppy-disk","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4be.png"},{"unicode":"📀","code":"blu-ray","id":"261_blu-ray","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4c0.png"},{"unicode":"🧮","code":"calculation","id":"262_calculation","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9ee.png"},{"unicode":"🎥","code":"camera","id":"263_camera","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3a5.png"},{"unicode":"🎞️","code":"cinema","id":"264_cinema","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f39e.png"},{"unicode":"📽️","code":"cinema2","id":"265_cinema2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4fd.png"},{"unicode":"📸","code":"camera-flash","id":"266_camera-flash","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4f8.png"},{"unicode":"📼","code":"vhs-tape","id":"267_vhs-tape","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4fc.png"},{"unicode":"🔎","code":"magnifying","id":"268_magnifying","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f50e.png"},{"unicode":"🕯️","code":"light","id":"269_light","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f56f.png"},{"unicode":"💡","code":"bulb","id":"270_bulb","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4a1.png"},{"unicode":"🔦","code":"electric-torch","id":"271_electric-torch","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f526.png"},{"unicode":"📒","code":"notebook","id":"272_notebook","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4d2.png"},{"unicode":"📃","code":"note","id":"273_note","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4c3.png"},{"unicode":"📰","code":"newspaper","id":"274_newspaper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4f0.png"},{"unicode":"🗞️","code":"newspaper-rolled","id":"275_newspaper-rolled","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5de.png"},{"unicode":"💴","code":"money-rolled","id":"276_money-rolled","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4b4.png"},{"unicode":"💲","code":"dollar-sign","id":"277_dollar-sign","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4b2.png"},{"unicode":"✉️","code":"email","id":"278_email","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2709.png"},{"unicode":"✏️","code":"pencil","id":"279_pencil","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/270f.png"},{"unicode":"✒️","code":"pen","id":"280_pen","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2712.png"},{"unicode":"📝","code":"note-pencil","id":"281_note-pencil","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4dd.png"},{"unicode":"💼","code":"briefcase","id":"282_briefcase","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4bc.png"},{"unicode":"🗓️","code":"calendar","id":"283_calendar","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5d3.png"},{"unicode":"📌","code":"pin","id":"284_pin","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4cc.png"},{"unicode":"📍","code":"pin2","id":"285_pin2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4cd.png"},{"unicode":"📎","code":"paperclip","id":"286_paperclip","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4ce.png"},{"unicode":"📏","code":"ruler","id":"287_ruler","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4cf.png"},{"unicode":"📐","code":"ruler2","id":"288_ruler2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4d0.png"},{"unicode":"✂️","code":"cutting","id":"289_cutting","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2702.png"},{"unicode":"🗑️","code":"wastebasket","id":"290_wastebasket","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5d1.png"},{"unicode":"🔑","code":"key","id":"291_key","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f511.png"},{"unicode":"🗝️","code":"key-old","id":"292_key-old","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5dd.png"},{"unicode":"🔨","code":"hammer","id":"293_hammer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f528.png"},{"unicode":"⛏️","code":"pickaxe","id":"294_pickaxe","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/26cf.png"},{"unicode":"⚒️","code":"hammer2","id":"295_hammer2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2692.png"},{"unicode":"🛠️","code":"hammer-wrench","id":"296_hammer-wrench","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6e0.png"},{"unicode":"🗡️","code":"knife","id":"297_knife","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5e1.png"},{"unicode":"⚔️","code":"swords","id":"298_swords","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2694.png"},{"unicode":"🔫","code":"gun-tool","id":"299_gun-tool","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f52b.png"},{"unicode":"🏹","code":"archer","id":"300_archer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f9.png"},{"unicode":"🛡️","code":"shield","id":"301_shield","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6e1.png"},{"unicode":"🔧","code":"spanner","id":"302_spanner","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f527.png"},{"unicode":"🔩","code":"bolt","id":"303_bolt","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f529.png"},{"unicode":"⚙️","code":"cog","id":"304_cog","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2699.png"},{"unicode":"⚖️","code":"balance","id":"305_balance","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2696.png"},{"unicode":"🔗","code":"link","id":"306_link","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f517.png"},{"unicode":"🧲","code":"magnetic","id":"307_magnetic","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9f2.png"},{"unicode":"⚗️","code":"chemistry","id":"308_chemistry","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2697.png"},{"unicode":"🧪","code":"chemist","id":"309_chemist","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9ea.png"},{"unicode":"🧬","code":"gene","id":"310_gene","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9ec.png"},{"unicode":"🔬","code":"microscope","id":"311_microscope","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f52c.png"},{"unicode":"🔭","code":"telescope","id":"312_telescope","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f52d.png"},{"unicode":"📡","code":"antenna-dish","id":"313_antenna-dish","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f4e1.png"},{"unicode":"💉","code":"medicine","id":"314_medicine","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f489.png"},{"unicode":"💊","code":"medicine","id":"315_medicine","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f48a.png"},{"unicode":"🚪","code":"door","id":"316_door","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6aa.png"},{"unicode":"🛏️","code":"hotel-bed","id":"317_hotel-bed","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6cf.png"},{"unicode":"🚽","code":"toilet","id":"318_toilet","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6bd.png"},{"unicode":"🚿","code":"shower","id":"319_shower","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6bf.png"},{"unicode":"🛁","code":"bath","id":"320_bath","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6c1.png"},{"unicode":"🧴","code":"lotion","id":"321_lotion","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9f4.png"},{"unicode":"🧷","code":"diaper","id":"322_diaper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9f7.png"},{"unicode":"🧹","code":"sweeping","id":"323_sweeping","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9f9.png"},{"unicode":"🧺","code":"farming","id":"324_farming","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9fa.png"},{"unicode":"🧻","code":"toilet paper","id":"325_toilet paper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9fb.png"},{"unicode":"🧯","code":"extinguisher","id":"326_extinguisher","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9ef.png"},{"unicode":"🛒","code":"shopping-cart","id":"327_shopping-cart","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6d2.png"},{"unicode":"🚬","code":"smoking","id":"328_smoking","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6ac.png"},{"unicode":"✔️","code":"check","id":"329_check","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2714.png"},{"unicode":"⚰️","code":"death","id":"330_death","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/26b0.png"},{"unicode":"🗿","code":"statue-face","id":"331_statue-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f5ff.png"},{"unicode":"🐵","code":"monkey-face","id":"332_monkey-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f435.png"},{"unicode":"🐒","code":"monkey","id":"333_monkey","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f412.png"},{"unicode":"🦍","code":"gorilla","id":"334_gorilla","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98d.png"},{"unicode":"🐶","code":"dog-face","id":"335_dog-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f436.png"},{"unicode":"🐩","code":"dog","id":"336_dog","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f429.png"},{"unicode":"🐺","code":"face","id":"337_face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43a.png"},{"unicode":"🦊","code":"face","id":"338_face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98a.png"},{"unicode":"🦝","code":"curious","id":"339_curious","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99d.png"},{"unicode":"🐱","code":"cat","id":"340_cat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f431.png"},{"unicode":"🦁","code":"lion-face","id":"341_lion-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f981.png"},{"unicode":"🐯","code":"tiger-face","id":"342_tiger-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42f.png"},{"unicode":"🐅","code":"tiger","id":"343_tiger","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f405.png"},{"unicode":"🐆","code":"leopard","id":"344_leopard","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f406.png"},{"unicode":"🐴","code":"horse-face","id":"345_horse-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f434.png"},{"unicode":"🐎","code":"racehorse","id":"346_racehorse","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40e.png"},{"unicode":"🦄","code":"unicorn-face","id":"347_unicorn-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f984.png"},{"unicode":"🦓","code":"zebra","id":"348_zebra","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f993.png"},{"unicode":"🦌","code":"deer","id":"349_deer","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98c.png"},{"unicode":"🐮","code":"cow","id":"350_cow","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42e.png"},{"unicode":"🐂","code":"bull","id":"351_bull","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f402.png"},{"unicode":"🐃","code":"buffalo","id":"352_buffalo","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f403.png"},{"unicode":"🐄","code":"cow","id":"353_cow","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f404.png"},{"unicode":"🐷","code":"pig-face","id":"354_pig-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f437.png"},{"unicode":"🐖","code":"sow","id":"355_sow","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f416.png"},{"unicode":"🐗","code":"pig","id":"356_pig","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f417.png"},{"unicode":"🐽","code":"pig-nose","id":"357_pig-nose","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43d.png"},{"unicode":"🐏","code":"aries","id":"358_aries","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40f.png"},{"unicode":"🐑","code":"sheep","id":"359_sheep","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f411.png"},{"unicode":"🐐","code":"capricorn","id":"360_capricorn","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f410.png"},{"unicode":"🐪","code":"dromedary","id":"361_dromedary","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42a.png"},{"unicode":"🐫","code":"camel","id":"362_camel","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42b.png"},{"unicode":"🦙","code":"alpaca","id":"363_alpaca","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f999.png"},{"unicode":"🦒","code":"spots","id":"364_spots","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f992.png"},{"unicode":"🐘","code":"elephant","id":"365_elephant","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f418.png"},{"unicode":"🦏","code":"rhinoceros","id":"366_rhinoceros","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98f.png"},{"unicode":"🦛","code":"hippo","id":"367_hippo","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99b.png"},{"unicode":"🐭","code":"mouse-face","id":"368_mouse-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42d.png"},{"unicode":"🐁","code":"mouse","id":"369_mouse","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f401.png"},{"unicode":"🐀","code":"rat","id":"370_rat","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f400.png"},{"unicode":"🐹","code":"pet-face","id":"371_pet-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f439.png"},{"unicode":"🐰","code":"bunny-face","id":"372_bunny-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f430.png"},{"unicode":"🐇","code":"bunny","id":"373_bunny","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f407.png"},{"unicode":"🐿️","code":"squirrel","id":"374_squirrel","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43f.png"},{"unicode":"🦔","code":"spiny","id":"375_spiny","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f994.png"},{"unicode":"🦇","code":"vampire","id":"376_vampire","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f987.png"},{"unicode":"🐻","code":"face","id":"377_face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43b.png"},{"unicode":"🐨","code":"bear","id":"378_bear","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f428.png"},{"unicode":"🐼","code":"panda-face","id":"379_panda-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43c.png"},{"unicode":"🦘","code":"marsupial","id":"380_marsupial","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f998.png"},{"unicode":"🦡","code":"honey badger","id":"381_honey badger","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9a1.png"},{"unicode":"🐾","code":"paw","id":"382_paw","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f43e.png"},{"unicode":"🦃","code":"bird","id":"383_bird","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f983.png"},{"unicode":"🐔","code":"chicken","id":"384_chicken","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f414.png"},{"unicode":"🐓","code":"rooster","id":"385_rooster","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f413.png"},{"unicode":"🐣","code":"baby-bird","id":"386_baby-bird","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f423.png"},{"unicode":"🐤","code":"baby-chick","id":"387_baby-chick","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f424.png"},{"unicode":"🐥","code":"baby-chick2","id":"388_baby-chick2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f425.png"},{"unicode":"🐧","code":"penguin","id":"389_penguin","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f427.png"},{"unicode":"🕊️","code":"bird-fly","id":"390_bird-fly","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f54a.png"},{"unicode":"🦅","code":"eagle","id":"391_eagle","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f985.png"},{"unicode":"🦆","code":"duck","id":"392_duck","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f986.png"},{"unicode":"🦢","code":"swan","id":"393_swan","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9a2.png"},{"unicode":"🦉","code":"owl","id":"394_owl","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f989.png"},{"unicode":"🦚","code":"peahen","id":"395_peahen","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99a.png"},{"unicode":"🦜","code":"macaw","id":"396_macaw","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99c.png"},{"unicode":"🐸","code":"frog-face","id":"397_frog-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f438.png"},{"unicode":"🐊","code":"crocodile","id":"398_crocodile","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40a.png"},{"unicode":"🐢","code":"turtle","id":"399_turtle","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f422.png"},{"unicode":"🦎","code":"reptile","id":"400_reptile","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98e.png"},{"unicode":"🐍","code":"snake","id":"401_snake","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40d.png"},{"unicode":"🐲","code":"dragon-face","id":"402_dragon-face","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f432.png"},{"unicode":"🐉","code":"dragon","id":"403_dragon","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f409.png"},{"unicode":"🦕","code":"brontosaurus","id":"404_brontosaurus","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f995.png"},{"unicode":"🦖","code":"t-rex","id":"405_t-rex","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f996.png"},{"unicode":"🐳","code":"whale","id":"406_whale","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f433.png"},{"unicode":"🐋","code":"whale2","id":"407_whale2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40b.png"},{"unicode":"🐬","code":"flipper","id":"408_flipper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f42c.png"},{"unicode":"🐠","code":"tropical-fish","id":"409_tropical-fish","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f420.png"},{"unicode":"🐡","code":"fish","id":"410_fish","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f421.png"},{"unicode":"🦈","code":"shark","id":"411_shark","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f988.png"},{"unicode":"🐙","code":"octopus","id":"412_octopus","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f419.png"},{"unicode":"🐚","code":"shell","id":"413_shell","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41a.png"},{"unicode":"🐌","code":"snail","id":"414_snail","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f40c.png"},{"unicode":"🦋","code":"butterfly","id":"415_butterfly","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f98b.png"},{"unicode":"🐛","code":"insect","id":"416_insect","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41b.png"},{"unicode":"🐜","code":"insect","id":"417_insect","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41c.png"},{"unicode":"🐝","code":"bee","id":"418_bee","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41d.png"},{"unicode":"🐞","code":"ladybug","id":"419_ladybug","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f41e.png"},{"unicode":"🦗","code":"grasshopper","id":"420_grasshopper","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f997.png"},{"unicode":"🕷️","code":"insect","id":"421_insect","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f577.png"},{"unicode":"🕸️","code":"spider-web","id":"422_spider-web","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f578.png"},{"unicode":"🦂","code":"scorpio","id":"423_scorpio","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f982.png"},{"unicode":"🦟","code":"mosquito","id":"424_mosquito","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f99f.png"},{"unicode":"🦠","code":"amoeba","id":"425_amoeba","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f9a0.png"},{"unicode":"💐","code":"flower","id":"426_flower","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f490.png"},{"unicode":"🌸","code":"blossom","id":"427_blossom","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f338.png"},{"unicode":"🌹","code":"flower","id":"428_flower","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f339.png"},{"unicode":"🥀","code":"flower-wilted","id":"429_flower-wilted","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f940.png"},{"unicode":"🌺","code":"flower2","id":"430_flower2","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33a.png"},{"unicode":"🌻","code":"sun-flower","id":"431_sun-flower","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33b.png"},{"unicode":"🌼","code":"flower3","id":"432_flower3","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33c.png"},{"unicode":"🌷","code":"flower4","id":"433_flower4","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f337.png"},{"unicode":"🌱","code":"young-tree","id":"434_young-tree","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f331.png"},{"unicode":"🌲","code":"tree","id":"435_tree","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f332.png"},{"unicode":"🌳","code":"big-tree","id":"436_big-tree","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f333.png"},{"unicode":"🌵","code":"plant","id":"437_plant","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f335.png"},{"unicode":"🌿","code":"leaf","id":"438_leaf","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f33f.png"},{"unicode":"☘️","code":"three-leaf clover","id":"439_three-leaf clover","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/2618.png"},{"unicode":"🍀","code":"four-leaf clover","id":"440_four-leaf clover","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f340.png"},{"unicode":"🍁","code":"falling-leaf","id":"441_falling-leaf","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f341.png"},{"unicode":"🏁","code":"checkered","id":"442_checkered","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3c1.png"},{"unicode":"🚩","code":"post","id":"443_post","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f6a9.png"},{"unicode":"🎌","code":"japanese-celebration","id":"444_japanese-celebration","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f38c.png"},{"unicode":"🏴","code":"flag-black","id":"445_flag-black","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f4.png"},{"unicode":"🏳️","code":"flag-white","id":"446_flag-white","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f3.png"},{"unicode":"🏳️‍🌈","code":"flag-pride","id":"447_flag-pride","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f3-fe0f-200d-1f308.png"},{"unicode":"🏴‍☠️","code":"flag-pirate","id":"448_flag-pirate","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f3f4-200d-2620-fe0f.png"},{"unicode":"🇦🇷","code":"AR","id":"449_AR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e6-1f1f7.png"},{"unicode":"🇦🇺","code":"AU","id":"450_AU","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e6-1f1fa.png"},{"unicode":"🇧🇬","code":"BG","id":"451_BG","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e7-1f1ec.png"},{"unicode":"🇧🇷","code":"BR","id":"452_BR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e7-1f1f7.png"},{"unicode":"🇨🇦","code":"CA","id":"453_CA","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e8-1f1e6.png"},{"unicode":"🇨🇳","code":"CN","id":"454_CN","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e8-1f1f3.png"},{"unicode":"🇨🇿","code":"CZ","id":"455_CZ","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e8-1f1ff.png"},{"unicode":"🇩🇪","code":"DE","id":"456_DE","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1ea.png"},{"unicode":"🇩🇰","code":"DK","id":"457_DK","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1f0.png"},{"unicode":"🇩🇲","code":"DM","id":"458_DM","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1f2.png"},{"unicode":"🇩🇴","code":"DO","id":"459_DO","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1f4.png"},{"unicode":"🇩🇿","code":"DZ","id":"460_DZ","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1e9-1f1ff.png"},{"unicode":"🇪🇦","code":"EA","id":"461_EA","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ea-1f1e6.png"},{"unicode":"🇪🇨","code":"EC","id":"462_EC","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ea-1f1e8.png"},{"unicode":"🇪🇸","code":"ES","id":"463_ES","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ea-1f1f8.png"},{"unicode":"🇫🇮","code":"FI","id":"464_FI","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1eb-1f1ee.png"},{"unicode":"🇫🇷","code":"FR","id":"465_FR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1eb-1f1f7.png"},{"unicode":"🇬🇧","code":"GB","id":"466_GB","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ec-1f1e7.png"},{"unicode":"🇭🇰","code":"HK","id":"467_HK","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ed-1f1f0.png"},{"unicode":"🇮🇱","code":"IL","id":"468_IL","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ee-1f1f1.png"},{"unicode":"🇮🇹","code":"IT","id":"469_IT","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ee-1f1f9.png"},{"unicode":"🇯🇵","code":"JA","id":"470_JA","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1ef-1f1f5.png"},{"unicode":"🇰🇵","code":"KP","id":"471_KP","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f0-1f1f5.png"},{"unicode":"🇰🇷","code":"KR","id":"472_KR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f0-1f1f7.png"},{"unicode":"🇳🇱","code":"NL","id":"473_NL","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f3-1f1f1.png"},{"unicode":"🇳🇴","code":"NO","id":"474_NO","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f3-1f1f4.png"},{"unicode":"🇵🇱","code":"PL","id":"475_PL","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f5-1f1f1.png"},{"unicode":"🇵🇹","code":"PT","id":"476_PT","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f5-1f1f9.png"},{"unicode":"🇷🇴","code":"RO","id":"477_RO","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f7-1f1f4.png"},{"unicode":"🇷🇺","code":"RU","id":"478_RU","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f7-1f1fa.png"},{"unicode":"🇸🇰","code":"SK","id":"479_SK","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f8-1f1f0.png"},{"unicode":"🇸🇻","code":"SV","id":"480_SV","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f8-1f1fb.png"},{"unicode":"🇹🇭","code":"TH","id":"481_TH","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f9-1f1ed.png"},{"unicode":"🇹🇷","code":"TR","id":"482_TR","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1f9-1f1f7.png"},{"unicode":"🇻🇮","code":"VI","id":"483_VI","4x":"https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/72x72/1f1fb-1f1ee.png"}]';
-    /*
-     * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
-     *
-     * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
-     *
-     * SmartTwitchTV is free software: you can redistribute it and/or modify
-     * it under the terms of the GNU General Public License as published by
-     * the Free Software Foundation, either version 3 of the License, or
-     * (at your option) any later version.
-     *
-     * SmartTwitchTV is distributed in the hope that it will be useful,
-     * but WITHOUT ANY WARRANTY; without even the implied warranty of
-     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-     * GNU General Public License for more details.
-     *
-     * You should have received a copy of the GNU General Public License
-     * along with SmartTwitchTV.  If not, see <https://github.com/fgl27/SmartTwitchTV/blob/master/LICENSE>.
-     *
-     */
-
-    //Spacing for release maker not trow errors from jshint
-    var IMG_404_GAME =
-        'data:image/png;base64,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';
-
-    var IMG_404_LOGO =
-        'data:image/png;base64,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';
-
-    var IMG_404_VIDEO =
-        'data:image/png;base64,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';
-
-    var IMG_404_VOD =
-        'data:image/png;base64,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';
-
-    var IMG_404_BANNER = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
-
-    var IMG_PARTNER =
-        'data:image/png;base64,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';
-    //empty
     /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
      *
@@ -8335,6 +8296,84 @@
         if (!Main_IsOn_OSInterface) calculateFontSize();
     }
     /*
+     * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
+     *
+     * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
+     *
+     * SmartTwitchTV is free software: you can redistribute it and/or modify
+     * it under the terms of the GNU General Public License as published by
+     * the Free Software Foundation, either version 3 of the License, or
+     * (at your option) any later version.
+     *
+     * SmartTwitchTV is distributed in the hope that it will be useful,
+     * but WITHOUT ANY WARRANTY; without even the implied warranty of
+     * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     * GNU General Public License for more details.
+     *
+     * You should have received a copy of the GNU General Public License
+     * along with SmartTwitchTV.  If not, see <https://github.com/fgl27/SmartTwitchTV/blob/master/LICENSE>.
+     *
+     */
+
+    //https://developer.android.com/reference/android/view/KeyEvent
+    //overwrite from java dispatchKeyEvent()
+    var KEY_PAUSE = 83; //overwrite key S = stop because p = play
+    var KEY_PLAY = 80; //overwrite key P = play
+
+    var KEY_STOP = 178;
+    var KEY_PLAYPAUSE = 179;
+
+    var KEY_LEFT = 37;
+    var KEY_UP = 38;
+    var KEY_RIGHT = 39;
+    var KEY_DOWN = 40;
+    var KEY_ENTER = 13;
+
+    var KEY_PG_DOWN = 34;
+    var KEY_PG_UP = 33;
+
+    var KEY_RETURN = 113; //key #F2
+
+    var KEY_KEYBOARD_BACKSPACE = 8; // http://developer.samsung.com/tv/develop/guides/user-interaction/keyboardime
+    var KEY_KEYBOARD_DONE = 13;
+    var KEY_KEYBOARD_SPACE = 32;
+
+    var KEY_MEDIA_NEXT = 176;
+    var KEY_MEDIA_PREVIOUS = 177;
+
+    var KEY_MEDIA_FAST_FORWARD = 228;
+    var KEY_MEDIA_REWIND = 227;
+
+    var KEY_0 = 48;
+    var KEY_1 = 49;
+    var KEY_2 = 50;
+    var KEY_3 = 51;
+    var KEY_4 = 52;
+    var KEY_5 = 53;
+    var KEY_6 = 54;
+    var KEY_7 = 55;
+    var KEY_8 = 56;
+    var KEY_9 = 57;
+
+    var KEY_NUMPAD_0 = 96;
+    var KEY_NUMPAD_1 = 97;
+    var KEY_NUMPAD_2 = 98;
+    var KEY_NUMPAD_3 = 99;
+    var KEY_NUMPAD_4 = 100;
+    var KEY_NUMPAD_5 = 101;
+    var KEY_NUMPAD_6 = 102;
+    var KEY_NUMPAD_7 = 103;
+    var KEY_NUMPAD_8 = 104;
+    var KEY_NUMPAD_9 = 105;
+
+    var KEY_A = 65;
+    var KEY_C = 67;
+    var KEY_E = 69;
+    var KEY_J = 74;
+    var KEY_K = 75;
+    var KEY_T = 84;
+    var KEY_U = 85;
+    /*
      * Copyright (c) 2017-∞ Felipe de Leon <fglfgl27@gmail.com>
      *
      * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
@@ -8357,11 +8396,22 @@
     //Spacing for release maker not trow errors from jshint
     var version = {
         VersionBase: '3.0',
-        publishVersionCode: 394, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
-        ApkUrl: 'https://github.com/YofarDev/SmarterTwitchTV/releases/download/394/SmarterPurpleTV_3_0_394.apk',
-        WebVersion: 'October 29 2026',
-        WebTag: 771, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+        publishVersionCode: 395, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
+        ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/395/SmarterPurpleTV_3_0_395.apk',
+        WebVersion: 'October 31 2026',
+        WebTag: 772, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
         changelog: [
+            {
+                title: 'October 31 2026 (Web 772)',
+                changes: [
+                    'Merged YouTube and Kick chat: for streamers who multistream, the chat now also shows their YouTube and Kick messages next to Twitch, with platform icons, badges and own nick colors (respecting "Readable nick colors")',
+                    'Super Chats, Super Stickers, memberships, Kick subscriptions and gifts are shown too, history is mixed across platforms, and message deletions and bans are applied',
+                    'Channel links come from the UnityChat directory (jouki.cz) and can be overridden per streamer with the new "Linked chats" player button',
+                    'The feature can be turned off in Settings > Chat ("YouTube and Kick chat")',
+                    "The app now loads its web part from the LordBoos fork's GitHub Pages and checks updates there",
+                    'Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat'
+                ]
+            },
             {
                 title: 'October 29 2026 (Web 771)',
                 changes: [
@@ -13062,6 +13112,904 @@
         );
     }
     /*
+     * Kick chat source of the merged chat: live messages over the Pusher websocket, history, role badges,
+     * subs, gifts and moderation. Everything from Kick is untrusted: names are escaped, emote ids are numeric only,
+     * badge images come from whitelisted hosts only. Every async path checks ChatMulti_IsActive(chat_number, seq).
+     */
+
+    //Variable initialization
+    var ChatKick_State = []; // per chat_number {seq, slug, chatroom, channelId, subBadges, withHistory, ws, timer, retry}
+    var ChatKick_PusherFallback = {key: '34bf7a0ff419a2a775b9', cluster: 'us2'};
+    var ChatKick_Key = null; // last good {key, cluster}, dropped on Pusher error 4001
+    var ChatKick_ChannelUrl = 'https://kick.com/api/v2/channels/';
+    var ChatKick_RetryMs = 120000; // channel info failed: try again after this
+    var ChatKick_RealtimeUrl = 'https://api.jouki.cz/kick/realtime';
+    var ChatKick_EmoteRegex = /\[emote:(\d{1,12}):[^\]]*\]/g;
+    var ChatKick_ImageHostRegex = /^(files\.kick\.com|ext\.cdn\.kick\.com)$/;
+    var ChatKick_SlugRegex = /^[\w-]{1,40}$/;
+    var ChatKick_KeyRegex = /^[a-f0-9]{16,40}$/;
+    var ChatKick_ClusterRegex = /^[a-z0-9-]{2,12}$/;
+    var ChatKick_RoleBadges = {
+        broadcaster: 'broadcaster',
+        moderator: 'moderator',
+        vip: 'vip',
+        og: 'og',
+        founder: 'founder',
+        verified: 'verified',
+        sub_gifter: 'sub_gifter',
+        staff: 'staff',
+        subscriber: 'subscriber'
+    };
+    //Variable initialization end
+
+    function ChatKick_Start(chat_number, seq, slug, withHistory) {
+        ChatKick_Stop(chat_number);
+        if (!ChatKick_SlugRegex.test(slug)) return;
+
+        var st = {seq: seq, slug: slug, chatroom: 0, channelId: 0, subBadges: [], withHistory: withHistory, ws: null, timer: 0, retry: 0};
+        ChatKick_State[chat_number] = st;
+        ChatKick_FetchChannel(chat_number, st);
+    }
+
+    function ChatKick_FetchChannel(chat_number, st) {
+        var url = ChatKick_ChannelUrl + encodeURIComponent(st.slug);
+
+        ChatKick_Xhr(url, function (status, text) {
+            if (!ChatKick_Live(chat_number, st)) return;
+
+            // Blocked by Cloudflare or CORS: let the native side try
+            if (status === 0 || status === 403) FullxmlHttpGet(url, null, ChatKick_ChannelNative, noop_fun, chat_number, st.seq);
+            else if (status === 200) ChatKick_Channel(chat_number, st, text);
+            else ChatKick_RetryChannel(chat_number, st);
+        });
+    }
+
+    // Silent: no line in the chat, only a timer in st.timer so Stop clears it
+    function ChatKick_RetryChannel(chat_number, st) {
+        st.timer = Main_setTimeout(
+            function () {
+                if (ChatKick_Live(chat_number, st)) ChatKick_FetchChannel(chat_number, st);
+            },
+            ChatKick_RetryMs,
+            st.timer
+        );
+    }
+
+    function ChatKick_Stop(chat_number) {
+        var st = ChatKick_State[chat_number];
+        ChatKick_State[chat_number] = null;
+        if (!st) return;
+
+        Main_clearTimeout(st.timer);
+        ChatKick_CloseSocket(st);
+    }
+
+    function ChatKick_CloseSocket(st) {
+        var ws = st.ws;
+        st.ws = null;
+        if (!ws) return;
+
+        ws.onclose = null;
+        ws.onmessage = null;
+        ws.onerror = null;
+        try {
+            ws.close(1000);
+        } catch (e) {
+            // already closed
+        }
+    }
+
+    // Session still current: not stopped, restarted or replaced
+    function ChatKick_Live(chat_number, st) {
+        return ChatKick_State[chat_number] === st && ChatMulti_IsActive(chat_number, st.seq);
+    }
+
+    function ChatKick_Xhr(url, done) {
+        try {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.timeout = 15000;
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) done(xhr.status, xhr.responseText);
+            };
+            xhr.send();
+        } catch (e) {
+            done(0, '');
+        }
+    }
+
+    function ChatKick_ParseJson(text) {
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function ChatKick_ChannelNative(obj, chat_number, seq) {
+        var st = ChatKick_State[chat_number];
+        if (!st || st.seq !== seq || !ChatKick_Live(chat_number, st)) return;
+
+        if (obj.status === 200) ChatKick_Channel(chat_number, st, obj.responseText);
+        else ChatKick_RetryChannel(chat_number, st);
+    }
+
+    function ChatKick_PositiveInt(value) {
+        var n = Number(value);
+        return n > 0 && n % 1 === 0 && n < 1e12 ? n : 0;
+    }
+
+    function ChatKick_Channel(chat_number, st, text) {
+        var json = ChatKick_ParseJson(text);
+        if (!json) {
+            ChatKick_RetryChannel(chat_number, st);
+            return;
+        }
+
+        st.chatroom = ChatKick_PositiveInt(json.chatroom && json.chatroom.id);
+        st.channelId = ChatKick_PositiveInt(json.id);
+        st.subBadges = Object.prototype.toString.call(json.subscriber_badges) === '[object Array]' ? json.subscriber_badges : [];
+        if (!st.chatroom) {
+            ChatKick_RetryChannel(chat_number, st);
+            return;
+        }
+
+        if (st.withHistory && st.channelId) ChatKick_History(chat_number, st);
+        ChatKick_Open(chat_number, st);
+    }
+
+    function ChatKick_History(chat_number, st) {
+        ChatKick_Xhr(ChatKick_ChannelUrl + st.channelId + '/messages', function (status, text) {
+            if (status !== 200 || !ChatKick_Live(chat_number, st)) return;
+
+            var json = ChatKick_ParseJson(text),
+                list = json && json.data && json.data.messages,
+                i = 0,
+                msg;
+
+            if (Object.prototype.toString.call(list) !== '[object Array]') return;
+
+            for (i; i < list.length; i++) {
+                msg = ChatKick_ToMsg(list[i], st.subBadges, true);
+                if (msg) ChatMulti_Line(chat_number, st.seq, msg);
+            }
+        });
+    }
+
+    // Gets the Pusher key (cached after the first good one) and connects
+    function ChatKick_Open(chat_number, st) {
+        if (ChatKick_Key) ChatKick_Connect(chat_number, st);
+        else FullxmlHttpGet(ChatKick_RealtimeUrl, null, ChatKick_KeyResult, noop_fun, chat_number, st.seq);
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function ChatKick_KeyResult(obj, chat_number, seq) {
+        var st = ChatKick_State[chat_number];
+        if (!st || st.seq !== seq || !ChatKick_Live(chat_number, st)) return;
+
+        var json = obj.status === 200 ? ChatKick_ParseJson(obj.responseText) : null;
+
+        if (json && ChatKick_KeyRegex.test(json.key) && ChatKick_ClusterRegex.test(json.cluster))
+            ChatKick_Key = {key: json.key, cluster: json.cluster};
+        else ChatKick_Key = ChatKick_PusherFallback;
+
+        ChatKick_Connect(chat_number, st);
+    }
+
+    function ChatKick_Connect(chat_number, st) {
+        if (!ChatKick_Live(chat_number, st)) return;
+
+        ChatKick_CloseSocket(st);
+
+        var ws;
+        try {
+            ws = new WebSocket(
+                'wss://ws-' + ChatKick_Key.cluster + '.pusher.com/app/' + ChatKick_Key.key + '?protocol=7&client=js&version=8.3.0&flash=false'
+            );
+        } catch (e) {
+            ChatKick_Reconnect(chat_number, st);
+            return;
+        }
+        st.ws = ws;
+
+        ws.onmessage = function (e) {
+            if (st.ws === ws && ChatKick_Live(chat_number, st)) ChatKick_OnFrame(chat_number, st, ws, e.data);
+        };
+        ws.onclose = function (e) {
+            if (st.ws !== ws) return;
+            st.ws = null;
+            if (e && e.code === 4001) ChatKick_Key = null;
+            ChatKick_Reconnect(chat_number, st);
+        };
+        ws.onerror = noop_fun;
+    }
+
+    function ChatKick_Reconnect(chat_number, st) {
+        if (!ChatKick_Live(chat_number, st)) return;
+
+        var delay = Math.min(60000, 2000 * Math.pow(2, st.retry++));
+        st.timer = Main_setTimeout(
+            function () {
+                if (ChatKick_Live(chat_number, st)) ChatKick_Open(chat_number, st);
+            },
+            delay,
+            st.timer
+        );
+    }
+
+    function ChatKick_Send(ws, event, data) {
+        try {
+            ws.send(JSON.stringify({event: event, data: data}));
+        } catch (e) {
+            // closing socket, onclose reconnects
+        }
+    }
+
+    function ChatKick_OnFrame(chat_number, st, ws, raw) {
+        var frame = ChatKick_ParseJson(raw);
+        if (!frame || typeof frame.event !== 'string') return;
+
+        var name = ChatKick_EventName(frame),
+            data = typeof frame.data === 'string' ? ChatKick_ParseJson(frame.data) : frame.data;
+
+        if (frame.event === 'pusher:connection_established') {
+            ChatKick_Send(ws, 'pusher:subscribe', {auth: '', channel: 'chatrooms.' + st.chatroom + '.v2'});
+            ChatKick_Send(ws, 'pusher:subscribe', {auth: '', channel: 'chatroom_' + st.chatroom});
+        } else if (frame.event === 'pusher:ping') {
+            ChatKick_Send(ws, 'pusher:pong', {});
+        } else if (frame.event === 'pusher_internal:subscription_succeeded') {
+            st.retry = 0;
+        } else if (frame.event === 'pusher:error') {
+            // The shared key was replaced by Kick, fetch the current one on the reconnect
+            if (data && data.code === 4001) ChatKick_Key = null;
+        } else if (data) {
+            ChatKick_OnEvent(chat_number, st, frame.channel, name, data);
+        }
+    }
+
+    function ChatKick_OnEvent(chat_number, st, channel, name, data) {
+        var v2 = channel === 'chatrooms.' + st.chatroom + '.v2';
+
+        // Chat messages and moderation only from .v2, subs and gifts from both channels (deduped by msgId)
+        if (!v2 && channel !== 'chatroom_' + st.chatroom) return;
+        if (!v2 && (name === 'ChatMessageEvent' || name === 'MessageDeletedEvent' || name === 'UserBannedEvent')) return;
+
+        var msg = ChatKick_EventToMsg(name, data, st.subBadges);
+        if (!msg) return;
+
+        if (msg.platform) ChatMulti_Line(chat_number, st.seq, msg);
+        else if (msg.del) ChatMulti_DeleteMsg('kick', msg.del);
+        else if (msg.ban) ChatMulti_DeleteAuthor(chat_number, 'kick', msg.ban);
+    }
+
+    // Event name without the optional 'App\Events\' prefix
+    function ChatKick_EventName(ev) {
+        var name = typeof ev === 'string' ? ev : ev && ev.event;
+        return typeof name === 'string' ? name.replace(/^App\\Events\\/, '') : '';
+    }
+
+    // [emote:<numeric id>:<name>] becomes an image, everything else stays a string token
+    function ChatKick_Tokens(content) {
+        var text = String(content || ''),
+            tokens = [],
+            last = 0,
+            match,
+            before;
+
+        ChatKick_EmoteRegex.lastIndex = 0;
+        while ((match = ChatKick_EmoteRegex.exec(text))) {
+            before = text.slice(last, match.index).trim();
+            // text after an emote keeps a leading space: extraMessageTokenize overwrites the first word with the previous emote otherwise
+            if (before) tokens.push(last ? ' ' + before : before);
+            tokens.push([emoteTemplate('https://files.kick.com/emotes/' + match[1] + '/fullsize')]);
+            last = match.index + match[0].length;
+        }
+
+        before = text.slice(last).trim();
+        if (before) tokens.push(last ? ' ' + before : before);
+
+        return tokens;
+    }
+
+    // The badge with the highest months that is not above the subscriber's months
+    function ChatKick_SubBadgeUrl(subBadges, months) {
+        var best = null,
+            bestMonths = -1,
+            i = 0,
+            len = subBadges ? subBadges.length : 0,
+            item;
+
+        for (i; i < len; i++) {
+            item = subBadges[i];
+            if (item && item.months <= months && item.months > bestMonths && item.badge_image && typeof item.badge_image.src === 'string') {
+                best = item.badge_image.src;
+                bestMonths = item.months;
+            }
+        }
+
+        return best;
+    }
+
+    function ChatKick_ImageBadge(url) {
+        var safe = ChatMulti_SafeUrl(url, ChatKick_ImageHostRegex);
+        return safe ? '<span class="tag" style="background-image: url(' + safe + ');"></span>' : '';
+    }
+
+    // Role badges are built in css, images only from Kick hosts. role: 'owner' | 'mod' | ''
+    function ChatKick_Badges(identity, subBadges) {
+        var html = '',
+            role = '',
+            done = {},
+            list = identity && identity.badges,
+            v2 = identity && identity.badges_v2,
+            i = 0,
+            item,
+            cls,
+            img;
+
+        for (i = 0; list && i < list.length; i++) {
+            item = list[i];
+            cls = item && ChatKick_RoleBadges.hasOwnProperty(item.type) ? ChatKick_RoleBadges[item.type] : null;
+            if (!cls) continue;
+
+            done[item.type] = true;
+            if (item.type === 'broadcaster') role = 'owner';
+            else if (item.type === 'moderator' && !role) role = 'mod';
+
+            img = item.type === 'subscriber' ? ChatKick_ImageBadge(ChatKick_SubBadgeUrl(subBadges, Number(item.count) || 0)) : '';
+            html += img || '<span class="tag chat_b_kick_' + cls + '"></span>';
+        }
+
+        // Kick's own images (level and so on), only the selected ones, not repeating a role already shown
+        for (i = 0; v2 && i < v2.length; i++) {
+            item = v2[i];
+            if (item && item.selected && !done[item.name]) html += ChatKick_ImageBadge(item.image_url);
+        }
+
+        return {html: html, role: role};
+    }
+
+    function ChatKick_ToMsg(data, subBadges, history) {
+        if (!data || !data.sender || typeof data.content !== 'string') return null;
+
+        var identity = data.sender.identity || {},
+            badges = ChatKick_Badges(identity, subBadges);
+
+        return {
+            platform: 'kick',
+            msgId: data.id,
+            authorId: data.sender.id,
+            nick: data.sender.username,
+            color: identity.color,
+            role: badges.role,
+            badges: badges.html,
+            tokens: ChatKick_Tokens(data.content),
+            text: data.content,
+            ts: Date.parse(data.created_at) || 0,
+            history: !!history,
+            special: null,
+            highlight: null
+        };
+    }
+
+    function ChatKick_Special(nick, text) {
+        return {
+            platform: 'kick',
+            msgId: '',
+            authorId: '',
+            nick: nick,
+            color: null,
+            role: '',
+            badges: '',
+            tokens: [],
+            text: '',
+            ts: Date.now(),
+            history: false,
+            special: Screens_AriaEscape(nick) + ' ' + text,
+            highlight: null
+        };
+    }
+
+    // -> msg for ChatMulti_Line | {del: msgId} | {ban: userId} | null
+    function ChatKick_EventToMsg(name, data, subBadges) {
+        var msg, months, count, gifted;
+
+        if (!data) return null;
+
+        if (name === 'ChatMessageEvent') return ChatKick_ToMsg(data, subBadges, false);
+
+        if (name === 'MessageDeletedEvent') return data.message && data.message.id ? {del: data.message.id} : null;
+
+        if (name === 'UserBannedEvent') return data.user && data.user.id ? {ban: data.user.id} : null;
+
+        // shape not yet seen live
+        if (name === 'SubscriptionEvent') {
+            if (typeof data.username !== 'string') return null;
+
+            months = ChatKick_PositiveInt(data.months) || 1;
+            msg = ChatKick_Special(data.username, STR_CHAT_KICK_SUB.replace('%x', months));
+            msg.msgId = 'sub_' + data.username + '_' + months;
+            return msg;
+        }
+
+        // shape not yet seen live
+        if (name === 'GiftedSubscriptionsEvent') {
+            if (typeof data.gifter_username !== 'string') return null;
+
+            gifted = Object.prototype.toString.call(data.gifted_usernames) === '[object Array]' ? data.gifted_usernames : null;
+            count = gifted ? gifted.length : 1;
+            msg = ChatKick_Special(data.gifter_username, STR_CHAT_KICK_GIFT.replace('%x', count || 1));
+            msg.msgId = 'gift_' + data.gifter_username + '_' + (data.id || (gifted && gifted.join('_')) || count);
+            return msg;
+        }
+
+        return null;
+    }
+    /*
+     * Channel links for merged chat: which YouTube / Kick channel belongs to a Twitch streamer.
+     * Source is the UnityChat directory, overridable per streamer by manual values.
+     */
+
+    //Variable initialization
+    var ChatLink_StoreKey = 'chat_links';
+    var ChatLink_DirCache = {}; // {login: streamer|null}, only successful answers (200 / 404) are cached
+    var ChatLink_LookupUrl = 'https://api.jouki.cz/streamers/lookup?platform=twitch&handle=';
+    //Variable initialization end
+
+    function ChatLink_Get(login) {
+        var entry = Main_getItemJson(ChatLink_StoreKey, {})[login];
+        return entry && typeof entry === 'object' ? entry : {enabled: true};
+    }
+
+    function ChatLink_Save(login, entry) {
+        var all = Main_getItemJson(ChatLink_StoreKey, {});
+        all[login] = entry;
+        Main_setItem(ChatLink_StoreKey, JSON.stringify(all));
+    }
+
+    // Returns '@handle' (lowercase) or 'UC...' (24 chars), null if the input is not usable
+    function ChatLink_NormalizeYouTube(input) {
+        var text = String(input || '').replace(/^\s+|\s+$/g, '');
+        var match;
+
+        if (/^UC[\w-]{22}$/.test(text)) return text;
+
+        if (/youtube\.com\//i.test(text)) {
+            match = text.match(/\/channel\/(UC[\w-]{22})(?:[/?#]|$)/i);
+            if (match) return match[1];
+
+            match = text.match(/\/@([\w.-]{3,30})(?:[/?#]|$)/);
+            return match ? '@' + match[1].toLowerCase() : null;
+        }
+
+        match = text.match(/^@?([\w.-]{3,30})$/);
+        return match ? '@' + match[1].toLowerCase() : null;
+    }
+
+    // Returns a lowercase kick.com slug, null if the input is not usable
+    function ChatLink_NormalizeKick(input) {
+        var match = String(input || '')
+            .replace(/^\s+|\s+$/g, '')
+            .match(/^(?:https?:\/\/)?(?:www\.)?(?:kick\.com\/)?([\w-]{1,25})\/?$/i);
+        return match ? match[1].toLowerCase() : null;
+    }
+
+    // entry: stored entry, dir: directory streamer or null. Missing platform = directory, '' = do not link, else manual.
+    function ChatLink_Resolve(entry, dir) {
+        var result = {yt: null, kick: null};
+        if (!entry || entry.enabled === false) return result;
+
+        if (typeof entry.yt === 'string') {
+            if (entry.yt) {
+                var yt = ChatLink_NormalizeYouTube(entry.yt);
+                if (yt) result.yt = {value: yt, source: 'manual'};
+            }
+        } else if (dir) {
+            var fromDir = ChatLink_NormalizeYouTube(dir.youtubeChannelId) || ChatLink_NormalizeYouTube(dir.youtubeHandle);
+            if (fromDir) result.yt = {value: fromDir, source: 'dir'};
+        }
+
+        if (typeof entry.kick === 'string') {
+            if (entry.kick) {
+                var kick = ChatLink_NormalizeKick(entry.kick);
+                if (kick) result.kick = {value: kick, source: 'manual'};
+            }
+        } else if (dir) {
+            var kickDir = ChatLink_NormalizeKick(dir.kickSlug);
+            if (kickDir) result.kick = {value: kickDir, source: 'dir'};
+        }
+
+        return result;
+    }
+
+    function ChatLink_Lookup(chat_number, id) {
+        var login = ChatLive_selectedChannel[chat_number];
+
+        if (login in ChatLink_DirCache) {
+            ChatMulti_OnLinks(chat_number, id);
+            return;
+        }
+
+        FullxmlHttpGet(ChatLink_LookupUrl + encodeURIComponent(login), null, ChatLink_LookupResult, noop_fun, chat_number, id);
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function ChatLink_LookupResult(obj, chat_number, id) {
+        if (id !== Chat_Id[chat_number]) return;
+
+        var login = ChatLive_selectedChannel[chat_number];
+        var json;
+
+        if (obj.status === 200) {
+            try {
+                json = JSON.parse(obj.responseText);
+            } catch (e) {
+                json = null;
+            }
+            // Invalid JSON is handled like a network error: not cached
+            if (json) ChatLink_DirCache[login] = json.found && json.streamer ? json.streamer : null;
+        } else if (obj.status === 404) {
+            ChatLink_DirCache[login] = null;
+        }
+
+        // Directory failures are silent, manual links still work
+        ChatMulti_OnLinks(chat_number, id);
+    }
+
+    function ChatLink_Current(chat_number) {
+        var login = ChatLive_selectedChannel[chat_number];
+        return ChatLink_Resolve(ChatLink_Get(login), ChatLink_DirCache[login] || null);
+    }
+    /*
+     * "Linked chats" player dialog: shows and overrides the YouTube / Kick channel linked to the Twitch streamer of chat 0.
+     * Rows and Apply are pure (no DOM); the rest drives the dialog with the TV remote.
+     */
+
+    //Variable initialization
+    var ChatLinkDialog_IsVisible = false;
+    var ChatLinkDialog_Login = '';
+    var ChatLinkDialog_RowsData = [];
+    var ChatLinkDialog_Focus = 0;
+    var ChatLinkDialog_Editing = '';
+    var ChatLinkDialog_InputTimer = null;
+    var ChatLinkDialog_EditLabel = '';
+    var ChatLinkDialog_PanelWasShowing = false;
+    var ChatLinkDialog_OriginControl = -1;
+    //Variable initialization end
+
+    function ChatLinkDialog_Rows(entry, resolved) {
+        var rows = [
+            ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved),
+            ChatLinkDialog_PlatformRow('kick', 'Kick', entry, resolved),
+            {kind: 'enabled', label: STR_CHAT_LINK_ENABLED, value: entry.enabled === false ? STR_NO : STR_YES, source: ''}
+        ];
+
+        if (typeof entry.yt === 'string' || typeof entry.kick === 'string') {
+            rows.push({kind: 'reset', label: STR_CHAT_LINK_RESET, value: '', source: ''});
+        }
+        rows.push({kind: 'close', label: STR_CLOSE, value: '', source: ''});
+
+        return rows;
+    }
+
+    //A manual '' (do not link) keeps source manual with an empty value; no value at all is source none
+    function ChatLinkDialog_PlatformRow(kind, label, entry, resolved) {
+        var item = resolved && resolved[kind],
+            value = item ? item.value : '';
+
+        return {
+            kind: kind,
+            label: label,
+            value: value,
+            source: item ? item.source : entry[kind] === '' ? 'manual' : 'none',
+            action: value ? 'edit' : 'enter'
+        };
+    }
+
+    //Values of the dialog's own streamer, shown regardless of the enabled switch
+    function ChatLinkDialog_Resolved(login) {
+        var entry = ChatLink_Get(login);
+
+        return ChatLink_Resolve(
+            {enabled: true, yt: entry.yt, kick: entry.kick},
+            ChatLink_DirCache.hasOwnProperty(login) ? ChatLink_DirCache[login] : null
+        );
+    }
+
+    //Saves a manual value: normalized, '' = do not link. Returns false (nothing saved) for unusable input
+    function ChatLinkDialog_Apply(login, kind, rawInput) {
+        var text = String(rawInput || '').replace(/^\s+|\s+$/g, ''),
+            value,
+            current,
+            entry;
+
+        if (kind !== 'yt' && kind !== 'kick') return false;
+
+        if (text === '') value = '';
+        else {
+            value = kind === 'yt' ? ChatLink_NormalizeYouTube(text) : ChatLink_NormalizeKick(text);
+            if (!value) return false;
+        }
+
+        entry = ChatLink_Get(login);
+
+        //Unchanged directory value: do not pin it as manual, later directory updates must still apply
+        if (typeof entry[kind] !== 'string') {
+            current = ChatLinkDialog_Resolved(login)[kind];
+            if (current && current.value === value) return true;
+        }
+
+        entry[kind] = value;
+        ChatLink_Save(login, entry);
+        return true;
+    }
+
+    //Login of a chat from the player data, as ChatLive_SetOptions sets it (ChatLive_selectedChannel is stale while chat is force-disabled)
+    function ChatLinkDialog_ChatLogin(chat_number) {
+        return ((!chat_number ? Play_data : PlayExtra_data).data[6] || '').toLowerCase();
+    }
+
+    function ChatLinkDialog_Restart() {
+        ChatMulti_Restart(0);
+        if (PlayExtra_PicturePicture && ChatLinkDialog_ChatLogin(1) === ChatLinkDialog_Login) ChatMulti_Restart(1);
+    }
+
+    function ChatLinkDialog_SourceText(source) {
+        return source === 'dir' ? STR_CHAT_LINK_FROM_DIR : source === 'manual' ? STR_CHAT_LINK_MANUAL : source === 'none' ? STR_CHAT_LINK_NONE : '';
+    }
+
+    function ChatLinkDialog_Render() {
+        var holder = Main_getElementById('chat_link_rows'),
+            i,
+            row,
+            div,
+            text;
+
+        ChatLinkDialog_RowsData = ChatLinkDialog_Rows(ChatLink_Get(ChatLinkDialog_Login), ChatLinkDialog_Resolved(ChatLinkDialog_Login));
+        if (ChatLinkDialog_Focus >= ChatLinkDialog_RowsData.length) ChatLinkDialog_Focus = ChatLinkDialog_RowsData.length - 1;
+
+        Main_emptyWithEle(holder);
+
+        for (i = 0; i < ChatLinkDialog_RowsData.length; i++) {
+            row = ChatLinkDialog_RowsData[i];
+            div = document.createElement('div');
+            div.className = 'strokedelinebig chat_link_row' + (i === ChatLinkDialog_Focus ? ' button_dialog_focused' : '');
+
+            //Only textContent: channel names and handles are untrusted
+            text = row.label;
+            if (row.kind === 'yt' || row.kind === 'kick') {
+                text += ': ' + (row.value ? row.value : row.source === 'manual' ? STR_CHAT_LINK_UNLINKED : STR_CHAT_LINK_NONE);
+                if (row.value || row.source === 'manual') text += ' (' + ChatLinkDialog_SourceText(row.source) + ')';
+                text += ' – ' + (row.action === 'edit' ? STR_CHAT_LINK_EDIT : STR_CHAT_LINK_ENTER);
+            } else if (row.value) text += ': ' + row.value;
+
+            div.textContent = text;
+            holder.appendChild(div);
+        }
+    }
+
+    function ChatLinkDialog_Show() {
+        var login = ChatLinkDialog_ChatLogin(0);
+
+        if (!login) {
+            Play_showWarningMiddleDialog(STR_CHAT_LINK_NO_CHANNEL, 2000);
+            return;
+        }
+
+        if (typeof PlayerUI_SuspendPhone === 'function') PlayerUI_SuspendPhone();
+
+        //Take remote input ownership: the player panel cannot act beneath the dialog
+        Main_removeEventListener('keydown', Play_handleKeyDown);
+        Main_addEventListener('keydown', ChatLinkDialog_HandleKeyDown);
+
+        //Remember the panel state so Close can restore focus to the originating control
+        ChatLinkDialog_PanelWasShowing = !!Play_isPanelShowing();
+        ChatLinkDialog_OriginControl = Play_PanelCounter;
+
+        Play_clearHidePanel();
+        Play_hidePanel();
+
+        ChatLinkDialog_Login = login;
+        ChatLinkDialog_Focus = 0;
+        ChatLinkDialog_Editing = '';
+
+        Main_textContent('chat_link_title', STR_CHAT_LINKED);
+        Main_textContent('chat_link_channel', Play_data.data[1] + ' (' + login + ')');
+        Main_HideElement('chat_link_input_holder');
+        ChatLinkDialog_Render();
+
+        ChatLinkDialog_IsVisible = true;
+        Main_ShowElement('dialog_chat_link');
+    }
+
+    function ChatLinkDialog_Hide(skipFocusRestore) {
+        if (!ChatLinkDialog_IsVisible && !Main_isElementShowing('dialog_chat_link')) return;
+
+        if (ChatLinkDialog_Editing) ChatLinkDialog_InputClose(false);
+
+        ChatLinkDialog_IsVisible = false;
+        Main_HideElement('dialog_chat_link');
+        Main_removeEventListener('keydown', ChatLinkDialog_HandleKeyDown);
+
+        //Restore player input/focus only while the player still exists
+        if (Play_isOn && !skipFocusRestore) {
+            Main_PlayHandleKeyDown();
+
+            if (ChatLinkDialog_PanelWasShowing) {
+                Play_ForceShowPannel();
+
+                if (
+                    ChatLinkDialog_OriginControl > -1 &&
+                    Play_controls[ChatLinkDialog_OriginControl] &&
+                    Play_controls[ChatLinkDialog_OriginControl].visible
+                ) {
+                    Play_PanelCounter = ChatLinkDialog_OriginControl;
+                }
+
+                Play_IconsAddFocus();
+                Play_ResetPanel(1);
+            } else if (Play_isPanelShowing()) {
+                Play_IconsAddFocus();
+            }
+        }
+
+        ChatLinkDialog_PanelWasShowing = false;
+        ChatLinkDialog_OriginControl = -1;
+        if (typeof PlayerUI_ResumePhone === 'function') PlayerUI_ResumePhone(skipFocusRestore);
+    }
+
+    //Player teardown hook: idempotent, never reattaches player input
+    function ChatLinkDialog_Cleanup() {
+        ChatLinkDialog_Hide(true);
+    }
+
+    function ChatLinkDialog_Move(step) {
+        var next = ChatLinkDialog_Focus + step;
+
+        if (next < 0 || next >= ChatLinkDialog_RowsData.length) return;
+        ChatLinkDialog_Focus = next;
+        ChatLinkDialog_Render();
+    }
+
+    function ChatLinkDialog_Activate() {
+        var row = ChatLinkDialog_RowsData[ChatLinkDialog_Focus],
+            entry;
+
+        if (!row) return;
+
+        switch (row.kind) {
+            case 'yt':
+            case 'kick':
+                ChatLinkDialog_InputOpen(row);
+                break;
+            case 'enabled':
+                entry = ChatLink_Get(ChatLinkDialog_Login);
+                entry.enabled = entry.enabled === false;
+                ChatLink_Save(ChatLinkDialog_Login, entry);
+                ChatLinkDialog_Restart();
+                ChatLinkDialog_Render();
+                break;
+            case 'reset':
+                //Back to the directory values, the enabled switch is kept
+                entry = ChatLink_Get(ChatLinkDialog_Login);
+                delete entry.yt;
+                delete entry.kick;
+                ChatLink_Save(ChatLinkDialog_Login, entry);
+                ChatLinkDialog_Restart();
+                ChatLinkDialog_Render();
+                break;
+            default:
+                ChatLinkDialog_Hide();
+                break;
+        }
+    }
+
+    function ChatLinkDialog_HandleKeyDown(e) {
+        e.stopPropagation();
+
+        switch (e.keyCode) {
+            case KEY_UP:
+                ChatLinkDialog_Move(-1);
+                break;
+            case KEY_DOWN:
+                ChatLinkDialog_Move(1);
+                break;
+            case KEY_ENTER:
+                ChatLinkDialog_Activate();
+                break;
+            case KEY_KEYBOARD_BACKSPACE:
+            case KEY_RETURN:
+                ChatLinkDialog_Hide();
+                break;
+            case KEY_STOP:
+                //Exit playback: close cleanly first, then let the player handle the key
+                ChatLinkDialog_Hide();
+                Main_PlayHandleKeyDown();
+                Play_handleKeyDown(e);
+                break;
+            default:
+                break;
+        }
+    }
+
+    //Label above the input doubles as the inline error (a toast would sit under the opaque card)
+    function ChatLinkDialog_InputLabel(text, isError) {
+        Main_textContent('chat_link_input_label', text);
+        if (isError) Main_AddClass('chat_link_input_label', 'chat_link_error');
+        else Main_RemoveClass('chat_link_input_label', 'chat_link_error');
+    }
+
+    function ChatLinkDialog_InputOpen(row) {
+        var input = Main_getElementById('chat_link_input'),
+            entry = ChatLink_Get(ChatLinkDialog_Login);
+
+        ChatLinkDialog_Editing = row.kind;
+        Main_removeEventListener('keydown', ChatLinkDialog_HandleKeyDown);
+        ChatLinkDialog_InputLabel(row.label, false);
+        ChatLinkDialog_EditLabel = row.label;
+        input.value = typeof entry[row.kind] === 'string' ? entry[row.kind] : row.value;
+        Main_ShowElement('chat_link_input_holder');
+
+        ChatLinkDialog_InputTimer = Main_setTimeout(
+            function () {
+                if (!ChatLinkDialog_Editing) return;
+                OSInterface_AvoidClicks(true);
+                input.focus();
+                if (Main_IsOn_OSInterface) {
+                    if (OptionsShowObj.keyboard_options.defaultValue === 1) OSInterface_KeyboardCheckAndHIde();
+                    else if (OptionsShowObj.keyboard_options.defaultValue === 2) OSInterface_hideKeyboardFrom();
+                }
+                Main_addEventListener('keydown', ChatLinkDialog_InputKey);
+            },
+            200,
+            ChatLinkDialog_InputTimer
+        );
+    }
+
+    //Closes the input; backToDialog gives the remote back to the dialog, otherwise the caller (Hide) hands it to the player
+    function ChatLinkDialog_InputClose(backToDialog) {
+        var input = Main_getElementById('chat_link_input');
+
+        ChatLinkDialog_Editing = '';
+        Main_clearTimeout(ChatLinkDialog_InputTimer);
+        Main_removeEventListener('keydown', ChatLinkDialog_InputKey);
+        input.blur();
+        OSInterface_AvoidClicks(false);
+        Main_HideElement('chat_link_input_holder');
+
+        if (backToDialog) Main_addEventListener('keydown', ChatLinkDialog_HandleKeyDown);
+    }
+
+    function ChatLinkDialog_InputKey(e) {
+        e.stopPropagation();
+
+        //Any key clears a previous inline error
+        ChatLinkDialog_InputLabel(ChatLinkDialog_EditLabel, false);
+
+        switch (e.keyCode) {
+            case KEY_KEYBOARD_DONE:
+            case KEY_ENTER:
+                if (ChatLinkDialog_Apply(ChatLinkDialog_Login, ChatLinkDialog_Editing, Main_getElementById('chat_link_input').value)) {
+                    ChatLinkDialog_InputClose(true);
+                    ChatLinkDialog_Restart();
+                    ChatLinkDialog_Render();
+                } else {
+                    ChatLinkDialog_InputLabel(STR_CHAT_LINK_INVALID, true);
+                }
+                break;
+            case KEY_RETURN:
+                ChatLinkDialog_InputClose(true);
+                break;
+            case KEY_STOP:
+                ChatLinkDialog_InputClose(true);
+                ChatLinkDialog_HandleKeyDown(e);
+                break;
+            default:
+                break;
+        }
+    }
+    /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
      *
      * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
@@ -13263,6 +14211,9 @@
             ChatLive_checkFallow(chat_number, Chat_Id[chat_number]);
             ChatLive_checkSub(chat_number, Chat_Id[chat_number]);
         }
+
+        //YouTube and Kick messages of a multistreaming streamer, history only on a fresh chat
+        ChatMulti_Start(chat_number, Chat_Id[chat_number], !SkipClear);
     }
 
     function ChatLive_Switch() {
@@ -14894,7 +15845,7 @@
     function ChatLive_CheckIfSubSend(message, chat_number, isSub) {
         ChatLive_LineAddCheckDelay(chat_number, {
             chat_number: chat_number,
-            message: '<span class="message">' + message + '</span>',
+            message: '<span class="message">' + ChatMulti_Icon('tw') + message + '</span>',
             sub: isSub,
             mod: !isSub
         });
@@ -14973,6 +15924,9 @@
             div += addToStart && tags.hasOwnProperty('tmi-sent-ts') ? ChatLive_GetTimeStamp(tags['tmi-sent-ts']) + ' ' : Main_clock_H_M + ' ';
         }
 
+        //Platform icon, only visible when the chat has linked YouTube / Kick chats
+        div += ChatMulti_Icon('tw');
+
         //Add badges
         div += ChatLive_GetBadges(tags, chat_number);
 
@@ -15047,7 +16001,8 @@
             hasbits: hasbits && ChatLive_Highlight_Bits,
             extraMessage: extraMessage,
             extraMessageClass: extraMessageClass,
-            addToStart: addToStart
+            addToStart: addToStart,
+            historyTs: addToStart && tags['tmi-sent-ts'] ? parseInt(tags['tmi-sent-ts'], 10) : 0
         };
 
         ChatLive_LineAddCheckDelay(chat_number, messageObj);
@@ -15294,6 +16249,7 @@
             !last ||
             !last.el ||
             !last.el.parentNode || //line removed by Chat_Clean, show a new one instead of merging into a detached node
+            messageObj.addToStart || //a history line never merges into the latest live line
             messageObj.text === undefined ||
             now - last.time > ChatLive_SpamWindow ||
             last.nick !== messageObj.nick ||
@@ -15421,9 +16377,22 @@
             Chat_div[messageObj.chat_number].appendChild(chat_line_holder);
         } else {
             chat_line_holder.className = 'chat_line_holder';
-            Chat_div[messageObj.chat_number].insertBefore(chat_line_holder, Chat_div[messageObj.chat_number].childNodes[0]);
+            ChatLive_HistoryInsert(Chat_div[messageObj.chat_number], chat_line_holder, messageObj.historyTs);
             ChatLive_ElementAddCheckExtra(messageObj);
         }
+    }
+
+    //History of the platforms arrives at different times: a timed line goes before the
+    //first line without time (live lines) or with a later/equal time, an untimed one on top as before
+    function ChatLive_HistoryInsert(box, holder, ts) {
+        var child = box.firstChild;
+
+        if (ts) {
+            holder.chatTs = ts;
+            while (child && child.chatTs && child.chatTs < ts) child = child.nextSibling;
+        }
+
+        box.insertBefore(holder, child);
     }
 
     function ChatLive_ElementAddCheckExtra(messageObj) {
@@ -15435,7 +16404,8 @@
                 message: ChatLive_LineAddSimple(messageObj.extraMessage),
                 skip_addline: 1,
                 extraClass: messageObj.extraMessageClass,
-                addToStart: messageObj.addToStart
+                addToStart: messageObj.addToStart,
+                historyTs: messageObj.historyTs
             });
         }
     }
@@ -15494,6 +16464,7 @@
     }
 
     function ChatLive_Clear(chat_number) {
+        ChatMulti_Stop(chat_number);
         ChatLive_ClearIds(chat_number);
 
         Chat_Id[chat_number] = 0;
@@ -16638,6 +17609,204 @@
         ChatLiveControls_SetarrowsKey(key);
     }
     /*
+     * Merged chat core: starts and stops the YouTube / Kick sources of a chat and renders their lines
+     * through the Twitch line pipeline (delay, pause, spam merge, cleanup, moderation).
+     * Everything that comes from YouTube / Kick is untrusted: names are escaped, text goes through
+     * ChatLive_extraMessageTokenize, colors, ids and image urls are whitelisted.
+     */
+
+    //Variable initialization
+    var ChatMulti_State = []; // per chat_number {id (Chat_Id), seq, withHistory, started} of the running session
+    var ChatMulti_Seq = 0; // session counter, a new value on every Start / Restart
+    var ChatMulti_Seen = []; // per chat_number {count, ids}, dedupes a message present in history and live
+    var ChatMulti_SeenMax = 500;
+    var ChatMulti_RoleColors = {owner: '#ffd600', mod: '#5e84f1', member: '#2ba640'}; // YouTube has role colors only
+    var ChatMulti_ColorRegex = /^#[0-9a-f]{6}$/i;
+    var ChatMulti_BackgroundRegex = /^(#[0-9a-f]{6}|rgba?\([\d., ]+\))$/i;
+    // No quotes, parentheses, spaces, '&' or '\': the url ends up in attributes, inline onerror js and css url()
+    var ChatMulti_UrlRegex = /^https:\/\/([a-z0-9.-]+)\/[\w.~\/%=+,:-]*$/i;
+    //Variable initialization end
+
+    function ChatMulti_Start(chat_number, id, withHistory) {
+        ChatMulti_Stop(chat_number);
+        if (!id || !Settings_value.chat_multi.defaultValue) return;
+
+        ChatMulti_State[chat_number] = {id: id, seq: ++ChatMulti_Seq, withHistory: withHistory, started: false};
+        ChatLink_Lookup(chat_number, id);
+    }
+
+    // Contract for ChatKick.js / ChatYouTube.js: their Start gets the session seq as its id, passes it as the
+    // FullxmlHttpGet checkResult and checks ChatMulti_IsActive before rendering, reconnecting or rescheduling.
+    // Turning the setting off and ChatMulti_Restart end a session without changing Chat_Id, so a Chat_Id check
+    // alone would let in-flight requests through.
+    function ChatMulti_IsActive(chat_number, seq) {
+        var state = ChatMulti_State[chat_number];
+        return !!state && state.seq === seq && state.id === Chat_Id[chat_number];
+    }
+
+    // Only ChatLive_Clear stops the sources, a Twitch IRC reconnect (ChatLive_Close) keeps them
+    function ChatMulti_Stop(chat_number) {
+        ChatMulti_State[chat_number] = null;
+        ChatMulti_Seen[chat_number] = null;
+        ChatMulti_SetLinked(chat_number, false);
+
+        if (typeof ChatKick_Stop === 'function') ChatKick_Stop(chat_number);
+        if (typeof ChatYouTube_Stop === 'function') ChatYouTube_Stop(chat_number);
+    }
+
+    // After the links of the current streamer changed, history is not loaded again
+    function ChatMulti_Restart(chat_number) {
+        ChatMulti_Start(chat_number, Chat_Id[chat_number], false);
+    }
+
+    function ChatMulti_OnLinks(chat_number, id) {
+        var state = ChatMulti_State[chat_number];
+        if (!state || state.id !== id || id !== Chat_Id[chat_number] || state.started) return;
+        state.started = true;
+
+        var links = ChatLink_Current(chat_number);
+        ChatMulti_SetLinked(chat_number, !!(links.yt || links.kick));
+
+        if (links.kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, links.kick.value, state.withHistory);
+        if (links.yt && typeof ChatYouTube_Start === 'function') ChatYouTube_Start(chat_number, state.seq, links.yt.value, state.withHistory);
+    }
+
+    // The Twitch icon of every line is only visible inside a linked chat (css .chat_linked .chat_pi_tw)
+    function ChatMulti_SetLinked(chat_number, linked) {
+        if (linked) Main_AddClassWithEle(Chat_div[chat_number], 'chat_linked');
+        else Main_RemoveClassWithEle(Chat_div[chat_number], 'chat_linked');
+    }
+
+    function ChatMulti_Icon(platform) {
+        return '<span class="tag chat_pi chat_pi_' + platform + '"></span>';
+    }
+
+    function ChatMulti_SafeId(value) {
+        return String(value === undefined || value === null ? '' : value).replace(/[^\w-]/g, '');
+    }
+
+    function ChatMulti_SafeUrl(url, hostRegex) {
+        var match = typeof url === 'string' ? url.match(ChatMulti_UrlRegex) : null;
+        return match && hostRegex.test(match[1].toLowerCase()) ? url : null;
+    }
+
+    // role: 'owner' | 'mod' | 'member' | ''
+    function ChatMulti_NickStyle(platform, nick, color, role) {
+        var value;
+
+        if (!ChatLive_Custom_Nick_Color) {
+            if (platform === 'yt') value = ChatMulti_RoleColors[role];
+            else if (ChatMulti_ColorRegex.test(color)) value = color;
+        }
+
+        if (!value) value = defaultColors[(String(nick).charCodeAt(0) || 0) % defaultColorsLength];
+
+        return 'style="color: ' + value + ';"';
+    }
+
+    // seq: the session seq the source got in its Start (see ChatMulti_IsActive)
+    // msg = {platform, msgId, authorId, nick, color, role, badges (html), tokens (strings and [html]), text, ts (ms),
+    //        history (bool), special (html header or null), highlight (css background color or null)}
+    // nick, color, ids, highlight and string tokens are sanitized here; badges, special and [html] tokens
+    // must be built by the source from escaped text and ChatMulti_SafeUrl urls only
+
+    function ChatMulti_Line(chat_number, seq, msg) {
+        if (!ChatMulti_IsActive(chat_number, seq)) return;
+
+        var platform = msg.platform,
+            msgId = ChatMulti_SafeId(msg.msgId),
+            seen = ChatMulti_Seen[chat_number],
+            key;
+
+        if (msgId) {
+            if (!seen || seen.count >= ChatMulti_SeenMax) seen = ChatMulti_Seen[chat_number] = {count: 0, ids: {}};
+
+            key = platform + '_' + msg.msgId;
+            if (seen.ids[key]) return;
+            seen.ids[key] = true;
+            seen.count++;
+        }
+
+        var nick = String(msg.nick || ''),
+            special = msg.special,
+            text = String(msg.text || ''),
+            role = msg.role,
+            atstreamer = false,
+            fromstreamer = false,
+            mod = false;
+
+        if ((ChatLive_HideBots && KnowBots.hasOwnProperty(nick)) || (special && !ChatLive_Show_SUB)) return;
+        // Same as Twitch: hide bots also drops a lone !command
+        if (ChatLive_HideBots && !special && text.charAt(0) === '!' && text.indexOf(' ') === -1) return;
+
+        if (ChatLive_Highlight_AtStreamer && ChatLive_Channel_Regex_Search[chat_number].test(text)) atstreamer = true;
+        else if (ChatLive_Highlight_FromStreamer && role === 'owner') fromstreamer = true;
+        else if (ChatLive_Highlight_Mod && role === 'mod') mod = true;
+
+        var nickHtml =
+                '<span ' +
+                (atstreamer || fromstreamer || mod ? chat_Line_highlight_green : ChatMulti_NickStyle(platform, nick, msg.color, role)) +
+                '>' +
+                Screens_AriaEscape(nick) +
+                '</span>',
+            background = msg.highlight && ChatMulti_BackgroundRegex.test(msg.highlight) ? ' style="background-color: ' + msg.highlight + ';"' : '',
+            body = msg.tokens && msg.tokens.length ? ChatLive_extraMessageTokenize(msg.tokens, chat_number, 0) : '',
+            badges = msg.badges || '',
+            message;
+
+        if (special) {
+            message =
+                '<span class="message"' +
+                background +
+                '>' +
+                ChatMulti_Icon(platform) +
+                special +
+                (body ? STR_BR + STR_BR + badges + nickHtml + ': ' + body : '') +
+                '</span>';
+        } else {
+            message =
+                (ChatLive_Show_TimeStamp ? (msg.history && msg.ts ? ChatLive_GetTimeStamp(msg.ts) : Main_clock_H_M) + ' ' : '') +
+                ChatMulti_Icon(platform) +
+                badges +
+                nickHtml +
+                ':&nbsp;' +
+                '<span ' +
+                (msgId ? 'id="' + platform + '_' + msgId + '" ' : '') +
+                'class="' +
+                platform +
+                '_' +
+                ChatMulti_SafeId(msg.authorId) +
+                ' message"' +
+                background +
+                '>' +
+                body +
+                '</span>';
+        }
+
+        ChatLive_LineAddCheckDelay(chat_number, {
+            chat_number: chat_number,
+            message: message,
+            nick: platform + ':' + nick.toLowerCase(), // spam merge key: never merges into a Twitch or other-platform line of the same nick
+            text: special ? undefined : text, // a Super Chat / sub line never merges as spam
+            atstreamer: atstreamer,
+            fromstreamer: fromstreamer,
+            mod: mod,
+            sub: !!special,
+            addToStart: !!msg.history,
+            historyTs: (msg.history && msg.ts) || 0
+        });
+    }
+
+    function ChatMulti_DeleteMsg(platform, msgId) {
+        var safe = ChatMulti_SafeId(msgId);
+        if (safe) ChatLive_CleanMessage({tags: {'target-msg-id': platform + '_' + safe}});
+    }
+
+    function ChatMulti_DeleteAuthor(chat_number, platform, authorId) {
+        var safe = ChatMulti_SafeId(authorId);
+        if (safe) ChatLive_CleanUser(chat_number, {tags: {'target-user-id': platform + '_' + safe}});
+    }
+    /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
      *
      * This file is part of SmartTwitchTV <https://github.com/fgl27/SmartTwitchTV>
@@ -17570,6 +18739,606 @@
         }
 
         return bright;
+    }
+    /*
+     * YouTube chat source of the merged chat: finds the live video of a channel, reads the chat page (history and
+     * innertube data) and polls get_live_chat. Everything from YouTube is untrusted: names and header texts are escaped,
+     * images come from whitelisted hosts only, background colors are rebuilt from a number. Every async path and every
+     * timer checks ChatMulti_IsActive(chat_number, seq). Failures are silent, the only reaction is a retry timer.
+     */
+
+    //Variable initialization
+    var ChatYouTube_State = []; // per chat_number {seq, target, withHistory, loaded, key, context, continuation, timers}
+    var ChatYouTube_PollMs = 1000;
+    var ChatYouTube_RetryMs = 120000;
+    var ChatYouTube_Headers = [
+        ['User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36'],
+        ['Cookie', 'SOCS=CAI']
+    ];
+    var ChatYouTube_ImageHostRegex = /^(yt3\.ggpht\.com|yt4\.ggpht\.com|[a-z0-9-]+\.googleusercontent\.com|www\.youtube\.com|www\.gstatic\.com)$/;
+    var ChatYouTube_TargetRegex = /^(UC[\w-]{20,30}|@[^\s\/\\?#&"'<>%]{1,60})$/;
+    var ChatYouTube_PageUrl = 'https://www.youtube.com/live_chat?is_popout=1&v=';
+    var ChatYouTube_PollUrl = 'https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?prettyPrint=false&key=';
+    var ChatYouTube_Badge_Icons = {OWNER: 'owner', MODERATOR: 'mod', VERIFIED: 'verified'};
+    //Variable initialization end
+
+    function ChatYouTube_Start(chat_number, seq, target, withHistory) {
+        ChatYouTube_Stop(chat_number);
+        if (!ChatYouTube_TargetRegex.test(target)) return;
+
+        var st = {
+            seq: seq,
+            target: target,
+            withHistory: withHistory,
+            loaded: false,
+            polled: false,
+            lastTs: 0,
+            key: '',
+            context: null,
+            continuation: '',
+            timers: []
+        };
+        ChatYouTube_State[chat_number] = st;
+
+        ChatYouTube_FindLive(chat_number, st);
+    }
+
+    function ChatYouTube_Stop(chat_number) {
+        var st = ChatYouTube_State[chat_number];
+        ChatYouTube_State[chat_number] = null;
+        if (!st) return;
+
+        var i = 0;
+        for (i; i < st.timers.length; i++) Main_clearTimeout(st.timers[i]);
+        st.timers = [];
+    }
+
+    // The session is still current: not stopped, restarted, replaced or switched away
+    function ChatYouTube_Current(chat_number, seq) {
+        var st = ChatYouTube_State[chat_number];
+        return st && st.seq === seq && ChatMulti_IsActive(chat_number, seq) ? st : null;
+    }
+
+    // Every timer of the slot goes through here so Stop can clear it and a stale one does nothing
+    function ChatYouTube_Later(chat_number, st, fn, delay) {
+        var id = Main_setTimeout(function () {
+            var pos = st.timers.indexOf(id);
+            if (pos !== -1) st.timers.splice(pos, 1);
+            if (ChatYouTube_State[chat_number] === st && ChatMulti_IsActive(chat_number, st.seq)) fn();
+        }, delay);
+
+        st.timers.push(id);
+    }
+
+    function ChatYouTube_Retry(chat_number, st) {
+        // A stream that goes live later has no history: the page of a later load must not be inserted above live lines
+        st.withHistory = false;
+        ChatYouTube_Later(
+            chat_number,
+            st,
+            function () {
+                ChatYouTube_FindLive(chat_number, st);
+            },
+            ChatYouTube_RetryMs
+        );
+    }
+
+    function ChatYouTube_LiveUrl(target) {
+        return target.charAt(0) === '@'
+            ? 'https://www.youtube.com/@' + encodeURIComponent(target.slice(1)) + '/live'
+            : 'https://www.youtube.com/channel/' + encodeURIComponent(target) + '/live';
+    }
+
+    function ChatYouTube_FindLive(chat_number, st) {
+        FullxmlHttpGet(ChatYouTube_LiveUrl(st.target), ChatYouTube_Headers, ChatYouTube_LiveResult, noop_fun, chat_number, st.seq);
+    }
+
+    // A live stream needs a live marker, a bare videoId is also on pages of ended or upcoming streams
+    function ChatYouTube_ParseLive(html) {
+        var text = String(html || '');
+        if (text.indexOf('"isLiveNow":true') === -1 && text.indexOf('"isLive":true') === -1) return null;
+
+        var match = /"videoId":"([\w-]{11})"/.exec(text);
+        return match ? match[1] : null;
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function ChatYouTube_LiveResult(obj, chat_number, seq) {
+        var st = ChatYouTube_Current(chat_number, seq),
+            videoId = st && obj.status === 200 ? ChatYouTube_ParseLive(obj.responseText) : null;
+        if (!st) return;
+
+        if (videoId) ChatYouTube_FetchPage(chat_number, st, videoId);
+        else ChatYouTube_Retry(chat_number, st);
+    }
+
+    function ChatYouTube_FetchPage(chat_number, st, videoId) {
+        st.videoId = videoId;
+        FullxmlHttpGet(ChatYouTube_PageUrl + encodeURIComponent(videoId), ChatYouTube_Headers, ChatYouTube_PageResult, noop_fun, chat_number, st.seq);
+    }
+
+    function ChatYouTube_ParseJson(text) {
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Parses the JSON object that starts at the first '{' at or after `from` (brace matching, strings aware)
+    function ChatYouTube_JsonAt(text, from) {
+        var start = text.indexOf('{', from),
+            depth = 0,
+            inString = false,
+            i = start,
+            c;
+        if (start === -1) return null;
+
+        for (i; i < text.length; i++) {
+            c = text.charAt(i);
+
+            if (inString) {
+                if (c === '\\') i++;
+                else if (c === '"') inString = false;
+            } else if (c === '"') {
+                inString = true;
+            } else if (c === '{') {
+                depth++;
+            } else if (c === '}' && --depth === 0) {
+                return ChatYouTube_ParseJson(text.slice(start, i + 1));
+            }
+        }
+
+        return null;
+    }
+
+    function ChatYouTube_ContinuationOf(list) {
+        var data = list && list[0],
+            item = data && (data.invalidationContinuationData || data.timedContinuationData || data.reloadContinuationData);
+
+        return item && typeof item.continuation === 'string' && item.continuation ? item.continuation : '';
+    }
+
+    // -> {key, context, continuation, actions} or null when the page is not a usable chat page
+    function ChatYouTube_ParseChatPage(html) {
+        var text = String(html || ''),
+            key = /"INNERTUBE_API_KEY":\s*"([\w-]+)"/.exec(text),
+            at = text.indexOf('"INNERTUBE_CONTEXT":'),
+            context = at === -1 ? null : ChatYouTube_JsonAt(text, at + 20),
+            marker = text.indexOf('ytInitialData"] = '),
+            data;
+
+        if (marker === -1) marker = text.indexOf('var ytInitialData = ');
+        data = marker === -1 ? null : ChatYouTube_JsonAt(text, marker);
+
+        var chat = data && data.contents && data.contents.liveChatRenderer,
+            continuation = chat ? ChatYouTube_ContinuationOf(chat.continuations) : '';
+        if (!key || !context || !continuation) return null;
+
+        return {
+            key: key[1],
+            context: context,
+            continuation: continuation,
+            actions: Object.prototype.toString.call(chat.actions) === '[object Array]' ? chat.actions : []
+        };
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function ChatYouTube_PageResult(obj, chat_number, seq) {
+        var st = ChatYouTube_Current(chat_number, seq);
+        if (!st) return;
+
+        var page = obj.status === 200 ? ChatYouTube_ParseChatPage(obj.responseText) : null;
+        if (!page) {
+            ChatYouTube_Retry(chat_number, st);
+            return;
+        }
+
+        st.key = page.key;
+        st.context = page.context;
+        st.continuation = page.continuation;
+
+        // The first load is history (when wanted), a reload shows only messages newer than the ones already rendered
+        ChatYouTube_Render(chat_number, st, page.actions, st.loaded ? 'reload' : st.withHistory ? 'history' : 'skip');
+        st.loaded = true;
+        st.polled = false;
+
+        ChatYouTube_Poll(chat_number, st);
+    }
+
+    function ChatYouTube_Poll(chat_number, st) {
+        FullxmlHttpGet(
+            ChatYouTube_PollUrl + encodeURIComponent(st.key),
+            ChatYouTube_Headers.concat([['Content-Type', 'application/json']]),
+            ChatYouTube_PollResult,
+            noop_fun,
+            chat_number,
+            st.seq,
+            'POST',
+            JSON.stringify({context: st.context, continuation: st.continuation})
+        );
+    }
+
+    // -> {actions, continuation} or null
+    function ChatYouTube_ParsePoll(text) {
+        var json = ChatYouTube_ParseJson(text),
+            live = json && json.continuationContents && json.continuationContents.liveChatContinuation;
+        if (!live) return null;
+
+        return {
+            actions: Object.prototype.toString.call(live.actions) === '[object Array]' ? live.actions : [],
+            continuation: ChatYouTube_ContinuationOf(live.continuations)
+        };
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function ChatYouTube_PollResult(obj, chat_number, seq) {
+        var st = ChatYouTube_Current(chat_number, seq);
+        if (!st) return;
+
+        var poll = obj.status === 200 ? ChatYouTube_ParsePoll(obj.responseText) : null;
+
+        if (!poll || !poll.continuation) {
+            // Chain broken or stream ended. Reload the chat page only when a poll worked since the last load, else a persistent
+            // failure would reload every second: wait for the retry timer (live detection again)
+            if (!st.polled) {
+                ChatYouTube_Retry(chat_number, st);
+                return;
+            }
+
+            st.polled = false;
+            ChatYouTube_Later(
+                chat_number,
+                st,
+                function () {
+                    ChatYouTube_FetchPage(chat_number, st, st.videoId);
+                },
+                ChatYouTube_PollMs
+            );
+            return;
+        }
+
+        st.polled = true;
+        st.continuation = poll.continuation;
+        // Next poll first: a render exception must not end the session
+        ChatYouTube_Later(
+            chat_number,
+            st,
+            function () {
+                ChatYouTube_Poll(chat_number, st);
+            },
+            ChatYouTube_PollMs
+        );
+        ChatYouTube_Render(chat_number, st, poll.actions, 'live');
+    }
+
+    // Moderation action -> {del: itemId} | {ban: channelId} | null
+    function ChatYouTube_Moderation(action) {
+        var del = action && (action.markChatItemAsDeletedAction || action.removeChatItemAction), // markChatItemAsDeletedAction: shape not yet seen live, removeChatItemAction seen live
+            ban = action && action.markChatItemsByAuthorAsDeletedAction; // shape not yet seen live
+
+        if (del && del.targetItemId) return {del: del.targetItemId};
+        if (ban && (ban.externalChannelId || ban.authorExternalChannelId)) return {ban: ban.externalChannelId || ban.authorExternalChannelId};
+        return null;
+    }
+
+    // mode: 'history' a first page load, deleted items are filtered out; 'skip' a first page load without history, only the
+    // watermark moves; 'reload' a later page load, only messages newer than the watermark; 'live' a poll. Live: moderation is
+    // applied at once, messages are sorted by time and spread over the poll interval by their time differences.
+    // st.lastTs is the newest message time rendered in this session (items without a time, gifts, do not move it).
+    function ChatYouTube_Render(chat_number, st, actions, mode) {
+        var history = mode === 'history',
+            mark = st.lastTs,
+            seq = st.seq,
+            msgs = [],
+            mods = [],
+            i = 0,
+            action,
+            msg,
+            mod;
+
+        for (i; i < actions.length; i++) {
+            action = actions[i];
+            mod = ChatYouTube_Moderation(action);
+
+            if (mod) mods.push(mod);
+            else if (action && action.addChatItemAction && action.addChatItemAction.item) {
+                msg = ChatYouTube_ToMsg(action.addChatItemAction.item, history);
+                if (msg) {
+                    msg.order = msgs.length;
+                    msgs.push(msg);
+                }
+            }
+        }
+
+        for (i = 0; i < msgs.length; i++) {
+            if (msgs[i].realTs && msgs[i].ts > st.lastTs) st.lastTs = msgs[i].ts;
+        }
+
+        if (mode === 'skip') return;
+
+        if (mode === 'reload') {
+            for (i = msgs.length - 1; i >= 0; i--) {
+                if (!msgs[i].realTs || msgs[i].ts <= mark) msgs.splice(i, 1);
+            }
+        }
+
+        if (history) {
+            for (i = 0; i < mods.length; i++) {
+                for (var j = msgs.length - 1; j >= 0; j--) {
+                    if (msgs[j].msgId === mods[i].del || (mods[i].ban && msgs[j].authorId === mods[i].ban)) msgs.splice(j, 1);
+                }
+            }
+            for (i = 0; i < msgs.length; i++) ChatMulti_Line(chat_number, seq, msgs[i]);
+            return;
+        }
+
+        for (i = 0; i < mods.length; i++) {
+            if (mods[i].del) ChatMulti_DeleteMsg('yt', mods[i].del);
+            else ChatMulti_DeleteAuthor(chat_number, 'yt', mods[i].ban);
+        }
+
+        msgs.sort(function (a, b) {
+            return a.ts - b.ts || a.order - b.order;
+        });
+
+        for (i = 0; i < msgs.length; i++) ChatYouTube_Spread(chat_number, st, msgs[i], Math.min(msgs[i].ts - msgs[0].ts, ChatYouTube_PollMs));
+    }
+
+    function ChatYouTube_Spread(chat_number, st, msg, delay) {
+        if (delay > 0) {
+            ChatYouTube_Later(
+                chat_number,
+                st,
+                function () {
+                    ChatMulti_Line(chat_number, st.seq, msg);
+                },
+                delay
+            );
+        } else {
+            ChatMulti_Line(chat_number, st.seq, msg);
+        }
+    }
+
+    // Protocol relative urls are made absolute, then only whitelisted hosts pass
+    function ChatYouTube_SafeImage(url) {
+        if (typeof url === 'string' && url.indexOf('//') === 0) url = 'https:' + url;
+        return ChatMulti_SafeUrl(url, ChatYouTube_ImageHostRegex);
+    }
+
+    function ChatYouTube_LastThumb(thumbnails) {
+        var last = thumbnails && thumbnails.length ? thumbnails[thumbnails.length - 1] : null;
+        return last ? last.url : null;
+    }
+
+    function ChatYouTube_PushText(tokens, str) {
+        var last = tokens.length ? tokens[tokens.length - 1] : null;
+
+        if (!str) return;
+        if (typeof last === 'string') tokens[tokens.length - 1] = last + str;
+        // Text after an [html] token needs a leading space: extraMessageTokenize overwrites its first word with the previous emote
+        else tokens.push(last && str.charAt(0) !== ' ' ? ' ' + str : str);
+    }
+
+    // runs -> tokens for ChatLive_extraMessageTokenize: strings and [html] items. A foreign-host emoji becomes text:
+    // a unicode emojiId when there is one (custom emoji have an ascii id), else the first shortcut.
+    function ChatYouTube_Tokens(runs) {
+        var tokens = [],
+            i = 0,
+            len = runs && runs.length ? runs.length : 0,
+            run,
+            emoji,
+            url,
+            id;
+
+        for (i; i < len; i++) {
+            run = runs[i];
+
+            if (run && typeof run.text === 'string') {
+                ChatYouTube_PushText(tokens, run.text);
+            } else if (run && run.emoji) {
+                emoji = run.emoji;
+                url = ChatYouTube_SafeImage(emoji.image && ChatYouTube_LastThumb(emoji.image.thumbnails));
+                id = typeof emoji.emojiId === 'string' && !/^[\x00-\x7f]*$/.test(emoji.emojiId) ? emoji.emojiId : '';
+
+                if (url) tokens.push([emoteTemplate(url)]);
+                else ChatYouTube_PushText(tokens, id || (emoji.shortcuts && emoji.shortcuts[0]) || '');
+            }
+        }
+
+        return tokens;
+    }
+
+    // simpleText or runs as plain (unescaped) text
+    function ChatYouTube_PlainText(obj) {
+        if (!obj) return '';
+        if (typeof obj.simpleText === 'string') return obj.simpleText;
+
+        var runs = obj.runs || [],
+            text = '',
+            i = 0;
+
+        for (i; i < runs.length; i++) {
+            if (!runs[i]) continue;
+            if (typeof runs[i].text === 'string') text += runs[i].text;
+            else if (runs[i].emoji) text += (runs[i].emoji.shortcuts && runs[i].emoji.shortcuts[0]) || '';
+        }
+
+        return text;
+    }
+
+    // -> {html, role}, role is owner, mod, member or ''
+    function ChatYouTube_Badges(authorBadges) {
+        var html = '',
+            role = '',
+            i = 0,
+            len = authorBadges && authorBadges.length ? authorBadges.length : 0,
+            badge,
+            icon,
+            url;
+
+        for (i; i < len; i++) {
+            badge = authorBadges[i] && authorBadges[i].liveChatAuthorBadgeRenderer;
+            if (!badge) continue;
+
+            icon = badge.icon && ChatYouTube_Badge_Icons.hasOwnProperty(badge.icon.iconType) ? ChatYouTube_Badge_Icons[badge.icon.iconType] : '';
+
+            if (icon) {
+                html += '<span class="tag chat_b_yt_' + icon + '"></span>';
+                if (icon === 'owner' || (icon === 'mod' && role !== 'owner')) role = icon;
+            } else if (badge.customThumbnail) {
+                url = ChatYouTube_SafeImage(ChatYouTube_LastThumb(badge.customThumbnail.thumbnails));
+
+                if (url) {
+                    html += '<span class="tag" style="background-image: url(' + url + ');"></span>';
+                    if (!role) role = 'member';
+                }
+            }
+        }
+
+        return {html: html, role: role};
+    }
+
+    // ARGB int -> css rgba() with the alpha capped at 0.4 (light tiers are opaque and unreadable under white text), null when it is not a number
+    function ChatYouTube_Color(argb) {
+        var n = Number(argb);
+        if (!isFinite(n) || n < 0 || n > 4294967295) return null;
+
+        return 'rgba(' + ((n >>> 16) & 255) + ',' + ((n >>> 8) & 255) + ',' + (n & 255) + ',' + Math.min((n >>> 24) / 255, 0.4).toFixed(2) + ')';
+    }
+
+    function ChatYouTube_Ts(timestampUsec) {
+        var ts = Math.floor(Number(timestampUsec) / 1000);
+        return ts > 0 ? ts : new Date().getTime();
+    }
+
+    function ChatYouTube_Msg(renderer, history, nick, tokens, text, badges) {
+        return {
+            platform: 'yt',
+            msgId: renderer.id,
+            authorId: renderer.authorExternalChannelId,
+            nick: nick,
+            color: null,
+            role: badges.role,
+            badges: badges.html,
+            tokens: tokens,
+            text: text,
+            ts: ChatYouTube_Ts(renderer.timestampUsec),
+            realTs: Number(renderer.timestampUsec) > 0,
+            history: !!history,
+            special: null,
+            highlight: null
+        };
+    }
+
+    // A special line shows the nick itself when the message body (which carries the nick) is empty
+    function ChatYouTube_Special(msg, nick, label) {
+        msg.special = (msg.tokens.length ? '' : Screens_AriaEscape(nick) + ' ') + label;
+        return msg;
+    }
+
+    // -> msg for ChatMulti_Line or null for items that are not shown
+    function ChatYouTube_ToMsg(item, history) {
+        if (!item) return null;
+
+        var renderer = item.liveChatTextMessageRenderer,
+            nick,
+            msg,
+            badges,
+            runs,
+            text;
+
+        if (renderer) {
+            runs = renderer.message && renderer.message.runs;
+            return ChatYouTube_Msg(
+                renderer,
+                history,
+                ChatYouTube_PlainText(renderer.authorName),
+                ChatYouTube_Tokens(runs),
+                ChatYouTube_PlainText(renderer.message),
+                ChatYouTube_Badges(renderer.authorBadges)
+            );
+        }
+
+        // The items below were not seen live yet except giftMessageViewModel, shapes follow spec 6.3 point 4
+        renderer = item.liveChatPaidMessageRenderer; // shape not yet seen live
+        if (renderer) {
+            msg = ChatYouTube_Msg(
+                renderer,
+                history,
+                ChatYouTube_PlainText(renderer.authorName),
+                ChatYouTube_Tokens(renderer.message && renderer.message.runs),
+                ChatYouTube_PlainText(renderer.message),
+                ChatYouTube_Badges(renderer.authorBadges)
+            );
+            msg.highlight = ChatYouTube_Color(renderer.bodyBackgroundColor);
+            return ChatYouTube_Special(
+                msg,
+                msg.nick,
+                Screens_AriaEscape(STR_CHAT_YT_SUPERCHAT + ' ' + ChatYouTube_PlainText(renderer.purchaseAmountText))
+            );
+        }
+
+        renderer = item.liveChatPaidStickerRenderer; // shape not yet seen live
+        if (renderer) {
+            msg = ChatYouTube_Msg(renderer, history, ChatYouTube_PlainText(renderer.authorName), [], '', ChatYouTube_Badges(renderer.authorBadges));
+            msg.highlight = ChatYouTube_Color(renderer.moneyChipBackgroundColor || renderer.backgroundColor);
+            text = ChatYouTube_SafeImage(renderer.sticker && ChatYouTube_LastThumb(renderer.sticker.thumbnails));
+            return ChatYouTube_Special(
+                msg,
+                msg.nick,
+                Screens_AriaEscape(STR_CHAT_YT_SUPERSTICKER + ' ' + ChatYouTube_PlainText(renderer.purchaseAmountText)) +
+                    (text ? ' ' + emoteTemplate(text) : '')
+            );
+        }
+
+        renderer = item.liveChatMembershipItemRenderer; // shape not yet seen live
+        if (renderer) {
+            msg = ChatYouTube_Msg(
+                renderer,
+                history,
+                ChatYouTube_PlainText(renderer.authorName),
+                ChatYouTube_Tokens(renderer.message && renderer.message.runs),
+                ChatYouTube_PlainText(renderer.message),
+                ChatYouTube_Badges(renderer.authorBadges)
+            );
+            text = (ChatYouTube_PlainText(renderer.headerPrimaryText) + ' ' + ChatYouTube_PlainText(renderer.headerSubtext)).replace(
+                /^\s+|\s+$/g,
+                ''
+            );
+            return ChatYouTube_Special(msg, msg.nick, Screens_AriaEscape(text || STR_CHAT_YT_MEMBERSHIP));
+        }
+
+        renderer = item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer; // shape not yet seen live
+        if (renderer) {
+            badges = renderer.header && renderer.header.liveChatSponsorshipsHeaderRenderer;
+            if (!badges) return null;
+
+            nick = ChatYouTube_PlainText(badges.authorName);
+            msg = ChatYouTube_Msg(renderer, history, nick, [], '', ChatYouTube_Badges(badges.authorBadges));
+            return ChatYouTube_Special(msg, nick, Screens_AriaEscape(ChatYouTube_PlainText(badges.primaryText) || STR_CHAT_YT_GIFT));
+        }
+
+        renderer = item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer; // shape not yet seen live
+        if (renderer) {
+            nick = ChatYouTube_PlainText(renderer.authorName);
+            msg = ChatYouTube_Msg(renderer, history, nick, [], '', ChatYouTube_Badges(renderer.authorBadges));
+            return ChatYouTube_Special(msg, nick, Screens_AriaEscape(ChatYouTube_PlainText(renderer.message) || STR_CHAT_YT_MEMBERSHIP));
+        }
+
+        // Gift (seen live): a view model without time or channel id, shown only with an author and a readable text
+        renderer = item.giftMessageViewModel;
+        if (renderer) {
+            nick = ((renderer.authorName && renderer.authorName.content) || '').replace(/^\s+|\s+$/g, '');
+            text = ((renderer.text && renderer.text.content) || '').replace(/^\s+|\s+$/g, '');
+            if (!nick || !text) return null;
+
+            msg = ChatYouTube_Msg(renderer, history, nick, [], '', {html: '', role: ''});
+            msg.special = Screens_AriaEscape(nick + ' ' + text);
+            return msg;
+        }
+
+        return null;
     }
     /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
@@ -18710,7 +20479,7 @@
             if (Main_HasUpdate && Main_isUpdateDialogVisible() && Settings_value.update_background.defaultValue && !forceUpdate) return;
 
             BaseXmlHttpGet(
-                'https://yofardev.github.io/SmarterTwitchTV/release/githubio/version/version.json',
+                'https://lordboos.github.io/SmarterTwitchTV/release/githubio/version/version.json',
                 Main_CheckUpdateResult,
                 Main_CheckUpdateFail
             );
@@ -19796,7 +21565,7 @@
             OSInterface_BaseXmlHttpGet(
                 theUrl,
                 DefaultHttpGetTimeout,
-                postMessage,
+                postMessage ? postMessage : null,
                 Method ? Method : null,
                 Headers ? JSON.stringify(Headers) : null,
                 'Main_CheckFullxmlHttpGet',
@@ -20611,6 +22380,7 @@
     function Main_CheckStop() {
         Navigation_Close(false);
         PhoneChat_Hide(true);
+        ChatLinkDialog_Hide(true);
         PlayerUI_Close(false);
         Screens_LoadPreviewSTop();
         // Called only by JAVA
@@ -25358,6 +27128,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         //Stream replacement/shutdown: close the phone chat dialog without
         //reattaching player input (this path removes that listener right after)
         PhoneChat_Cleanup();
+        ChatLinkDialog_Cleanup();
         PlayVod_previews_clear();
 
         Play_Playing = false;
@@ -26143,9 +27914,12 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
     function Play_Exit() {
         PhoneChat_Cleanup();
+        ChatLinkDialog_Cleanup();
         PlayVod_previews_clear();
         Play_CleanHideExit();
         Play_hideChat();
+        //Play_ClearPlay clears only chat 0, stop the picture-in-picture chat (IRC, YouTube, Kick) here
+        ChatLive_Clear(1);
         PlayExtra_ClearExtra();
         Play_shutdownStream();
     }
@@ -27294,6 +29068,622 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         if (!Main_IsOn_OSInterface) {
             BrowserTestStopClip();
         }
+    }
+    /* Player presentation adapter. Playback objects and their original callbacks remain authoritative. */
+    var PlayerUI_State = {
+        mode: 0,
+        frames: [],
+        suspended: false,
+        closing: false,
+        hiddenTimer: null,
+        timelineTimer: null,
+        paused: false,
+        barPaused: null
+    };
+
+    function PlayerUI_Mode() {
+        return Play_isOn ? 1 : PlayVod_isOn ? 2 : PlayClip_isOn ? 3 : 0;
+    }
+
+    function PlayerUI_Groups() {
+        return {
+            chat: [Play_controlsPhoneChat, Play_controlsChat, Play_controlsChatSend, Play_controlsChatSettings, Play_controlsLinkedChats],
+            quality: [Play_controlsQuality, Play_controlsQualityMini, Play_controlsQualityMulti],
+            layout: [Play_controlsChatSide, Play_MultiStream],
+            content: [
+                Play_controlsSearch,
+                Play_controlsChanelCont,
+                Play_controlsGameCont,
+                Play_controlsOpenLive,
+                Play_controlsOpenVod,
+                Play_controlsFollow,
+                Play_controlsContentLang
+            ],
+            playback: [
+                Play_controlsSpeed,
+                Play_controlsExternal,
+                Play_controlsRewind,
+                Play_controlsScreeOff,
+                Play_controlsLowLatency,
+                Play_controlsChapters
+            ],
+            audio: [
+                Play_controlsAudioAll,
+                Play_controlsAudio_Volume_100,
+                Play_controlsAudioEna0,
+                Play_controlsAudioVol0,
+                Play_controlsAudioEna1,
+                Play_controlsAudioVol1,
+                Play_controlsAudioEna2,
+                Play_controlsAudioVol2,
+                Play_controlsAudioEna3,
+                Play_controlsAudioVol3
+            ],
+            preview: [Play_controlsPreviewEnable, Play_controlsPreviewSize, Play_controlsPreviewVolume, Play_controlsPreviewMainVolume],
+            diagnostics: [Play_controlsPlayerStatus, Play_controlsControls],
+            chatSettings: [
+                Play_controlsChatForceDis,
+                Play_controlsChatDisShared,
+                Play_controlsChatDelay,
+                Play_controlsChatPos,
+                Play_controlsChatSize,
+                Play_controlsChatBright,
+                Play_controlsChatFont
+            ]
+        };
+    }
+
+    function PlayerUI_Labels() {
+        return {
+            chat: STR_UI.chat,
+            quality: STR_UI.quality,
+            layout: STR_UI.layout,
+            more: STR_UI.more,
+            content: STR_UI.channelContent,
+            playback: STR_UI.playback,
+            audio: STR_UI.audio,
+            preview: STR_UI.preview,
+            diagnostics: STR_UI.diagnostics,
+            chatSettings: STR_CHAT_EXTRA
+        };
+    }
+
+    function PlayerUI_Visibility() {
+        if (PlayerUI_State.mode === 2) return 'ShowInVod';
+        if (PlayerUI_State.mode === 3) return 'ShowInClip';
+        return Play_StayDialogVisible() ? 'ShowInStay' : Play_MultiEnable ? 'ShowInMulti' : PlayExtra_PicturePicture ? 'ShowInPP' : 'ShowInLive';
+    }
+
+    function PlayerUI_Available(key, group) {
+        var control = Play_controls[key];
+        if (!control) return false;
+        if (group === 'chatSettings') return Boolean(control.ShowInChat);
+        if (group === 'preview') return Boolean(control.ShowInPreview);
+        if (group === 'audio') {
+            var visibility = Play_MultiEnable ? 'ShowInAudioMulti' : PlayExtra_PicturePicture ? 'ShowInAudioPP' : 'ShowInAudio';
+            if (!control[visibility]) return false;
+            if (key >= Play_controlsAudioEna0 && key <= Play_controlsAudioVol3 && Play_MultiEnable) {
+                var slot = Math.floor((key - Play_controlsAudioEna0) / 2);
+                return Boolean(Play_MultiArray[slot] && Play_MultiArray[slot].data.length);
+            }
+            return true;
+        }
+        if (key === Play_controlsChapters) return PlayerUI_State.mode === 2 && PlayVod_ChaptersArray.length > 0;
+        if (key === Play_controlsOpenLive) return PlayerUI_State.mode > 1 && Boolean(Play_HasLive);
+        if (key === Play_controlsOpenVod) return PlayerUI_State.mode === 3 && Boolean(PlayClip_HasVOD);
+        return Boolean(control[PlayerUI_Visibility()]);
+    }
+
+    function PlayerUI_Frame() {
+        return PlayerUI_State.frames[PlayerUI_State.frames.length - 1];
+    }
+
+    function PlayerUI_Show(mode) {
+        if (!mode || !Main_isScene2DocVisible() || PlayerUI_State.suspended || PlayerUI_State.closing) return;
+        if (PlayerUI_State.frames.length) {
+            if (PlayerUI_State.mode === mode) return;
+            PlayerUI_Close(false);
+        }
+        PlayerUI_State.mode = mode;
+        PlayerUI_State.frames = [{group: 'bar', index: 0}];
+        Play_clearHidePanel();
+        UIFocus_Push({
+            id: 'player',
+            handle: PlayerUI_Handle,
+            cleanup: function () {
+                Main_clearTimeout(PlayerUI_State.hiddenTimer);
+                Main_clearTimeout(PlayerUI_State.timelineTimer);
+                PlayerUI_State.frames = [];
+                PlayerUI_State.suspended = false;
+                Main_HideElement('player-ui');
+                Main_RemoveClass('scene2', 'player-ui-active');
+                Main_RemoveClass('scene2', 'player-ui-drawer-open');
+                Main_RemoveClass('player-ui', 'player-ui-drawer-open');
+                Main_removeEventListener('keydown', PlayerUI_Listener);
+                // Release the DOM focus the focused control kept; playback keeps its own handlers.
+                UIFocus_DomRelease(Main_getElementById('player-ui'));
+            }
+        });
+        Main_addEventListener('keydown', PlayerUI_Listener);
+        Main_AddClass('scene2', 'player-ui-active');
+        Main_ShowElement('player-ui');
+        PlayerUI_Render();
+        PlayerUI_ScheduleHide();
+        // VOD reveals the timeline about half a second after start; re-check once it is up.
+        Main_clearTimeout(PlayerUI_State.timelineTimer);
+        PlayerUI_State.timelineTimer = Main_setTimeout(function () {
+            if (PlayerUI_State.frames.length && !PlayerUI_State.suspended) PlayerUI_TimelineClass();
+        }, 700);
+    }
+
+    function PlayerUI_Listener() {
+        // Input is dispatched by UIFocus_Listener before this existing-listener adapter is reached.
+    }
+
+    function PlayerUI_ScheduleHide() {
+        Main_clearTimeout(PlayerUI_State.hiddenTimer);
+        Play_clearHidePanel();
+        if (PlayerUI_State.frames.length === 1 && !PlayerUI_State.suspended) {
+            PlayerUI_State.hiddenTimer = Main_setTimeout(function () {
+                PlayerUI_Close(true);
+            }, 5000);
+        }
+    }
+
+    function PlayerUI_Close(hidePanel) {
+        if (PlayerUI_State.closing || PlayerUI_State.suspended) return;
+        PlayerUI_State.closing = true;
+        if (PlayerUI_State.frames.length) UIFocus_Pop(false);
+        if (hidePanel && PlayerUI_Mode()) Play_hidePanelFull(PlayerUI_Mode());
+        PlayerUI_State.closing = false;
+    }
+
+    function PlayerUI_Open(group) {
+        Main_clearTimeout(PlayerUI_State.hiddenTimer);
+        Play_clearHidePanel();
+        var initializer =
+            group === 'audio'
+                ? Play_controlsAudio
+                : group === 'preview'
+                  ? Play_controlsPreview
+                  : group === 'chatSettings'
+                    ? Play_controlsChatSettings
+                    : null;
+        if (initializer !== null && Play_controls[initializer]) {
+            Play_PanelCounter = initializer;
+            Play_controls[initializer].enterKey.call(Play_controls[initializer], PlayerUI_State.mode);
+        }
+        PlayerUI_State.frames.push({group: group, index: 0});
+        PlayerUI_Render();
+    }
+
+    function PlayerUI_Back() {
+        if (PlayerUI_State.frames.length < 2) {
+            PlayerUI_Close(true);
+            return;
+        }
+        PlayerUI_State.frames.pop();
+        // Cancel uncommitted quality/speed/latency selections through the original reset paths.
+        if (PlayerUI_State.mode === 1) Play_qualityReset();
+        else if (PlayerUI_State.mode === 2) PlayVod_qualityReset();
+        else PlayClip_qualityReset();
+        Play_ResetSpeed();
+        Play_ResetLowlatency();
+        PlayerUI_Render();
+        PlayerUI_ScheduleHide();
+    }
+
+    function PlayerUI_Action(key, adjust) {
+        var frame = PlayerUI_Frame(),
+            control = Play_controls[key];
+        if (!frame || !PlayerUI_Available(key, frame.group)) return false;
+        frame.index = frame.entries.indexOf(key);
+        Play_PanelCounter = key;
+        if (adjust) {
+            if (control.updown) control.updown.call(control, adjust, PlayerUI_State.mode);
+        } else if (key === Play_controlsChatSettings) {
+            PlayerUI_Open('chatSettings');
+            return true;
+        } else {
+            var phone = key === Play_controlsPhoneChat,
+                leave =
+                    [
+                        Play_controlsSearch,
+                        Play_controlsChanelCont,
+                        Play_controlsGameCont,
+                        Play_controlsOpenLive,
+                        Play_controlsOpenVod,
+                        Play_controlsExternal,
+                        Play_controlsRewind,
+                        Play_controlsScreeOff,
+                        Play_controlsChapters,
+                        Play_MultiStream,
+                        Play_controlsChatSend,
+                        Play_controlsControls
+                    ].indexOf(key) !== -1;
+            var mode = PlayerUI_State.mode;
+            if (leave && !phone) PlayerUI_Close(false);
+            // Multistream takes a shutdown boolean, unlike ordinary controls taking a mode number.
+            if (control.enterKey) control.enterKey.call(control, key === Play_MultiStream ? false : mode);
+        }
+        Play_clearHidePanel();
+        if (PlayerUI_State.frames.length && !PlayerUI_State.suspended) {
+            if (PlayerUI_Mode() !== PlayerUI_State.mode) PlayerUI_Close(false);
+            else {
+                PlayerUI_Render();
+                PlayerUI_ScheduleHide();
+            }
+        }
+        return true;
+    }
+
+    function PlayerUI_QualityList() {
+        var mode = PlayerUI_State.mode,
+            qualities = mode === 1 ? Play_data.qualities : mode === 2 ? PlayVod_qualities : PlayClip_qualities,
+            count = mode === 1 ? Play_getQualitiesCount() : mode === 2 ? PlayVod_getQualitiesCount() : PlayClip_getQualitiesCount(),
+            playing = mode === 1 ? Play_data.qualityPlaying : mode === 2 ? PlayVod_qualityPlaying : PlayClip_qualityPlaying,
+            items = [],
+            indexes = [],
+            current = -1,
+            i;
+        for (i = 0; i < count; i++) {
+            if (!qualities[i]) continue;
+            items.push(qualities[i].id);
+            indexes.push(i);
+            if (qualities[i].id === playing) current = items.length - 1;
+        }
+        return {items: items, indexes: indexes, current: current};
+    }
+
+    function PlayerUI_QualityPick(index) {
+        var mode = PlayerUI_State.mode,
+            list = PlayerUI_QualityList(),
+            position = list.indexes[index];
+        // Re-applying the playing rendition restarts the stream; picking it just returns to the bar.
+        if (index !== list.current && position !== undefined) {
+            if (mode === 1) Play_data.qualityIndex = position;
+            else if (mode === 2) PlayVod_qualityIndex = position;
+            else PlayClip_qualityIndex = position;
+            Play_PanelCounter = Play_controlsQuality;
+            Play_controls[Play_controlsQuality].enterKey.call(Play_controls[Play_controlsQuality], mode);
+        }
+        PlayerUI_State.frames.pop();
+        PlayerUI_Render();
+        PlayerUI_ScheduleHide();
+    }
+
+    function PlayerUI_TimelineClass() {
+        var timeline = Main_getElementById('progress_pause_holder');
+        if (timeline.offsetHeight > 0) Main_AddClass('player-ui', 'player-ui-has-timeline');
+        else Main_RemoveClass('player-ui', 'player-ui-has-timeline');
+    }
+
+    function PlayerUI_Render() {
+        var frame = PlayerUI_Frame();
+        if (!frame) return;
+        var previousKey = frame.entries ? frame.entries[frame.index] : null;
+        var labels = PlayerUI_Labels(),
+            bar = Main_getElementById('player-ui-buttons'),
+            menu = Main_getElementById('player-ui-menu'),
+            drawer = Main_getElementById('player-ui-drawer'),
+            actionRoot = Main_getElementById('player-ui-actions'),
+            i,
+            key,
+            control,
+            keys,
+            node;
+        Main_emptyWithEle(menu);
+        PlayerUI_TimelineClass();
+        // Reuse the actual control DOM; there is no invisible duplicate strip behind the drawers.
+        for (key in Play_controls) Play_controls[key].doc.style.display = 'none';
+        var barGroups = ['pause', 'chat', 'quality', 'layout', 'more', 'channels'],
+            barIcons = {
+                pause: PlayerUI_State.paused ? 'play' : 'pause',
+                chat: 'chat',
+                quality: 'levels',
+                layout: 'side-by-side',
+                more: 'options',
+                channels: 'feed'
+            };
+        //The bar only depends on the paused state, keep the built nodes between renders
+        if (PlayerUI_State.barPaused !== PlayerUI_State.paused || !bar.firstChild) {
+            PlayerUI_State.barPaused = PlayerUI_State.paused;
+            Main_emptyWithEle(bar);
+            for (i = 0; i < barGroups.length; i++) {
+                key = barGroups[i];
+                node = Navigation_Button(
+                    bar,
+                    'player-ui-bar-' + i,
+                    key === 'pause' ? (PlayerUI_State.paused ? STR_UI.play : STR_UI.pause) : key === 'channels' ? STR_UI.channels : labels[key],
+                    PlayerUI_ActivateBar.bind(null, i),
+                    barIcons[key]
+                );
+                node.onfocus = PlayerUI_SetIndex.bind(null, i, 'bar');
+                if (!i) {
+                    node.setAttribute('aria-pressed', String(PlayerUI_State.paused));
+                    node.className += ' player-ui-bar-primary';
+                } else if (key === 'more') node.className += ' player-ui-bar-end';
+            }
+        }
+        Main_textContent(
+            'player-ui-name',
+            STR_UI.quality +
+                STR_UI.separator +
+                (PlayerUI_State.mode === 1 ? Play_data.qualityPlaying : PlayerUI_State.mode === 2 ? PlayVod_qualityPlaying : PlayClip_qualityPlaying)
+        );
+        Main_textContent('player-ui-value', PlayerUI_State.paused ? STR_UI.paused : '');
+        drawer.style.display = frame.group === 'bar' ? 'none' : '';
+        frame.list = false;
+        if (frame.group === 'bar') {
+            frame.entries = barGroups;
+        } else if (frame.group === 'more') {
+            frame.entries = ['content', 'playback', 'audio', 'preview', 'diagnostics'];
+            for (i = 0; i < frame.entries.length; i++) {
+                node = Navigation_Button(menu, 'player-ui-row-' + i, labels[frame.entries[i]], PlayerUI_OpenAt.bind(null, i, frame.entries[i]));
+                node.onfocus = PlayerUI_SetIndex.bind(null, i, 'more');
+            }
+        } else if (frame.group === 'quality' && PlayerUI_Available(Play_controlsQuality, 'quality')) {
+            // One row per rendition; the single-stream spinner row is replaced by the list. PiP and
+            // multistream keep their spinner rows through the generic branch below.
+            var list = PlayerUI_QualityList();
+            frame.entries = [];
+            if (!list.items.length) {
+                Main_textContentWithEle(menu, STR_UI.loadingQualities);
+            } else {
+                for (i = 0; i < list.items.length; i++) {
+                    node = Navigation_Button(
+                        menu,
+                        'player-ui-quality-' + i,
+                        list.current === i ? list.items[i] + ' ✓' : list.items[i],
+                        PlayerUI_QualityPick.bind(null, i)
+                    );
+                    node.setAttribute('role', 'menuitemradio');
+                    if (list.current === i) {
+                        node.setAttribute('aria-checked', 'true');
+                        node.className += ' player-ui-current';
+                    }
+                    node.onfocus = PlayerUI_SetIndex.bind(null, i, 'quality');
+                    frame.entries.push('q:' + list.items[i]);
+                }
+                frame.list = true;
+            }
+        } else {
+            keys = PlayerUI_Groups()[frame.group] || [];
+            frame.entries = [];
+            for (i = 0; i < keys.length; i++) {
+                key = keys[i];
+                control = Play_controls[key];
+                if (!PlayerUI_Available(key, frame.group)) continue;
+                frame.entries.push(key);
+                // Same order as the descriptors' own updown: arrows (writes the raw value) before the label
+                // (which may format it, e.g. speed's "1x (Normal)").
+                if (control.bottomArrows) control.bottomArrows();
+                // Only state-derived labels take a no-arg refresh here; the argument-driven ones
+                // (channel/game content, open live/vod, follow) stringify the argument, so a no-arg
+                // call would render "undefined" over the label the mode code already wrote.
+                if (control.setLabel && control.setLabel.length === 0) control.setLabel();
+                control.doc.style.display = '';
+                control.doc.className = 'player-ui-action';
+                control.doc.setAttribute('role', 'button');
+                control.doc.setAttribute('tabindex', '0');
+                control.doc.setAttribute('aria-label', control.doc_title.textContent);
+                control.doc.onclick = PlayerUI_Action.bind(null, key, 0);
+                control.doc.onfocus = PlayerUI_SetIndex.bind(null, frame.entries.length - 1, frame.group);
+                actionRoot.appendChild(control.doc);
+            }
+            if (!frame.entries.length) Main_textContentWithEle(menu, STR_UI.unavailable);
+        }
+        PlayerUI_Orient(frame, labels);
+        if (previousKey !== null && frame.entries.indexOf(previousKey) !== -1) frame.index = frame.entries.indexOf(previousKey);
+        frame.index = Math.max(0, Math.min(frame.index, frame.entries.length - 1));
+        PlayerUI_Focus();
+    }
+
+    /* Keep the viewer oriented while a drawer covers the content: underline the bar button that
+     * opened it, dim the rest of the bar, breadcrumb groups opened from More, drop the drawer state. */
+    function PlayerUI_Orient(frame, labels) {
+        var drawerOpen = frame.group !== 'bar',
+            buttons = Main_getElementById('player-ui-buttons').querySelectorAll('.navigation-button'),
+            origin,
+            i;
+        if (drawerOpen) {
+            Main_AddClass('player-ui', 'player-ui-drawer-open');
+            Main_AddClass('scene2', 'player-ui-drawer-open');
+        } else {
+            Main_RemoveClass('player-ui', 'player-ui-drawer-open');
+            Main_RemoveClass('scene2', 'player-ui-drawer-open');
+        }
+        origin = PlayerUI_State.frames.length > 1 ? Main_getElementById('player-ui-bar-' + PlayerUI_State.frames[0].index) : null;
+        for (i = 0; i < buttons.length; i++) {
+            if (drawerOpen && buttons[i] === origin) {
+                buttons[i].classList.add('player-ui-origin');
+                buttons[i].setAttribute('aria-current', 'true');
+            } else {
+                buttons[i].classList.remove('player-ui-origin');
+                buttons[i].removeAttribute('aria-current');
+            }
+        }
+        if (drawerOpen && PlayerUI_State.frames.length > 2 && PlayerUI_State.frames[1].group === 'more' && labels[frame.group]) {
+            Main_textContent('player-ui-title', labels.more + ' › ' + labels[frame.group]);
+        } else {
+            Main_textContent('player-ui-title', labels[frame.group] || '');
+        }
+    }
+
+    function PlayerUI_HelpText(frame) {
+        if (frame.list) return STR_UI.playerHelpList;
+        if (frame.group === 'more') return STR_UI.playerHelpMenu;
+        var control = frame.entries && Play_controls[frame.entries[frame.index]];
+        // Only rows with a value range use Left/Right; the others are toggles or actions pressed with OK.
+        if (control && control.values && control.values.length > 1) return STR_UI.playerHelp;
+        return STR_UI.playerHelpAction;
+    }
+
+    function PlayerUI_Focus() {
+        var root = Main_getElementById('player-ui'),
+            old = root.querySelector('.player-ui-focused'),
+            frame = PlayerUI_Frame(),
+            target;
+        if (old) old.classList.remove('player-ui-focused');
+        if (frame && frame.group !== 'bar') Main_textContent('player-ui-help', PlayerUI_HelpText(frame));
+        if (!frame || !frame.entries.length) return;
+        if (frame.group === 'bar') target = Main_getElementById('player-ui-bar-' + frame.index);
+        else if (frame.group === 'more') target = Main_getElementById('player-ui-row-' + frame.index);
+        else if (frame.list) target = Main_getElementById('player-ui-quality-' + frame.index);
+        else {
+            Play_PanelCounter = frame.entries[frame.index];
+            target = Play_controls[Play_PanelCounter].doc;
+        }
+        if (target) {
+            target.classList.add('player-ui-focused');
+            target.focus();
+            if (frame.group !== 'bar' && target.offsetTop > 0) {
+                var list = Main_getElementById('player-ui-scroll');
+                if (target.offsetTop < list.scrollTop) list.scrollTop = target.offsetTop;
+                else if (target.offsetTop + target.offsetHeight > list.scrollTop + list.clientHeight)
+                    list.scrollTop = target.offsetTop + target.offsetHeight - list.clientHeight;
+            }
+        }
+        PlayerUI_ScrollHints();
+    }
+
+    /* Fade hints when the drawer clips rows above or below the visible scroll area. */
+    function PlayerUI_ScrollHints() {
+        var scroll = Main_getElementById('player-ui-scroll');
+        if (!scroll.scrollHeight) return;
+        if (scroll.scrollTop > 1) Main_AddClass('player-ui-drawer', 'player-ui-more-above');
+        else Main_RemoveClass('player-ui-drawer', 'player-ui-more-above');
+        if (scroll.scrollTop + scroll.clientHeight < scroll.scrollHeight - 1) Main_AddClass('player-ui-drawer', 'player-ui-more-below');
+        else Main_RemoveClass('player-ui-drawer', 'player-ui-more-below');
+    }
+
+    function PlayerUI_ActivateBar(index) {
+        var groups = ['pause', 'chat', 'quality', 'layout', 'more', 'channels'];
+        if (!PlayerUI_Frame()) return;
+        PlayerUI_Frame().index = index;
+        if (!index) {
+            OSInterface_PlayPauseChange(PlayerUI_State.mode);
+            PlayerUI_ScheduleHide();
+        } else if (groups[index] === 'channels') PlayerUI_Channels();
+        else PlayerUI_Open(groups[index]);
+    }
+
+    function PlayerUI_Channels() {
+        var mode = PlayerUI_State.mode;
+        PlayerUI_Close(true);
+        if (!mode) return;
+        UserLiveFeed_FeedPosX = AddUser_UserIsSet() ? UserLiveFeedobj_UserLivePos : UserLiveFeedobj_LivePos;
+        var data = UserLiveFeed_DataObj[UserLiveFeed_FeedPosX] || [],
+            currentId = mode === 1 ? Play_data.data[14] : null;
+        for (var i = 0; i < data.length; i++) {
+            if (currentId && String(data[i][14]) === String(currentId)) {
+                UserLiveFeed_FeedPosY[UserLiveFeed_FeedPosX] = i;
+                Main_values.UserLiveFeed_LastPositionId[UserLiveFeed_FeedPosX] = currentId;
+                Main_values.UserLiveFeed_LastPosition[UserLiveFeed_FeedPosX] = i;
+                break;
+            }
+        }
+        UserLiveFeed_ShowFeed();
+    }
+
+    function PlayerUI_Handle(event, up) {
+        if (up) return true;
+        if (PlayerUI_State.mode !== PlayerUI_Mode() || !Main_isScene2DocVisible()) {
+            PlayerUI_Close(false);
+            return true;
+        }
+        var frame = PlayerUI_Frame(),
+            code = event.keyCode;
+        if (code === 9) return false;
+        if (!frame) return false;
+        //Only the quality drawer needs a refresh on plain input, its list loads
+        //asynchronously; other drawers re-render on the action itself, rebuilding
+        //them on every focus move is wasted work on key repeat
+        if (frame.group === 'quality') PlayerUI_Render();
+        if (code === KEY_RETURN || code === KEY_KEYBOARD_BACKSPACE || code === 27) PlayerUI_Back();
+        else if (code === KEY_ENTER) {
+            if (frame.group === 'bar') PlayerUI_ActivateBar(frame.index);
+            else if (frame.group === 'more') PlayerUI_Open(frame.entries[frame.index]);
+            else if (frame.list) PlayerUI_QualityPick(frame.index);
+            else if (frame.entries.length) PlayerUI_Action(frame.entries[frame.index], 0);
+        } else if (code === KEY_LEFT || code === KEY_RIGHT || code === KEY_UP || code === KEY_DOWN) {
+            if (frame.group === 'bar') {
+                if (code === KEY_LEFT || code === KEY_RIGHT)
+                    frame.index = Math.max(0, Math.min(frame.entries.length - 1, frame.index + (code === KEY_LEFT ? -1 : 1)));
+                else if (code === KEY_UP) {
+                    // Hand timeline navigation back to its existing mode handler.
+                    PlayerUI_Close(false);
+                    PlayVod_PanelY = 0;
+                    Play_BottomIconsFocus();
+                    return true;
+                }
+            } else if (code === KEY_UP || code === KEY_DOWN)
+                frame.index = Math.max(0, Math.min(frame.entries.length - 1, frame.index + (code === KEY_UP ? -1 : 1)));
+            else if (!frame.list && frame.group !== 'more' && frame.entries.length)
+                PlayerUI_Action(frame.entries[frame.index], code === KEY_LEFT ? -1 : 1);
+            PlayerUI_Focus();
+            PlayerUI_ScheduleHide();
+        } else {
+            // Media, number and specialized shortcuts keep their existing mode meaning.
+            PlayerUI_Close(false);
+            return false;
+        }
+        return true;
+    }
+
+    /* The native player only reports play/pause on a toggle; every (re)start of the main player begins
+     * playing (SetupPlayer), so the bridge start calls and leaving the player clear the paused state. */
+    function PlayerUI_ResetPaused() {
+        Main_HideElement('player-ui-paused');
+        if (!PlayerUI_State.paused) return;
+        PlayerUI_State.paused = false;
+        if (Play_BottonIcons_Pause) Main_innerHTMLWithEle(Play_BottonIcons_Pause, Play_GetPlayPauseIcon(true));
+        if (PlayerUI_State.frames.length && !PlayerUI_State.suspended) PlayerUI_Render();
+    }
+
+    function PlayerUI_SuspendPhone() {
+        if (!PlayerUI_State.frames.length) return;
+        PlayerUI_State.suspended = true;
+        Main_clearTimeout(PlayerUI_State.hiddenTimer);
+        UIFocus_Suspend('player', true);
+        Main_HideElement('player-ui');
+    }
+
+    function PlayerUI_ResumePhone(skipRestore) {
+        if (!PlayerUI_State.suspended) return;
+        PlayerUI_State.suspended = false;
+        UIFocus_Suspend('player', false);
+        if (skipRestore || PlayerUI_Mode() !== PlayerUI_State.mode) {
+            PlayerUI_Close(false);
+            return;
+        }
+        Main_ShowElement('player-ui');
+        Play_ForceShowPannel();
+        Main_addEventListener('keydown', PlayerUI_Listener);
+        PlayerUI_Render();
+        PlayerUI_ScheduleHide();
+    }
+
+    function PlayerUI_OpenAt(index, group) {
+        if (PlayerUI_Frame()) PlayerUI_Frame().index = index;
+        PlayerUI_Open(group);
+    }
+
+    function PlayerUI_ControlShown(key) {
+        var frame = PlayerUI_Frame();
+        return Boolean(
+            frame &&
+            frame.group !== 'bar' &&
+            frame.group !== 'more' &&
+            frame.entries &&
+            frame.entries.indexOf(Number(key)) !== -1 &&
+            PlayerUI_Available(Number(key), frame.group)
+        );
+    }
+
+    function PlayerUI_SetIndex(index, group) {
+        var frame = PlayerUI_Frame();
+        if (frame && frame.group === group) frame.index = index;
     }
     /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
@@ -29327,6 +31717,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     var Play_controlsChatSettings = temp_controls_pos++;
     var Play_controlsChatSend = temp_controls_pos++;
     var Play_controlsPhoneChat = temp_controls_pos++;
+    var Play_controlsLinkedChats = temp_controls_pos++;
 
     var Play_controlsPlayerStatus = temp_controls_pos++;
     //var Play_controlsProxy = temp_controls_pos++;
@@ -30316,6 +32707,29 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             defaultValue: null,
             enterKey: function () {
                 PhoneChat_Show();
+            }
+        };
+
+        Play_controls[Play_controlsLinkedChats] = {
+            //Linked chats: YouTube and Kick channels merged into the chat of the primary live channel
+            ShowInLive: true,
+            ShowInVod: false,
+            ShowInClip: false,
+            ShowInPP: true,
+            ShowInMulti: true,
+            ShowInChat: false,
+            ShowInAudio: false,
+            ShowInAudioPP: false,
+            ShowInAudioMulti: false,
+            ShowInPreview: false,
+            ShowInStay: false,
+            icons: 'globe',
+            offsetY: -4,
+            string: STR_CHAT_LINKED,
+            values: null,
+            defaultValue: null,
+            enterKey: function () {
+                ChatLinkDialog_Show();
             }
         };
 
@@ -36282,622 +38696,6 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     //     };
     //     PlayVod_ProcessChapters(obj);
     // }
-    /* Player presentation adapter. Playback objects and their original callbacks remain authoritative. */
-    var PlayerUI_State = {
-        mode: 0,
-        frames: [],
-        suspended: false,
-        closing: false,
-        hiddenTimer: null,
-        timelineTimer: null,
-        paused: false,
-        barPaused: null
-    };
-
-    function PlayerUI_Mode() {
-        return Play_isOn ? 1 : PlayVod_isOn ? 2 : PlayClip_isOn ? 3 : 0;
-    }
-
-    function PlayerUI_Groups() {
-        return {
-            chat: [Play_controlsPhoneChat, Play_controlsChat, Play_controlsChatSend, Play_controlsChatSettings],
-            quality: [Play_controlsQuality, Play_controlsQualityMini, Play_controlsQualityMulti],
-            layout: [Play_controlsChatSide, Play_MultiStream],
-            content: [
-                Play_controlsSearch,
-                Play_controlsChanelCont,
-                Play_controlsGameCont,
-                Play_controlsOpenLive,
-                Play_controlsOpenVod,
-                Play_controlsFollow,
-                Play_controlsContentLang
-            ],
-            playback: [
-                Play_controlsSpeed,
-                Play_controlsExternal,
-                Play_controlsRewind,
-                Play_controlsScreeOff,
-                Play_controlsLowLatency,
-                Play_controlsChapters
-            ],
-            audio: [
-                Play_controlsAudioAll,
-                Play_controlsAudio_Volume_100,
-                Play_controlsAudioEna0,
-                Play_controlsAudioVol0,
-                Play_controlsAudioEna1,
-                Play_controlsAudioVol1,
-                Play_controlsAudioEna2,
-                Play_controlsAudioVol2,
-                Play_controlsAudioEna3,
-                Play_controlsAudioVol3
-            ],
-            preview: [Play_controlsPreviewEnable, Play_controlsPreviewSize, Play_controlsPreviewVolume, Play_controlsPreviewMainVolume],
-            diagnostics: [Play_controlsPlayerStatus, Play_controlsControls],
-            chatSettings: [
-                Play_controlsChatForceDis,
-                Play_controlsChatDisShared,
-                Play_controlsChatDelay,
-                Play_controlsChatPos,
-                Play_controlsChatSize,
-                Play_controlsChatBright,
-                Play_controlsChatFont
-            ]
-        };
-    }
-
-    function PlayerUI_Labels() {
-        return {
-            chat: STR_UI.chat,
-            quality: STR_UI.quality,
-            layout: STR_UI.layout,
-            more: STR_UI.more,
-            content: STR_UI.channelContent,
-            playback: STR_UI.playback,
-            audio: STR_UI.audio,
-            preview: STR_UI.preview,
-            diagnostics: STR_UI.diagnostics,
-            chatSettings: STR_CHAT_EXTRA
-        };
-    }
-
-    function PlayerUI_Visibility() {
-        if (PlayerUI_State.mode === 2) return 'ShowInVod';
-        if (PlayerUI_State.mode === 3) return 'ShowInClip';
-        return Play_StayDialogVisible() ? 'ShowInStay' : Play_MultiEnable ? 'ShowInMulti' : PlayExtra_PicturePicture ? 'ShowInPP' : 'ShowInLive';
-    }
-
-    function PlayerUI_Available(key, group) {
-        var control = Play_controls[key];
-        if (!control) return false;
-        if (group === 'chatSettings') return Boolean(control.ShowInChat);
-        if (group === 'preview') return Boolean(control.ShowInPreview);
-        if (group === 'audio') {
-            var visibility = Play_MultiEnable ? 'ShowInAudioMulti' : PlayExtra_PicturePicture ? 'ShowInAudioPP' : 'ShowInAudio';
-            if (!control[visibility]) return false;
-            if (key >= Play_controlsAudioEna0 && key <= Play_controlsAudioVol3 && Play_MultiEnable) {
-                var slot = Math.floor((key - Play_controlsAudioEna0) / 2);
-                return Boolean(Play_MultiArray[slot] && Play_MultiArray[slot].data.length);
-            }
-            return true;
-        }
-        if (key === Play_controlsChapters) return PlayerUI_State.mode === 2 && PlayVod_ChaptersArray.length > 0;
-        if (key === Play_controlsOpenLive) return PlayerUI_State.mode > 1 && Boolean(Play_HasLive);
-        if (key === Play_controlsOpenVod) return PlayerUI_State.mode === 3 && Boolean(PlayClip_HasVOD);
-        return Boolean(control[PlayerUI_Visibility()]);
-    }
-
-    function PlayerUI_Frame() {
-        return PlayerUI_State.frames[PlayerUI_State.frames.length - 1];
-    }
-
-    function PlayerUI_Show(mode) {
-        if (!mode || !Main_isScene2DocVisible() || PlayerUI_State.suspended || PlayerUI_State.closing) return;
-        if (PlayerUI_State.frames.length) {
-            if (PlayerUI_State.mode === mode) return;
-            PlayerUI_Close(false);
-        }
-        PlayerUI_State.mode = mode;
-        PlayerUI_State.frames = [{group: 'bar', index: 0}];
-        Play_clearHidePanel();
-        UIFocus_Push({
-            id: 'player',
-            handle: PlayerUI_Handle,
-            cleanup: function () {
-                Main_clearTimeout(PlayerUI_State.hiddenTimer);
-                Main_clearTimeout(PlayerUI_State.timelineTimer);
-                PlayerUI_State.frames = [];
-                PlayerUI_State.suspended = false;
-                Main_HideElement('player-ui');
-                Main_RemoveClass('scene2', 'player-ui-active');
-                Main_RemoveClass('scene2', 'player-ui-drawer-open');
-                Main_RemoveClass('player-ui', 'player-ui-drawer-open');
-                Main_removeEventListener('keydown', PlayerUI_Listener);
-                // Release the DOM focus the focused control kept; playback keeps its own handlers.
-                UIFocus_DomRelease(Main_getElementById('player-ui'));
-            }
-        });
-        Main_addEventListener('keydown', PlayerUI_Listener);
-        Main_AddClass('scene2', 'player-ui-active');
-        Main_ShowElement('player-ui');
-        PlayerUI_Render();
-        PlayerUI_ScheduleHide();
-        // VOD reveals the timeline about half a second after start; re-check once it is up.
-        Main_clearTimeout(PlayerUI_State.timelineTimer);
-        PlayerUI_State.timelineTimer = Main_setTimeout(function () {
-            if (PlayerUI_State.frames.length && !PlayerUI_State.suspended) PlayerUI_TimelineClass();
-        }, 700);
-    }
-
-    function PlayerUI_Listener() {
-        // Input is dispatched by UIFocus_Listener before this existing-listener adapter is reached.
-    }
-
-    function PlayerUI_ScheduleHide() {
-        Main_clearTimeout(PlayerUI_State.hiddenTimer);
-        Play_clearHidePanel();
-        if (PlayerUI_State.frames.length === 1 && !PlayerUI_State.suspended) {
-            PlayerUI_State.hiddenTimer = Main_setTimeout(function () {
-                PlayerUI_Close(true);
-            }, 5000);
-        }
-    }
-
-    function PlayerUI_Close(hidePanel) {
-        if (PlayerUI_State.closing || PlayerUI_State.suspended) return;
-        PlayerUI_State.closing = true;
-        if (PlayerUI_State.frames.length) UIFocus_Pop(false);
-        if (hidePanel && PlayerUI_Mode()) Play_hidePanelFull(PlayerUI_Mode());
-        PlayerUI_State.closing = false;
-    }
-
-    function PlayerUI_Open(group) {
-        Main_clearTimeout(PlayerUI_State.hiddenTimer);
-        Play_clearHidePanel();
-        var initializer =
-            group === 'audio'
-                ? Play_controlsAudio
-                : group === 'preview'
-                  ? Play_controlsPreview
-                  : group === 'chatSettings'
-                    ? Play_controlsChatSettings
-                    : null;
-        if (initializer !== null && Play_controls[initializer]) {
-            Play_PanelCounter = initializer;
-            Play_controls[initializer].enterKey.call(Play_controls[initializer], PlayerUI_State.mode);
-        }
-        PlayerUI_State.frames.push({group: group, index: 0});
-        PlayerUI_Render();
-    }
-
-    function PlayerUI_Back() {
-        if (PlayerUI_State.frames.length < 2) {
-            PlayerUI_Close(true);
-            return;
-        }
-        PlayerUI_State.frames.pop();
-        // Cancel uncommitted quality/speed/latency selections through the original reset paths.
-        if (PlayerUI_State.mode === 1) Play_qualityReset();
-        else if (PlayerUI_State.mode === 2) PlayVod_qualityReset();
-        else PlayClip_qualityReset();
-        Play_ResetSpeed();
-        Play_ResetLowlatency();
-        PlayerUI_Render();
-        PlayerUI_ScheduleHide();
-    }
-
-    function PlayerUI_Action(key, adjust) {
-        var frame = PlayerUI_Frame(),
-            control = Play_controls[key];
-        if (!frame || !PlayerUI_Available(key, frame.group)) return false;
-        frame.index = frame.entries.indexOf(key);
-        Play_PanelCounter = key;
-        if (adjust) {
-            if (control.updown) control.updown.call(control, adjust, PlayerUI_State.mode);
-        } else if (key === Play_controlsChatSettings) {
-            PlayerUI_Open('chatSettings');
-            return true;
-        } else {
-            var phone = key === Play_controlsPhoneChat,
-                leave =
-                    [
-                        Play_controlsSearch,
-                        Play_controlsChanelCont,
-                        Play_controlsGameCont,
-                        Play_controlsOpenLive,
-                        Play_controlsOpenVod,
-                        Play_controlsExternal,
-                        Play_controlsRewind,
-                        Play_controlsScreeOff,
-                        Play_controlsChapters,
-                        Play_MultiStream,
-                        Play_controlsChatSend,
-                        Play_controlsControls
-                    ].indexOf(key) !== -1;
-            var mode = PlayerUI_State.mode;
-            if (leave && !phone) PlayerUI_Close(false);
-            // Multistream takes a shutdown boolean, unlike ordinary controls taking a mode number.
-            if (control.enterKey) control.enterKey.call(control, key === Play_MultiStream ? false : mode);
-        }
-        Play_clearHidePanel();
-        if (PlayerUI_State.frames.length && !PlayerUI_State.suspended) {
-            if (PlayerUI_Mode() !== PlayerUI_State.mode) PlayerUI_Close(false);
-            else {
-                PlayerUI_Render();
-                PlayerUI_ScheduleHide();
-            }
-        }
-        return true;
-    }
-
-    function PlayerUI_QualityList() {
-        var mode = PlayerUI_State.mode,
-            qualities = mode === 1 ? Play_data.qualities : mode === 2 ? PlayVod_qualities : PlayClip_qualities,
-            count = mode === 1 ? Play_getQualitiesCount() : mode === 2 ? PlayVod_getQualitiesCount() : PlayClip_getQualitiesCount(),
-            playing = mode === 1 ? Play_data.qualityPlaying : mode === 2 ? PlayVod_qualityPlaying : PlayClip_qualityPlaying,
-            items = [],
-            indexes = [],
-            current = -1,
-            i;
-        for (i = 0; i < count; i++) {
-            if (!qualities[i]) continue;
-            items.push(qualities[i].id);
-            indexes.push(i);
-            if (qualities[i].id === playing) current = items.length - 1;
-        }
-        return {items: items, indexes: indexes, current: current};
-    }
-
-    function PlayerUI_QualityPick(index) {
-        var mode = PlayerUI_State.mode,
-            list = PlayerUI_QualityList(),
-            position = list.indexes[index];
-        // Re-applying the playing rendition restarts the stream; picking it just returns to the bar.
-        if (index !== list.current && position !== undefined) {
-            if (mode === 1) Play_data.qualityIndex = position;
-            else if (mode === 2) PlayVod_qualityIndex = position;
-            else PlayClip_qualityIndex = position;
-            Play_PanelCounter = Play_controlsQuality;
-            Play_controls[Play_controlsQuality].enterKey.call(Play_controls[Play_controlsQuality], mode);
-        }
-        PlayerUI_State.frames.pop();
-        PlayerUI_Render();
-        PlayerUI_ScheduleHide();
-    }
-
-    function PlayerUI_TimelineClass() {
-        var timeline = Main_getElementById('progress_pause_holder');
-        if (timeline.offsetHeight > 0) Main_AddClass('player-ui', 'player-ui-has-timeline');
-        else Main_RemoveClass('player-ui', 'player-ui-has-timeline');
-    }
-
-    function PlayerUI_Render() {
-        var frame = PlayerUI_Frame();
-        if (!frame) return;
-        var previousKey = frame.entries ? frame.entries[frame.index] : null;
-        var labels = PlayerUI_Labels(),
-            bar = Main_getElementById('player-ui-buttons'),
-            menu = Main_getElementById('player-ui-menu'),
-            drawer = Main_getElementById('player-ui-drawer'),
-            actionRoot = Main_getElementById('player-ui-actions'),
-            i,
-            key,
-            control,
-            keys,
-            node;
-        Main_emptyWithEle(menu);
-        PlayerUI_TimelineClass();
-        // Reuse the actual control DOM; there is no invisible duplicate strip behind the drawers.
-        for (key in Play_controls) Play_controls[key].doc.style.display = 'none';
-        var barGroups = ['pause', 'chat', 'quality', 'layout', 'more', 'channels'],
-            barIcons = {
-                pause: PlayerUI_State.paused ? 'play' : 'pause',
-                chat: 'chat',
-                quality: 'levels',
-                layout: 'side-by-side',
-                more: 'options',
-                channels: 'feed'
-            };
-        //The bar only depends on the paused state, keep the built nodes between renders
-        if (PlayerUI_State.barPaused !== PlayerUI_State.paused || !bar.firstChild) {
-            PlayerUI_State.barPaused = PlayerUI_State.paused;
-            Main_emptyWithEle(bar);
-            for (i = 0; i < barGroups.length; i++) {
-                key = barGroups[i];
-                node = Navigation_Button(
-                    bar,
-                    'player-ui-bar-' + i,
-                    key === 'pause' ? (PlayerUI_State.paused ? STR_UI.play : STR_UI.pause) : key === 'channels' ? STR_UI.channels : labels[key],
-                    PlayerUI_ActivateBar.bind(null, i),
-                    barIcons[key]
-                );
-                node.onfocus = PlayerUI_SetIndex.bind(null, i, 'bar');
-                if (!i) {
-                    node.setAttribute('aria-pressed', String(PlayerUI_State.paused));
-                    node.className += ' player-ui-bar-primary';
-                } else if (key === 'more') node.className += ' player-ui-bar-end';
-            }
-        }
-        Main_textContent(
-            'player-ui-name',
-            STR_UI.quality +
-                STR_UI.separator +
-                (PlayerUI_State.mode === 1 ? Play_data.qualityPlaying : PlayerUI_State.mode === 2 ? PlayVod_qualityPlaying : PlayClip_qualityPlaying)
-        );
-        Main_textContent('player-ui-value', PlayerUI_State.paused ? STR_UI.paused : '');
-        drawer.style.display = frame.group === 'bar' ? 'none' : '';
-        frame.list = false;
-        if (frame.group === 'bar') {
-            frame.entries = barGroups;
-        } else if (frame.group === 'more') {
-            frame.entries = ['content', 'playback', 'audio', 'preview', 'diagnostics'];
-            for (i = 0; i < frame.entries.length; i++) {
-                node = Navigation_Button(menu, 'player-ui-row-' + i, labels[frame.entries[i]], PlayerUI_OpenAt.bind(null, i, frame.entries[i]));
-                node.onfocus = PlayerUI_SetIndex.bind(null, i, 'more');
-            }
-        } else if (frame.group === 'quality' && PlayerUI_Available(Play_controlsQuality, 'quality')) {
-            // One row per rendition; the single-stream spinner row is replaced by the list. PiP and
-            // multistream keep their spinner rows through the generic branch below.
-            var list = PlayerUI_QualityList();
-            frame.entries = [];
-            if (!list.items.length) {
-                Main_textContentWithEle(menu, STR_UI.loadingQualities);
-            } else {
-                for (i = 0; i < list.items.length; i++) {
-                    node = Navigation_Button(
-                        menu,
-                        'player-ui-quality-' + i,
-                        list.current === i ? list.items[i] + ' ✓' : list.items[i],
-                        PlayerUI_QualityPick.bind(null, i)
-                    );
-                    node.setAttribute('role', 'menuitemradio');
-                    if (list.current === i) {
-                        node.setAttribute('aria-checked', 'true');
-                        node.className += ' player-ui-current';
-                    }
-                    node.onfocus = PlayerUI_SetIndex.bind(null, i, 'quality');
-                    frame.entries.push('q:' + list.items[i]);
-                }
-                frame.list = true;
-            }
-        } else {
-            keys = PlayerUI_Groups()[frame.group] || [];
-            frame.entries = [];
-            for (i = 0; i < keys.length; i++) {
-                key = keys[i];
-                control = Play_controls[key];
-                if (!PlayerUI_Available(key, frame.group)) continue;
-                frame.entries.push(key);
-                // Same order as the descriptors' own updown: arrows (writes the raw value) before the label
-                // (which may format it, e.g. speed's "1x (Normal)").
-                if (control.bottomArrows) control.bottomArrows();
-                // Only state-derived labels take a no-arg refresh here; the argument-driven ones
-                // (channel/game content, open live/vod, follow) stringify the argument, so a no-arg
-                // call would render "undefined" over the label the mode code already wrote.
-                if (control.setLabel && control.setLabel.length === 0) control.setLabel();
-                control.doc.style.display = '';
-                control.doc.className = 'player-ui-action';
-                control.doc.setAttribute('role', 'button');
-                control.doc.setAttribute('tabindex', '0');
-                control.doc.setAttribute('aria-label', control.doc_title.textContent);
-                control.doc.onclick = PlayerUI_Action.bind(null, key, 0);
-                control.doc.onfocus = PlayerUI_SetIndex.bind(null, frame.entries.length - 1, frame.group);
-                actionRoot.appendChild(control.doc);
-            }
-            if (!frame.entries.length) Main_textContentWithEle(menu, STR_UI.unavailable);
-        }
-        PlayerUI_Orient(frame, labels);
-        if (previousKey !== null && frame.entries.indexOf(previousKey) !== -1) frame.index = frame.entries.indexOf(previousKey);
-        frame.index = Math.max(0, Math.min(frame.index, frame.entries.length - 1));
-        PlayerUI_Focus();
-    }
-
-    /* Keep the viewer oriented while a drawer covers the content: underline the bar button that
-     * opened it, dim the rest of the bar, breadcrumb groups opened from More, drop the drawer state. */
-    function PlayerUI_Orient(frame, labels) {
-        var drawerOpen = frame.group !== 'bar',
-            buttons = Main_getElementById('player-ui-buttons').querySelectorAll('.navigation-button'),
-            origin,
-            i;
-        if (drawerOpen) {
-            Main_AddClass('player-ui', 'player-ui-drawer-open');
-            Main_AddClass('scene2', 'player-ui-drawer-open');
-        } else {
-            Main_RemoveClass('player-ui', 'player-ui-drawer-open');
-            Main_RemoveClass('scene2', 'player-ui-drawer-open');
-        }
-        origin = PlayerUI_State.frames.length > 1 ? Main_getElementById('player-ui-bar-' + PlayerUI_State.frames[0].index) : null;
-        for (i = 0; i < buttons.length; i++) {
-            if (drawerOpen && buttons[i] === origin) {
-                buttons[i].classList.add('player-ui-origin');
-                buttons[i].setAttribute('aria-current', 'true');
-            } else {
-                buttons[i].classList.remove('player-ui-origin');
-                buttons[i].removeAttribute('aria-current');
-            }
-        }
-        if (drawerOpen && PlayerUI_State.frames.length > 2 && PlayerUI_State.frames[1].group === 'more' && labels[frame.group]) {
-            Main_textContent('player-ui-title', labels.more + ' › ' + labels[frame.group]);
-        } else {
-            Main_textContent('player-ui-title', labels[frame.group] || '');
-        }
-    }
-
-    function PlayerUI_HelpText(frame) {
-        if (frame.list) return STR_UI.playerHelpList;
-        if (frame.group === 'more') return STR_UI.playerHelpMenu;
-        var control = frame.entries && Play_controls[frame.entries[frame.index]];
-        // Only rows with a value range use Left/Right; the others are toggles or actions pressed with OK.
-        if (control && control.values && control.values.length > 1) return STR_UI.playerHelp;
-        return STR_UI.playerHelpAction;
-    }
-
-    function PlayerUI_Focus() {
-        var root = Main_getElementById('player-ui'),
-            old = root.querySelector('.player-ui-focused'),
-            frame = PlayerUI_Frame(),
-            target;
-        if (old) old.classList.remove('player-ui-focused');
-        if (frame && frame.group !== 'bar') Main_textContent('player-ui-help', PlayerUI_HelpText(frame));
-        if (!frame || !frame.entries.length) return;
-        if (frame.group === 'bar') target = Main_getElementById('player-ui-bar-' + frame.index);
-        else if (frame.group === 'more') target = Main_getElementById('player-ui-row-' + frame.index);
-        else if (frame.list) target = Main_getElementById('player-ui-quality-' + frame.index);
-        else {
-            Play_PanelCounter = frame.entries[frame.index];
-            target = Play_controls[Play_PanelCounter].doc;
-        }
-        if (target) {
-            target.classList.add('player-ui-focused');
-            target.focus();
-            if (frame.group !== 'bar' && target.offsetTop > 0) {
-                var list = Main_getElementById('player-ui-scroll');
-                if (target.offsetTop < list.scrollTop) list.scrollTop = target.offsetTop;
-                else if (target.offsetTop + target.offsetHeight > list.scrollTop + list.clientHeight)
-                    list.scrollTop = target.offsetTop + target.offsetHeight - list.clientHeight;
-            }
-        }
-        PlayerUI_ScrollHints();
-    }
-
-    /* Fade hints when the drawer clips rows above or below the visible scroll area. */
-    function PlayerUI_ScrollHints() {
-        var scroll = Main_getElementById('player-ui-scroll');
-        if (!scroll.scrollHeight) return;
-        if (scroll.scrollTop > 1) Main_AddClass('player-ui-drawer', 'player-ui-more-above');
-        else Main_RemoveClass('player-ui-drawer', 'player-ui-more-above');
-        if (scroll.scrollTop + scroll.clientHeight < scroll.scrollHeight - 1) Main_AddClass('player-ui-drawer', 'player-ui-more-below');
-        else Main_RemoveClass('player-ui-drawer', 'player-ui-more-below');
-    }
-
-    function PlayerUI_ActivateBar(index) {
-        var groups = ['pause', 'chat', 'quality', 'layout', 'more', 'channels'];
-        if (!PlayerUI_Frame()) return;
-        PlayerUI_Frame().index = index;
-        if (!index) {
-            OSInterface_PlayPauseChange(PlayerUI_State.mode);
-            PlayerUI_ScheduleHide();
-        } else if (groups[index] === 'channels') PlayerUI_Channels();
-        else PlayerUI_Open(groups[index]);
-    }
-
-    function PlayerUI_Channels() {
-        var mode = PlayerUI_State.mode;
-        PlayerUI_Close(true);
-        if (!mode) return;
-        UserLiveFeed_FeedPosX = AddUser_UserIsSet() ? UserLiveFeedobj_UserLivePos : UserLiveFeedobj_LivePos;
-        var data = UserLiveFeed_DataObj[UserLiveFeed_FeedPosX] || [],
-            currentId = mode === 1 ? Play_data.data[14] : null;
-        for (var i = 0; i < data.length; i++) {
-            if (currentId && String(data[i][14]) === String(currentId)) {
-                UserLiveFeed_FeedPosY[UserLiveFeed_FeedPosX] = i;
-                Main_values.UserLiveFeed_LastPositionId[UserLiveFeed_FeedPosX] = currentId;
-                Main_values.UserLiveFeed_LastPosition[UserLiveFeed_FeedPosX] = i;
-                break;
-            }
-        }
-        UserLiveFeed_ShowFeed();
-    }
-
-    function PlayerUI_Handle(event, up) {
-        if (up) return true;
-        if (PlayerUI_State.mode !== PlayerUI_Mode() || !Main_isScene2DocVisible()) {
-            PlayerUI_Close(false);
-            return true;
-        }
-        var frame = PlayerUI_Frame(),
-            code = event.keyCode;
-        if (code === 9) return false;
-        if (!frame) return false;
-        //Only the quality drawer needs a refresh on plain input, its list loads
-        //asynchronously; other drawers re-render on the action itself, rebuilding
-        //them on every focus move is wasted work on key repeat
-        if (frame.group === 'quality') PlayerUI_Render();
-        if (code === KEY_RETURN || code === KEY_KEYBOARD_BACKSPACE || code === 27) PlayerUI_Back();
-        else if (code === KEY_ENTER) {
-            if (frame.group === 'bar') PlayerUI_ActivateBar(frame.index);
-            else if (frame.group === 'more') PlayerUI_Open(frame.entries[frame.index]);
-            else if (frame.list) PlayerUI_QualityPick(frame.index);
-            else if (frame.entries.length) PlayerUI_Action(frame.entries[frame.index], 0);
-        } else if (code === KEY_LEFT || code === KEY_RIGHT || code === KEY_UP || code === KEY_DOWN) {
-            if (frame.group === 'bar') {
-                if (code === KEY_LEFT || code === KEY_RIGHT)
-                    frame.index = Math.max(0, Math.min(frame.entries.length - 1, frame.index + (code === KEY_LEFT ? -1 : 1)));
-                else if (code === KEY_UP) {
-                    // Hand timeline navigation back to its existing mode handler.
-                    PlayerUI_Close(false);
-                    PlayVod_PanelY = 0;
-                    Play_BottomIconsFocus();
-                    return true;
-                }
-            } else if (code === KEY_UP || code === KEY_DOWN)
-                frame.index = Math.max(0, Math.min(frame.entries.length - 1, frame.index + (code === KEY_UP ? -1 : 1)));
-            else if (!frame.list && frame.group !== 'more' && frame.entries.length)
-                PlayerUI_Action(frame.entries[frame.index], code === KEY_LEFT ? -1 : 1);
-            PlayerUI_Focus();
-            PlayerUI_ScheduleHide();
-        } else {
-            // Media, number and specialized shortcuts keep their existing mode meaning.
-            PlayerUI_Close(false);
-            return false;
-        }
-        return true;
-    }
-
-    /* The native player only reports play/pause on a toggle; every (re)start of the main player begins
-     * playing (SetupPlayer), so the bridge start calls and leaving the player clear the paused state. */
-    function PlayerUI_ResetPaused() {
-        Main_HideElement('player-ui-paused');
-        if (!PlayerUI_State.paused) return;
-        PlayerUI_State.paused = false;
-        if (Play_BottonIcons_Pause) Main_innerHTMLWithEle(Play_BottonIcons_Pause, Play_GetPlayPauseIcon(true));
-        if (PlayerUI_State.frames.length && !PlayerUI_State.suspended) PlayerUI_Render();
-    }
-
-    function PlayerUI_SuspendPhone() {
-        if (!PlayerUI_State.frames.length) return;
-        PlayerUI_State.suspended = true;
-        Main_clearTimeout(PlayerUI_State.hiddenTimer);
-        UIFocus_Suspend('player', true);
-        Main_HideElement('player-ui');
-    }
-
-    function PlayerUI_ResumePhone(skipRestore) {
-        if (!PlayerUI_State.suspended) return;
-        PlayerUI_State.suspended = false;
-        UIFocus_Suspend('player', false);
-        if (skipRestore || PlayerUI_Mode() !== PlayerUI_State.mode) {
-            PlayerUI_Close(false);
-            return;
-        }
-        Main_ShowElement('player-ui');
-        Play_ForceShowPannel();
-        Main_addEventListener('keydown', PlayerUI_Listener);
-        PlayerUI_Render();
-        PlayerUI_ScheduleHide();
-    }
-
-    function PlayerUI_OpenAt(index, group) {
-        if (PlayerUI_Frame()) PlayerUI_Frame().index = index;
-        PlayerUI_Open(group);
-    }
-
-    function PlayerUI_ControlShown(key) {
-        var frame = PlayerUI_Frame();
-        return Boolean(
-            frame &&
-            frame.group !== 'bar' &&
-            frame.group !== 'more' &&
-            frame.entries &&
-            frame.entries.indexOf(Number(key)) !== -1 &&
-            PlayerUI_Available(Number(key), frame.group)
-        );
-    }
-
-    function PlayerUI_SetIndex(index, group) {
-        var frame = PlayerUI_Frame();
-        if (frame && frame.group === group) frame.index = index;
-    }
     /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
      *
@@ -46011,6 +47809,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             values: ['no', 'yes'],
             defaultValue: 2
         },
+        chat_multi: {
+            //Migrated to dialog, YouTube and Kick messages of a multistreaming streamer
+            values: ['no', 'yes'],
+            defaultValue: 2
+        },
         chat_timestamp: {
             //Migrated to dialog
             values: ['no', 'yes'],
@@ -46755,7 +48558,13 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         else if (position === 'preview_sizes') OSInterface_SetPreviewSize(Settings_Obj_default('preview_sizes'));
         else if (position === 'enable_embed') enable_embed = Settings_value.enable_embed.defaultValue;
         else if (position === 'enable_mature') Settings_checkMature();
-        else if (position === 'global_font_offset') {
+        else if (position === 'chat_multi') {
+            //Turning it off stops the foreign sources and hides the icons, turning it on applies on the next chat start
+            if (!Settings_value.chat_multi.defaultValue) {
+                ChatMulti_Stop(0);
+                ChatMulti_Stop(1);
+            }
+        } else if (position === 'global_font_offset') {
             calculateFontSize();
             AddUser_UpdateSidePanelAfterShow();
             UserLiveFeed_ResetAddCellsize();
@@ -48731,6 +50540,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
         Settings_value.individual_lines.values = yes_no;
         Settings_value.chat_nickcolor.values = yes_no;
+        Settings_value.chat_multi.values = yes_no;
         Settings_value.chat_line_animation.values = yes_no;
         Settings_value.chat_timestamp.values = yes_no;
         Settings_value.chat_showUserNotice.values = yes_no;
@@ -48791,6 +50601,12 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 values: Settings_value.chat_nickcolor.values,
                 title: STR_CHAT_NICK_COLOR,
                 summary: STR_CHAT_NICK_COLOR_SUMMARY
+            },
+            chat_multi: {
+                defaultValue: Settings_value.chat_multi.defaultValue,
+                values: Settings_value.chat_multi.values,
+                title: STR_CHAT_MULTI,
+                summary: STR_CHAT_MULTI_SUMMARY
             },
             highlight_rewards: {
                 defaultValue: Settings_value.highlight_rewards.defaultValue,
