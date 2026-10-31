@@ -357,5 +357,24 @@ for (const rate of [20, 100]) for (const delay of [0, 5000, 30000]) {
     check(s.twemoji.parse('㊗️').indexOf('<img') !== -1, 'twemoji: block edge emoji still parsed');
     check(s.twemoji.parse('👨‍👩‍👧').indexOf('1f468-200d-1f469-200d-1f467') !== -1, 'twemoji: zwj family still parsed');
 }
+{
+    //robotty history sends valueless tags (";emotes;"); they must parse as true like "emotes=" and not break emote parsing
+    const s = {window: {}};
+    vm.createContext(s);
+    vm.runInContext(fs.readFileSync('app/thirdparty/irc-message.js', 'utf8'), s);
+    s.parseIRC = s.window.parseIRC;
+    const t = s.parseIRC('@emotes;badge-info;color=#FF0000;tmi-sent-ts=1 :u!u@u.tmi.twitch.tv PRIVMSG #c :hi').tags;
+    check(t.emotes === true && t['badge-info'] === true && t.color === '#FF0000', 'irc: valueless tags are true');
+    check(s.parseIRC('@emotes= :u!u@u PRIVMSG #c :hi').tags.emotes === true, 'irc: empty value still true');
+    check(s.parseIRC('@client-nonce=a=b :u!u@u PRIVMSG #c :hi').tags['client-nonce'] === 'a=b', 'irc: value with = kept');
+    const h = sandbox(), hs = h.s;
+    hs.window = {parseIRC: s.parseIRC};
+    hs.Chat_Id = [1, 2];
+    const seen = [];
+    hs.ChatLive_loadChatSuccess = (msg, slot, hist) => { hs.ChatLive_checkEmotes(msg.tags); seen.push(msg.params[1]); };
+    const raw = n => '@badge-info;badges=;color=;display-name=U;emotes;flags;id=' + n + ';tmi-sent-ts=1 :u!u@u.tmi.twitch.tv PRIVMSG #c :m' + n;
+    hs.ChatLive_PreLoadChatSuccess(JSON.stringify({messages: [raw(1), raw(2), raw(3)]}), 0, 1);
+    check(seen.length === 3, 'history: robotty valueless tags render all messages without throwing');
+}
 console.log(checks + ' TV scheduler/cache checks passed');
 module.exports = {sandbox, message};

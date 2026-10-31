@@ -56,7 +56,9 @@ window.parseIRC = function (data) {
             // If there's no equals, we assign the tag a value of true.
             var tag = rawTags[i];
             var pair = tag.split('=');
-            message.tags[pair[0]] = tag.substring(tag.indexOf('=') + 1) || true;
+            // A tag without '=' (recent-messages history sends ";emotes;") has no value: indexOf is -1 and
+            // substring would return the tag name itself, so only take a value after the first '='.
+            message.tags[pair[0]] = (tag.indexOf('=') === -1 ? '' : tag.substring(tag.indexOf('=') + 1)) || true;
         }
 
         position = nextspace + 1;
