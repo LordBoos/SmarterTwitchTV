@@ -776,6 +776,8 @@ function en_USLang() {
     STR_CHAT_LINK_RESET = 'Back to UnityChat';
     STR_CHAT_LINK_INVALID = 'Invalid channel, use a YouTube or Kick link, handle or name';
     STR_CHAT_LINK_NO_CHANNEL = 'No Twitch channel to link';
+    STR_CHAT_LINK_UNLINKED = 'not linked';
+    STR_CHAT_LINK_ENTER = 'Enter';
     STR_CHAT_CLEAR_MSG = 'Clear chat, delete user messages';
     STR_CHAT_SHOW_BADGES = 'Show user badges (excluding the ones below)';
     STR_CHAT_SHOW_BADGES_MOD = 'Show Moderator badges';

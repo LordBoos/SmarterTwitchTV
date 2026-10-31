@@ -760,4 +760,90 @@ function coreSandbox() {
     check(!ds.ChatLinkDialog_Apply('arcadebulls', 'enabled', 'x'), 'unknown kind rejected');
 }
 
+// Linked chats dialog: rows from stored entry, unchanged directory value, listener ownership
+{
+    const d = sandbox();
+    const ds = d.s;
+    ds.STR_CHAT_LINK_ENABLED = 'Link'; ds.STR_CHAT_LINK_RESET = 'Reset'; ds.STR_CLOSE = 'Close'; ds.STR_YES = 'Yes'; ds.STR_NO = 'No';
+    var rowsOff = ds.ChatLinkDialog_Rows({enabled: false, kick: ''}, ds.ChatLinkDialog_Resolved('zed'));
+    check(rowsOff[1].source === 'manual' && rowsOff[1].value === '' && rowsOff[1].action === 'enter' && rowsOff[2].value === 'No', 'manual empty shows manual source, disabled shows Off');
+    ds.ChatLink_DirCache.zed = {youtubeHandle: 'zedyt', kickSlug: 'zedkick'};
+    ds.ChatLink_Save('zed', {enabled: false});
+    var res = ds.ChatLinkDialog_Resolved('zed');
+    check(res.yt.value === '@zedyt' && res.yt.source === 'dir' && ds.ChatLinkDialog_Rows({enabled: false}, res)[0].action === 'edit', 'disabled still shows directory values with edit action');
+    check(ds.ChatLinkDialog_Apply('zed', 'yt', 'https://youtube.com/@ZedYT') && ds.ChatLink_Get('zed').yt === undefined, 'unchanged directory value is not pinned');
+    check(ds.ChatLinkDialog_Apply('zed', 'kick', 'other') && ds.ChatLink_Get('zed').kick === 'other', 'changed value is saved as manual');
+    check(ds.ChatLinkDialog_Resolved('nobody').yt === null, 'own-login resolution without cache entry');
+}
+{
+    const d = sandbox();
+    const ds = d.s;
+    vm.runInContext(fs.readFileSync('app/general/TVKeyValue.js', 'utf8'), ds);
+    const listeners = [], hidden = {}, labels = {};
+    let playRestore = 0, restarts = [], timer = null;
+    const el = () => ({value: '', blur() {}, focus() {}, appendChild() {}, className: '', textContent: ''});
+    const els = {};
+    Object.assign(ds, {
+        STR_CHAT_LINK_ENABLED: 'Link', STR_CHAT_LINK_RESET: 'Reset', STR_CLOSE: 'Close', STR_YES: 'Yes', STR_NO: 'No', STR_CHAT_LINK_INVALID: 'Invalid',
+        STR_CHAT_LINK_NONE: 'none', STR_CHAT_LINK_MANUAL: 'manual', STR_CHAT_LINK_FROM_DIR: 'dir', STR_CHAT_LINK_UNLINKED: 'not linked', STR_CHAT_LINK_EDIT: 'Edit', STR_CHAT_LINK_ENTER: 'Enter', STR_CHAT_LINKED: 'Linked',
+        document: {createElement: el}, Play_isOn: true, Play_PanelCounter: 3, Play_controls: {}, Play_data: {data: [0, 'Arcade']}, PlayExtra_PicturePicture: false,
+        Main_IsOn_OSInterface: false,
+        Main_getElementById: id => els[id] || (els[id] = el()),
+        Main_addEventListener: (type, fn) => listeners.push(fn),
+        Main_removeEventListener: (type, fn) => { const i = listeners.indexOf(fn); if (i !== -1) listeners.splice(i, 1); },
+        Main_ShowElement: id => { hidden[id] = false; }, Main_HideElement: id => { hidden[id] = true; },
+        Main_isElementShowing: id => hidden[id] === false,
+        Main_textContent: (id, text) => { labels[id] = text; }, Main_AddClass: () => {}, Main_RemoveClass: () => {}, Main_emptyWithEle: () => {},
+        Main_setTimeout: fn => { timer = fn; return 1; }, Main_clearTimeout: () => { timer = null; },
+        Main_PlayHandleKeyDown: () => { playRestore++; }, Play_handleKeyDown: () => {},
+        Play_isPanelShowing: () => false, Play_clearHidePanel: () => {}, Play_hidePanel: () => {}, Play_showWarningMiddleDialog: () => { throw new Error('toast'); },
+        OSInterface_AvoidClicks: () => {}, ChatMulti_Restart: n => restarts.push(n)
+    });
+    ds.ChatLive_selectedChannel = ['arcadebulls', ''];
+    const dlg = () => listeners.filter(f => f === ds.ChatLinkDialog_HandleKeyDown).length;
+    const inp = () => listeners.filter(f => f === ds.ChatLinkDialog_InputKey).length;
+    const key = (fn, code) => fn({keyCode: code, stopPropagation() {}});
+    const openInput = () => { ds.ChatLinkDialog_Show(); key(ds.ChatLinkDialog_HandleKeyDown, ds.KEY_ENTER); timer(); };
+
+    ds.ChatLinkDialog_Show();
+    check(dlg() === 1 && inp() === 0, 'show registers only the dialog handler');
+    ds.ChatLinkDialog_Show(); ds.ChatLinkDialog_Hide();
+    check(dlg() === 0 || dlg() === 1, 'sanity');
+    ds.ChatLinkDialog_Hide(true);
+    listeners.length = 0; playRestore = 0;
+
+    // Back
+    ds.ChatLinkDialog_Show(); key(ds.ChatLinkDialog_HandleKeyDown, ds.KEY_RETURN);
+    check(dlg() === 0 && inp() === 0 && playRestore === 1 && hidden.dialog_chat_link === true, 'back: handlers gone, player restored once');
+    // reopen does not double-register
+    ds.ChatLinkDialog_Show();
+    check(dlg() === 1, 'reopen registers once');
+    key(ds.ChatLinkDialog_HandleKeyDown, ds.KEY_RETURN);
+    // input cancel, then Close row
+    playRestore = 0;
+    openInput();
+    check(dlg() === 0 && inp() === 1, 'input open: only input handler');
+    key(ds.ChatLinkDialog_InputKey, ds.KEY_RETURN);
+    check(dlg() === 1 && inp() === 0 && playRestore === 0, 'input cancel returns to dialog');
+    for (let i = 0; i < 4; i++) key(ds.ChatLinkDialog_HandleKeyDown, ds.KEY_DOWN);
+    key(ds.ChatLinkDialog_HandleKeyDown, ds.KEY_ENTER);
+    check(dlg() === 0 && inp() === 0 && playRestore === 1, 'close row: handlers gone, player restored once');
+    // KEY_STOP in input
+    playRestore = 0; let stops = 0; ds.Play_handleKeyDown = () => { stops++; };
+    openInput(); key(ds.ChatLinkDialog_InputKey, ds.KEY_STOP);
+    check(dlg() === 0 && inp() === 0 && playRestore === 2 && stops === 1, 'stop in input: closed cleanly, player handles key (restore from Hide and from stop path)');
+    // teardown while editing
+    playRestore = 0;
+    openInput(); ds.ChatLinkDialog_Hide(true);
+    check(dlg() === 0 && inp() === 0 && playRestore === 0 && hidden.dialog_chat_link === true, 'teardown: handlers gone, player not reattached');
+    ds.ChatLinkDialog_Cleanup();
+    check(dlg() === 0 && inp() === 0, 'cleanup idempotent');
+    // invalid input stays open with inline error, no toast
+    openInput(); els.chat_link_input.value = 'a b c'; key(ds.ChatLinkDialog_InputKey, ds.KEY_ENTER);
+    check(inp() === 1 && labels.chat_link_input_label === 'Invalid', 'invalid input: error inline, input stays');
+    els.chat_link_input.value = 'robdiesalot'; key(ds.ChatLinkDialog_InputKey, ds.KEY_ENTER);
+    check(inp() === 0 && dlg() === 1 && restarts.join() === '0' && ds.ChatLink_Get('arcadebulls').yt === '@robdiesalot', 'valid input saved, restart chat 0');
+    ds.ChatLinkDialog_Hide(true);
+}
+
 console.log(checks + ' merged chat checks passed');

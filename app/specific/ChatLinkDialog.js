@@ -10,16 +10,15 @@ var ChatLinkDialog_RowsData = [];
 var ChatLinkDialog_Focus = 0;
 var ChatLinkDialog_Editing = '';
 var ChatLinkDialog_InputTimer = null;
+var ChatLinkDialog_EditLabel = '';
 var ChatLinkDialog_PanelWasShowing = false;
 var ChatLinkDialog_OriginControl = -1;
 //Variable initialization end
 
 function ChatLinkDialog_Rows(entry, resolved) {
-    var yt = resolved && resolved.yt,
-        kick = resolved && resolved.kick,
-        rows = [
-            {kind: 'yt', label: 'YouTube', value: yt ? yt.value : '', source: yt ? yt.source : 'none'},
-            {kind: 'kick', label: 'Kick', value: kick ? kick.value : '', source: kick ? kick.source : 'none'},
+    var rows = [
+            ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved),
+            ChatLinkDialog_PlatformRow('kick', 'Kick', entry, resolved),
             {kind: 'enabled', label: STR_CHAT_LINK_ENABLED, value: entry.enabled === false ? STR_NO : STR_YES, source: ''}
         ];
 
@@ -31,10 +30,32 @@ function ChatLinkDialog_Rows(entry, resolved) {
     return rows;
 }
 
+//A manual '' (do not link) keeps source manual with an empty value; no value at all is source none
+function ChatLinkDialog_PlatformRow(kind, label, entry, resolved) {
+    var item = resolved && resolved[kind],
+        value = item ? item.value : '';
+
+    return {
+        kind: kind,
+        label: label,
+        value: value,
+        source: item ? item.source : entry[kind] === '' ? 'manual' : 'none',
+        action: value ? 'edit' : 'enter'
+    };
+}
+
+//Values of the dialog's own streamer, shown regardless of the enabled switch
+function ChatLinkDialog_Resolved(login) {
+    var entry = ChatLink_Get(login);
+
+    return ChatLink_Resolve({enabled: true, yt: entry.yt, kick: entry.kick}, ChatLink_DirCache.hasOwnProperty(login) ? ChatLink_DirCache[login] : null);
+}
+
 //Saves a manual value: normalized, '' = do not link. Returns false (nothing saved) for unusable input
 function ChatLinkDialog_Apply(login, kind, rawInput) {
     var text = String(rawInput || '').replace(/^\s+|\s+$/g, ''),
         value,
+        current,
         entry;
 
     if (kind !== 'yt' && kind !== 'kick') return false;
@@ -46,6 +67,13 @@ function ChatLinkDialog_Apply(login, kind, rawInput) {
     }
 
     entry = ChatLink_Get(login);
+
+    //Unchanged directory value: do not pin it as manual, later directory updates must still apply
+    if (typeof entry[kind] !== 'string') {
+        current = ChatLinkDialog_Resolved(login)[kind];
+        if (current && current.value === value) return true;
+    }
+
     entry[kind] = value;
     ChatLink_Save(login, entry);
     return true;
@@ -67,7 +95,7 @@ function ChatLinkDialog_Render() {
         div,
         text;
 
-    ChatLinkDialog_RowsData = ChatLinkDialog_Rows(ChatLink_Get(ChatLinkDialog_Login), ChatLink_Current(0));
+    ChatLinkDialog_RowsData = ChatLinkDialog_Rows(ChatLink_Get(ChatLinkDialog_Login), ChatLinkDialog_Resolved(ChatLinkDialog_Login));
     if (ChatLinkDialog_Focus >= ChatLinkDialog_RowsData.length) ChatLinkDialog_Focus = ChatLinkDialog_RowsData.length - 1;
 
     Main_emptyWithEle(holder);
@@ -80,8 +108,9 @@ function ChatLinkDialog_Render() {
         //Only textContent: channel names and handles are untrusted
         text = row.label;
         if (row.kind === 'yt' || row.kind === 'kick') {
-            text += ': ' + (row.value ? row.value + ' (' + ChatLinkDialog_SourceText(row.source) + ')' : ChatLinkDialog_SourceText(row.source));
-            text += ' – ' + STR_CHAT_LINK_EDIT;
+            text += ': ' + (row.value ? row.value : row.source === 'manual' ? STR_CHAT_LINK_UNLINKED : STR_CHAT_LINK_NONE);
+            if (row.value || row.source === 'manual') text += ' (' + ChatLinkDialog_SourceText(row.source) + ')';
+            text += ' – ' + (row.action === 'edit' ? STR_CHAT_LINK_EDIT : STR_CHAT_LINK_ENTER);
         } else if (row.value) text += ': ' + row.value;
 
         div.textContent = text;
@@ -229,13 +258,21 @@ function ChatLinkDialog_HandleKeyDown(e) {
     }
 }
 
+//Label above the input doubles as the inline error (a toast would sit under the opaque card)
+function ChatLinkDialog_InputLabel(text, isError) {
+    Main_textContent('chat_link_input_label', text);
+    if (isError) Main_AddClass('chat_link_input_label', 'chat_link_error');
+    else Main_RemoveClass('chat_link_input_label', 'chat_link_error');
+}
+
 function ChatLinkDialog_InputOpen(row) {
     var input = Main_getElementById('chat_link_input'),
         entry = ChatLink_Get(ChatLinkDialog_Login);
 
     ChatLinkDialog_Editing = row.kind;
     Main_removeEventListener('keydown', ChatLinkDialog_HandleKeyDown);
-    Main_textContent('chat_link_input_label', row.label);
+    ChatLinkDialog_InputLabel(row.label, false);
+    ChatLinkDialog_EditLabel = row.label;
     input.value = typeof entry[row.kind] === 'string' ? entry[row.kind] : row.value;
     Main_ShowElement('chat_link_input_holder');
 
@@ -272,6 +309,9 @@ function ChatLinkDialog_InputClose(backToDialog) {
 function ChatLinkDialog_InputKey(e) {
     e.stopPropagation();
 
+    //Any key clears a previous inline error
+    ChatLinkDialog_InputLabel(ChatLinkDialog_EditLabel, false);
+
     switch (e.keyCode) {
         case KEY_KEYBOARD_DONE:
         case KEY_ENTER:
@@ -280,7 +320,7 @@ function ChatLinkDialog_InputKey(e) {
                 ChatLinkDialog_Restart();
                 ChatLinkDialog_Render();
             } else {
-                Play_showWarningMiddleDialog(STR_CHAT_LINK_INVALID, 2000);
+                ChatLinkDialog_InputLabel(STR_CHAT_LINK_INVALID, true);
             }
             break;
         case KEY_RETURN:
