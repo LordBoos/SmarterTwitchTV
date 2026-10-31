@@ -93,6 +93,9 @@ jobs:
 
             - uses: android-actions/setup-android@v3
               if: steps.plan.outputs.build == 'true'
+              with:
+                  # The default also installs the obsolete "tools" package, which no longer exists and fails the step
+                  packages: platform-tools
 
             - name: Android SDK packages and media dependency
               if: steps.plan.outputs.build == 'true'
