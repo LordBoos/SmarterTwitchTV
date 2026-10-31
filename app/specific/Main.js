@@ -2226,7 +2226,7 @@ function FullxmlHttpGet(theUrl, Headers, callbackSuccess, calbackError, key, che
         OSInterface_BaseXmlHttpGet(
             theUrl,
             DefaultHttpGetTimeout,
-            postMessage,
+            postMessage ? postMessage : null,
             Method ? Method : null,
             Headers ? JSON.stringify(Headers) : null,
             'Main_CheckFullxmlHttpGet',

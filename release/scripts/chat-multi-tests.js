@@ -65,4 +65,19 @@ s.ChatLive_selectedChannel = ['other', '']; s.ChatLink_Lookup(0, 7);
 check(requests === 1, 'cache miss requests directory');
 check(s.ChatLink_Current(0).kick === null, 'current resolves for channel without entry');
 
+// FullxmlHttpGet: omitted Method/postMessage must reach the native bridge as null, not undefined
+{
+    const src = fs.readFileSync('app/specific/Main.js', 'utf8');
+    const start = src.indexOf('function FullxmlHttpGet(');
+    const body = src.slice(start, src.indexOf('function Main_CheckFullxmlHttpGet'));
+    let args = null;
+    const x = {Main_IsOn_OSInterface: true, DefaultHttpGetTimeout: 1, OSInterface_BaseXmlHttpGet: function () { args = Array.prototype.slice.call(arguments); }};
+    vm.createContext(x); vm.runInContext(body, x);
+    function cb() {}
+    x.FullxmlHttpGet('u', null, cb, cb, 0, 1);
+    check(args[2] === null && args[3] === null, 'FullxmlHttpGet: omitted postMessage and Method are null for native bridge');
+    x.FullxmlHttpGet('u', null, cb, cb, 0, 1, 'POST', 'body');
+    check(args[2] === 'body' && args[3] === 'POST', 'FullxmlHttpGet: explicit POST and body pass through');
+}
+
 console.log(checks + ' merged chat checks passed');
