@@ -26,7 +26,18 @@ function ChatYouTube_Start(chat_number, seq, target, withHistory) {
     ChatYouTube_Stop(chat_number);
     if (!ChatYouTube_TargetRegex.test(target)) return;
 
-    var st = {seq: seq, target: target, withHistory: withHistory, loaded: false, key: '', context: null, continuation: '', timers: []};
+    var st = {
+        seq: seq,
+        target: target,
+        withHistory: withHistory,
+        loaded: false,
+        polled: false,
+        lastTs: 0,
+        key: '',
+        context: null,
+        continuation: '',
+        timers: []
+    };
     ChatYouTube_State[chat_number] = st;
 
     ChatYouTube_FindLive(chat_number, st);
@@ -60,6 +71,8 @@ function ChatYouTube_Later(chat_number, st, fn, delay) {
 }
 
 function ChatYouTube_Retry(chat_number, st) {
+    // A stream that goes live later has no history: the page of a later load must not be inserted above live lines
+    st.withHistory = false;
     ChatYouTube_Later(
         chat_number,
         st,
@@ -185,13 +198,10 @@ function ChatYouTube_PageResult(obj, chat_number, seq) {
     st.context = page.context;
     st.continuation = page.continuation;
 
-    // The first load is history (when wanted), a reload after a poll failure is live, duplicates are dropped by ChatMulti_Line
-    if (!st.loaded) {
-        if (st.withHistory) ChatYouTube_Render(chat_number, st, page.actions, true);
-    } else {
-        ChatYouTube_Render(chat_number, st, page.actions, false);
-    }
+    // The first load is history (when wanted), a reload shows only messages newer than the ones already rendered
+    ChatYouTube_Render(chat_number, st, page.actions, st.loaded ? 'reload' : st.withHistory ? 'history' : 'skip');
     st.loaded = true;
+    st.polled = false;
 
     ChatYouTube_Poll(chat_number, st);
 }
@@ -229,7 +239,14 @@ function ChatYouTube_PollResult(obj, chat_number, seq) {
     var poll = obj.status === 200 ? ChatYouTube_ParsePoll(obj.responseText) : null;
 
     if (!poll || !poll.continuation) {
-        // Chain broken or stream ended: read the chat page again (it fails into the retry timer when the stream is gone)
+        // Chain broken or stream ended. Reload the chat page only when a poll worked since the last load, else a persistent
+        // failure would reload every second: wait for the retry timer (live detection again)
+        if (!st.polled) {
+            ChatYouTube_Retry(chat_number, st);
+            return;
+        }
+
+        st.polled = false;
         ChatYouTube_Later(
             chat_number,
             st,
@@ -241,8 +258,9 @@ function ChatYouTube_PollResult(obj, chat_number, seq) {
         return;
     }
 
+    st.polled = true;
     st.continuation = poll.continuation;
-    ChatYouTube_Render(chat_number, st, poll.actions, false);
+    // Next poll first: a render exception must not end the session
     ChatYouTube_Later(
         chat_number,
         st,
@@ -251,11 +269,12 @@ function ChatYouTube_PollResult(obj, chat_number, seq) {
         },
         ChatYouTube_PollMs
     );
+    ChatYouTube_Render(chat_number, st, poll.actions, 'live');
 }
 
 // Moderation action -> {del: itemId} | {ban: channelId} | null
 function ChatYouTube_Moderation(action) {
-    var del = action && (action.markChatItemAsDeletedAction || action.removeChatItemAction), // removeChatItemAction seen live
+    var del = action && (action.markChatItemAsDeletedAction || action.removeChatItemAction), // markChatItemAsDeletedAction: shape not yet seen live, removeChatItemAction seen live
         ban = action && action.markChatItemsByAuthorAsDeletedAction; // shape not yet seen live
 
     if (del && del.targetItemId) return {del: del.targetItemId};
@@ -263,10 +282,14 @@ function ChatYouTube_Moderation(action) {
     return null;
 }
 
-// history: a page load, deleted items are filtered out. Live: moderation is applied at once, messages are
-// sorted by time and spread over the poll interval by their time differences instead of arriving in bursts.
-function ChatYouTube_Render(chat_number, st, actions, history) {
-    var seq = st.seq,
+// mode: 'history' a first page load, deleted items are filtered out; 'skip' a first page load without history, only the
+// watermark moves; 'reload' a later page load, only messages newer than the watermark; 'live' a poll. Live: moderation is
+// applied at once, messages are sorted by time and spread over the poll interval by their time differences.
+// st.lastTs is the newest message time rendered in this session (items without a time, gifts, do not move it).
+function ChatYouTube_Render(chat_number, st, actions, mode) {
+    var history = mode === 'history',
+        mark = st.lastTs,
+        seq = st.seq,
         msgs = [],
         mods = [],
         i = 0,
@@ -285,6 +308,18 @@ function ChatYouTube_Render(chat_number, st, actions, history) {
                 msg.order = msgs.length;
                 msgs.push(msg);
             }
+        }
+    }
+
+    for (i = 0; i < msgs.length; i++) {
+        if (msgs[i].realTs && msgs[i].ts > st.lastTs) st.lastTs = msgs[i].ts;
+    }
+
+    if (mode === 'skip') return;
+
+    if (mode === 'reload') {
+        for (i = msgs.length - 1; i >= 0; i--) {
+            if (!msgs[i].realTs || msgs[i].ts <= mark) msgs.splice(i, 1);
         }
     }
 
@@ -384,6 +419,7 @@ function ChatYouTube_PlainText(obj) {
         i = 0;
 
     for (i; i < runs.length; i++) {
+        if (!runs[i]) continue;
         if (typeof runs[i].text === 'string') text += runs[i].text;
         else if (runs[i].emoji) text += (runs[i].emoji.shortcuts && runs[i].emoji.shortcuts[0]) || '';
     }
@@ -423,12 +459,12 @@ function ChatYouTube_Badges(authorBadges) {
     return {html: html, role: role};
 }
 
-// ARGB int -> css rgba(), null when it is not a number
+// ARGB int -> css rgba() with the alpha capped at 0.4 (light tiers are opaque and unreadable under white text), null when it is not a number
 function ChatYouTube_Color(argb) {
     var n = Number(argb);
     if (!isFinite(n) || n < 0 || n > 4294967295) return null;
 
-    return 'rgba(' + ((n >>> 16) & 255) + ',' + ((n >>> 8) & 255) + ',' + (n & 255) + ',' + (((n >>> 24) & 255) / 255).toFixed(2) + ')';
+    return 'rgba(' + ((n >>> 16) & 255) + ',' + ((n >>> 8) & 255) + ',' + (n & 255) + ',' + Math.min((n >>> 24) / 255, 0.4).toFixed(2) + ')';
 }
 
 function ChatYouTube_Ts(timestampUsec) {
@@ -448,6 +484,7 @@ function ChatYouTube_Msg(renderer, history, nick, tokens, text, badges) {
         tokens: tokens,
         text: text,
         ts: ChatYouTube_Ts(renderer.timestampUsec),
+        realTs: Number(renderer.timestampUsec) > 0,
         history: !!history,
         special: null,
         highlight: null

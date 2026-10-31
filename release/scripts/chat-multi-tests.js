@@ -501,12 +501,12 @@ function coreSandbox() {
     var paid = s.ChatYouTube_ToMsg({liveChatPaidMessageRenderer: {id: 'p', timestampUsec: '1793476496725195', authorName: {simpleText: 'A'},
         authorExternalChannelId: 'UCx', purchaseAmountText: {simpleText: '100,00 Kč'}, bodyBackgroundColor: 4280150454, message: {runs: [{text: 'hi'}]}}}, false);
     check(paid.special.indexOf('100,00 Kč') !== -1 && /^rgba?\(/.test(paid.highlight), 'super chat amount and color');
-    check(paid.ts === 1793476496725 && paid.highlight === 'rgba(29,233,182,1.00)' && paid.tokens.join('') === 'hi' && paid.special.indexOf('A ') === -1, 'super chat: ms timestamp, ARGB to rgba, body keeps the nick');
+    check(paid.ts === 1793476496725 && paid.highlight === 'rgba(29,233,182,0.40)' && paid.tokens.join('') === 'hi' && paid.special.indexOf('A ') === -1, 'super chat: ms timestamp, ARGB to rgba with alpha capped at 0.4, body keeps the nick');
     paid = s.ChatYouTube_ToMsg({liveChatPaidMessageRenderer: {id: 'p', authorName: {simpleText: '"><img src=x onerror=1>'}, purchaseAmountText: {simpleText: '<b>1</b>'}, bodyBackgroundColor: 'red;background:url(x)'}}, false);
     check(paid.special.indexOf('<') === -1 && paid.highlight === null && paid.special.indexOf('&quot;') !== -1, 'super chat: escaped nick and amount, junk color dropped, nick in special without a body');
     var st = s.ChatYouTube_ToMsg({liveChatPaidStickerRenderer: {id: 's', timestampUsec: '1793476496725195', authorName: {simpleText: 'S'}, authorExternalChannelId: 'UCs',
         purchaseAmountText: {simpleText: '$2.00'}, moneyChipBackgroundColor: 4278190335, sticker: {thumbnails: [{url: 'https://lh3.googleusercontent.com/st=s72'}]}}}, false);
-    check(st.special.indexOf('Super Sticker $2.00') !== -1 && st.special.indexOf('src="https://lh3.googleusercontent.com/st=s72"') !== -1 && st.highlight === 'rgba(0,0,255,1.00)', 'super sticker: amount, image, color');
+    check(st.special.indexOf('Super Sticker $2.00') !== -1 && st.special.indexOf('src="https://lh3.googleusercontent.com/st=s72"') !== -1 && st.highlight === 'rgba(0,0,255,0.40)', 'super sticker: amount, image, color');
     st = s.ChatYouTube_ToMsg({liveChatPaidStickerRenderer: {id: 's', authorName: {simpleText: 'S'}, purchaseAmountText: {simpleText: '$2'}, sticker: {thumbnails: [{url: 'https://evil.example/s.png'}]}}}, false);
     check(st.special.indexOf('evil.example') === -1 && st.special.indexOf('<img') === -1, 'super sticker: foreign host dropped');
     var mem = s.ChatYouTube_ToMsg({liveChatMembershipItemRenderer: {id: 'mm', timestampUsec: '1793476496725195', authorName: {simpleText: 'M'}, authorExternalChannelId: 'UCm',
@@ -522,7 +522,6 @@ function coreSandbox() {
         message: {runs: [{text: 'received a gift membership by '}, {text: 'G'}]}}}, false);
     check(gr.special === 'R received a gift membership by G', 'gift redemption announcement');
 
-    // the page: ytInitialData, key, context, continuation
     var page = '<script>ytcfg.set({"INNERTUBE_API_KEY":"AIzaKey-1","INNERTUBE_CONTEXT":{"client":{"clientName":"WEB","x":"a}b"}},"INNERTUBE_CONTEXT_CLIENT_NAME":1});</script>' +
         '<script>window["ytInitialData"] = ' + JSON.stringify({contents: {liveChatRenderer: {continuations: [{invalidationContinuationData: {continuation: 'TOK1'}}], actions: acts}}}) + ';</script>';
     var pr = s.ChatYouTube_ParseChatPage(page);
@@ -534,9 +533,23 @@ function coreSandbox() {
     check(pp.actions.length === 3 && pp.continuation.length > 20 && s.ChatYouTube_ParsePoll('{}') === null && s.ChatYouTube_ParsePoll('<html>') === null, 'poll parsed from the fixture, junk gives null');
     check(s.ChatYouTube_ParsePoll(JSON.stringify(polls[0])).actions.length === 0, 'poll without actions');
 
-    // flow: live page -> chat page (history) -> polling
+    // flow, immediate live: chat page is history, then polling
     reset();
     var seq = start('@robdiesalot', true);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    var hl0 = http.length;
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    check(lines.length === 74 && lines.every(l => l.addToStart === true && l.historyTs > 1.7e12) && lines.filter(l => l.sub).length === 2, 'page actions rendered as history with times, gifts special');
+    var poll0 = http[http.length - 1];
+    check(http.length === hl0 + 1 && poll0.url === 'https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?prettyPrint=false&key=AIzaKey-1' && poll0.method === 'POST' &&
+        poll0.ok === 'ChatYouTube_PollResult' && poll0.check === seq && poll0.key === 0, 'poll: POST with named callback and seq');
+    check(JSON.parse(poll0.body).continuation === 'TOK1' && JSON.parse(poll0.body).context.client.clientName === 'WEB', 'poll body carries context and continuation');
+    check(poll0.headers.some(h => h[0] === 'Content-Type' && h[1] === 'application/json') && poll0.headers.some(h => h[0] === 'Cookie' && h[1] === 'SOCS=CAI'), 'poll headers: json plus YouTube headers');
+    s.ChatMulti_Stop(0);
+
+    // flow, stream goes live later: retries, then the page is NOT history (Spec 6.9)
+    reset();
+    seq = start('@robdiesalot', true);
     check(http.length === 1 && http[0].url === 'https://www.youtube.com/@robdiesalot/live' && http[0].ok === 'ChatYouTube_LiveResult' && http[0].check === seq && http[0].key === 0, 'live page by named callback with the session seq');
     check(JSON.stringify(http[0].headers) === JSON.stringify(s.ChatYouTube_Headers) && /Chrome\/130/.test(http[0].headers[0][1]) && http[0].headers[1][1] === 'SOCS=CAI', 'YouTube headers on the live request');
     s.ChatYouTube_LiveResult({status: 200, responseText: '"videoId":"-a9764YAN_8"'}, 0, seq);
@@ -556,8 +569,7 @@ function coreSandbox() {
     s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq - 1);
     check(lines.length === 0 && http.length === hl, 'stale page result is ignored');
     s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
-    check(lines.length === 74 && lines.every(l => l.addToStart === true && l.historyTs > 1.7e12), 'page actions rendered as history with times');
-    check(lines.filter(l => l.sub).length === 2, 'gift lines are special');
+    check(lines.length === 0 && s.ChatYouTube_State[0].withHistory === false && s.ChatYouTube_State[0].lastTs > 1.7e12, 'after a retry the page is not history (spec 6.9), only the watermark moves');
     var poll = http[http.length - 1];
     check(http.length === hl + 1 && poll.url === 'https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?prettyPrint=false&key=AIzaKey-1' && poll.method === 'POST' &&
         poll.ok === 'ChatYouTube_PollResult' && poll.check === seq && poll.key === 0, 'poll: POST with named callback and seq');
@@ -573,11 +585,11 @@ function coreSandbox() {
     s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify(body)}, 0, seq);
     check(lines.length === 1 && /first/.test(lines[0].message), 'first message is shown at once');
     check(deleted.join() === 'yt:old1' && banned.join() === '0:yt:UCbad', 'moderation applied');
-    check(timers.map(x => x.d).join() === '400,1000,1000', 'others are spread by time differences, capped at the poll interval, then the next poll');
-    timers[0].live = false; timers[0].fn(); timers[1].live = false; timers[1].fn();
+    check(timers.map(x => x.d).join() === '1000,400,1000', 'next poll is scheduled first, others are spread by time differences capped at the poll interval');
+    timers[1].live = false; timers[1].fn(); timers[2].live = false; timers[2].fn();
     check(lines.length === 3 && /second/.test(lines[1].message) && /third/.test(lines[2].message), 'spread messages arrive in time order');
     check(lines.every(l => !l.addToStart), 'live lines are not history');
-    timers[2].live = false; timers[2].fn();
+    timers[0].live = false; timers[0].fn();
     var req = http[http.length - 1];
     check(req.ok === 'ChatYouTube_PollResult' && JSON.parse(req.body).continuation === 'TOK2', 'next poll uses the returned continuation');
 
@@ -609,6 +621,76 @@ function coreSandbox() {
         {removeChatItemAction: {targetItemId: 'a'}}, {markChatItemsByAuthorAsDeletedAction: {externalChannelId: 'UCc'}}]}}});
     s.ChatYouTube_PageResult({status: 200, responseText: '"INNERTUBE_API_KEY":"k","INNERTUBE_CONTEXT":{} ytInitialData"] = ' + hp + ';'}, 0, seq);
     check(lines.length === 1 && />y</.test(lines[0].message) && deleted.length === 0, 'history: deleted item and banned author are not shown');
+
+    // persistent poll failure after a page load: one retry timer, no page reload loop
+    reset();
+    seq = start('@robdiesalot', true);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    reset();
+    for (var f = 0; f < 5; f++) {
+        s.ChatYouTube_PollResult({status: 400, responseText: ''}, 0, seq);
+        if (f === 0) check(pending() === 1 && timers[timers.length - 1].d === s.ChatYouTube_RetryMs, 'poll failure with no good poll since the page load: retry timer');
+    }
+    check(http.length === 0 && pending() === 5 && timers.every(x => x.d === s.ChatYouTube_RetryMs), 'consecutive poll failures never reload the page, only RetryMs timers');
+    // after a good poll, one failure reloads the page once (PollMs), the next failure goes to the retry timer
+    reset();
+    seq = start('@robdiesalot', true);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify({continuationContents: {liveChatContinuation: {continuations: [{timedContinuationData: {continuation: 'T3'}}]}}})}, 0, seq);
+    s.ChatYouTube_PollResult({status: 400, responseText: ''}, 0, seq);
+    check(timers.filter(x => x.live).pop().d === s.ChatYouTube_PollMs, 'failure after a good poll: page reload timer');
+    s.ChatYouTube_PollResult({status: 400, responseText: ''}, 0, seq);
+    check(timers.filter(x => x.live).pop().d === s.ChatYouTube_RetryMs, 'second failure in a row: retry timer');
+    s.ChatMulti_Stop(0);
+
+    // a render exception (null run) does not end polling
+    reset();
+    seq = start('@robdiesalot', false);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    reset();
+    var nullRun = {continuationContents: {liveChatContinuation: {continuations: [{timedContinuationData: {continuation: 'T4'}}], actions: [
+        {addChatItemAction: {item: {liveChatMembershipItemRenderer: {id: 'nr', timestampUsec: '1793999000000000', authorName: {simpleText: 'N'}, headerSubtext: {runs: [null]}}}}}]}}};
+    s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify(nullRun)}, 0, seq);
+    check(pending() === 1 && lines.length === 1 && lines[0].message.indexOf('New member') !== -1, 'null run: no exception, line rendered, next poll scheduled');
+    // schedule-first: even a throwing render keeps the poll timer
+    var oldMsg = s.ChatMulti_Line; s.ChatMulti_Line = () => { throw new Error('boom'); };
+    reset();
+    try { s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify(nullRun)}, 0, seq); } catch (e) { /* expected */ }
+    s.ChatMulti_Line = oldMsg;
+    check(pending() >= 1 && timers[0].d === s.ChatYouTube_PollMs, 'throwing render still leaves the next poll scheduled');
+    s.ChatMulti_Stop(0);
+
+    // watermark: a reload shows only messages newer than the newest rendered one, also after the seen ids were reset
+    reset();
+    seq = start('@robdiesalot', false);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    var pg = (list) => '"INNERTUBE_API_KEY":"k","INNERTUBE_CONTEXT":{} ytInitialData"] = ' + JSON.stringify({contents: {liveChatRenderer: {continuations: [{invalidationContinuationData: {continuation: 'T'}}], actions: list}}}) + ';';
+    s.ChatYouTube_PageResult({status: 200, responseText: pg([A('o1', 1793000001000000, 'old1'), A('o2', 1793000002000000, 'old2')])}, 0, seq);
+    check(lines.length === 0 && s.ChatYouTube_State[0].lastTs === 1793000002000, 'first load without history renders nothing but sets the watermark');
+    s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify({continuationContents: {liveChatContinuation: {continuations: [{timedContinuationData: {continuation: 'T5'}}], actions: [A('l1', 1793000004000000, 'live1')]}}})}, 0, seq);
+    check(lines.length === 1 && s.ChatYouTube_State[0].lastTs === 1793000004000, 'live poll moves the watermark');
+    s.ChatMulti_Seen[0] = null; // ids forgotten (500 cap)
+    s.ChatYouTube_PageResult({status: 200, responseText: pg([A('o2', 1793000002000000, 'old2'), A('l1', 1793000004000000, 'live1'), A('n1', 1793000005000000, 'new1')])}, 0, seq);
+    timers.filter(x => x.live).forEach(x => { x.live = false; x.fn(); });
+    check(lines.length === 2 && /new1/.test(lines[1].message), 'reload shows only the message newer than the watermark');
+    s.ChatMulti_Stop(0);
+
+    // current seq but Chat_Id changed (no Stop): the ChatMulti_IsActive half decides, nothing renders or schedules
+    reset();
+    seq = start('@robdiesalot', true);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    reset();
+    s.Chat_Id[0] = 8;
+    check(s.ChatYouTube_State[0].seq === seq, 'session state still has the current seq');
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify(body)}, 0, seq);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    s.Chat_Id[0] = 7;
+    check(lines.length === 0 && pending() === 0 && http.length === 0 && deleted.length === 0, 'Chat_Id changed: current seq alone renders and schedules nothing');
+    s.ChatMulti_Stop(0);
 
     // Review Focus 2: stale / stopped sessions do nothing, every timer is cleared by Stop
     reset();
