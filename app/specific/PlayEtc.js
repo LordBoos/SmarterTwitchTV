@@ -2026,6 +2026,7 @@ var Play_controlsChat = temp_controls_pos++;
 var Play_controlsChatSettings = temp_controls_pos++;
 var Play_controlsChatSend = temp_controls_pos++;
 var Play_controlsPhoneChat = temp_controls_pos++;
+var Play_controlsLinkedChats = temp_controls_pos++;
 
 var Play_controlsPlayerStatus = temp_controls_pos++;
 //var Play_controlsProxy = temp_controls_pos++;
@@ -3016,6 +3017,29 @@ function Play_MakeControls() {
         defaultValue: null,
         enterKey: function () {
             PhoneChat_Show();
+        }
+    };
+
+    Play_controls[Play_controlsLinkedChats] = {
+        //Linked chats: YouTube and Kick channels merged into the chat of the primary live channel
+        ShowInLive: true,
+        ShowInVod: false,
+        ShowInClip: false,
+        ShowInPP: true,
+        ShowInMulti: true,
+        ShowInChat: false,
+        ShowInAudio: false,
+        ShowInAudioPP: false,
+        ShowInAudioMulti: false,
+        ShowInPreview: false,
+        ShowInStay: false,
+        icons: 'globe',
+        offsetY: -4,
+        string: STR_CHAT_LINKED,
+        values: null,
+        defaultValue: null,
+        enterKey: function () {
+            ChatLinkDialog_Show();
         }
     };
 

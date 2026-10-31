@@ -1472,6 +1472,7 @@ function Play_ClearPlay(clearChat) {
     //Stream replacement/shutdown: close the phone chat dialog without
     //reattaching player input (this path removes that listener right after)
     PhoneChat_Cleanup();
+    ChatLinkDialog_Cleanup();
     PlayVod_previews_clear();
 
     Play_Playing = false;
@@ -2256,6 +2257,7 @@ function Play_handleKeyUpClear() {
 
 function Play_Exit() {
     PhoneChat_Cleanup();
+    ChatLinkDialog_Cleanup();
     PlayVod_previews_clear();
     Play_CleanHideExit();
     Play_hideChat();

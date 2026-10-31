@@ -7,7 +7,7 @@ function PlayerUI_Mode() {
 
 function PlayerUI_Groups() {
     return {
-        chat: [Play_controlsPhoneChat, Play_controlsChat, Play_controlsChatSend, Play_controlsChatSettings],
+        chat: [Play_controlsPhoneChat, Play_controlsChat, Play_controlsChatSend, Play_controlsChatSettings, Play_controlsLinkedChats],
         quality: [Play_controlsQuality, Play_controlsQualityMini, Play_controlsQualityMulti],
         layout: [Play_controlsChatSide, Play_MultiStream],
         content: [

@@ -3032,6 +3032,7 @@ var Main_isStopped = false;
 function Main_CheckStop() {
     Navigation_Close(false);
     PhoneChat_Hide(true);
+    ChatLinkDialog_Hide(true);
     PlayerUI_Close(false);
     Screens_LoadPreviewSTop();
     // Called only by JAVA

@@ -156,6 +156,51 @@
                 font-size: 120%;
             }
 
+            /* Linked chats dialog (app/specific/ChatLinkDialog.js) */
+            .chat_link_card {
+                display: inline-block;
+                min-width: 40vw;
+                text-align: center;
+                padding: 1.5vh 2.5vw;
+                background-color: #15121c;
+                border: 0.09em solid #2b2438;
+                border-radius: 0.25em;
+            }
+
+            .chat_link_channel {
+                color: #a78bfa;
+                font-size: 130%;
+                margin: 0.6vh 0 1vh;
+            }
+
+            .chat_link_row {
+                margin-top: 0.8vh;
+                padding: 0.5vh 2vw;
+                background-color: #1f1b29;
+                border: 0.08em solid #2b2438;
+                border-radius: 0.15em;
+                font-size: 110%;
+                overflow-wrap: anywhere;
+            }
+
+            .chat_link_row.button_dialog_focused {
+                outline: 0.12em solid #bca0ff;
+            }
+
+            .chat_link_input_holder {
+                margin-top: 1.2vh;
+            }
+
+            .chat_link_input {
+                width: 90%;
+                font-size: 110%;
+                padding: 0.5vh 1vw;
+                color: #ffffff;
+                background-color: #0f0d15;
+                border: 0.1em solid #bca0ff;
+                border-radius: 0.15em;
+            }
+
             .screen_size,
             .scene_keys,
             .burn_in_protection,
@@ -5227,6 +5272,17 @@
                         <div id="phone_chat_close" class="strokedelinebig phone_chat_close"></div>
                     </div>
                 </div>
+                <div id="dialog_chat_link" class="dialogs hide" style="z-index: 101; top: 10vh">
+                    <div class="chat_link_card">
+                        <div id="chat_link_title" class="strokedelinebig dialog_text" style="font-size: 140%"></div>
+                        <div id="chat_link_channel" class="strokedeline chat_link_channel"></div>
+                        <div id="chat_link_rows"></div>
+                        <div id="chat_link_input_holder" class="chat_link_input_holder hide">
+                            <div id="chat_link_input_label" class="strokedeline"></div>
+                            <input id="chat_link_input" class="chat_link_input" type="text" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
                 <div id="user_feed" class="user_feed user_feed_hide">
                     <div id="dialog_loading_feed" class="dialogs_feed hide" style="transform: translateY(180%); overflow: visible">
                         <div class="loading">
@@ -5372,6 +5428,7 @@
         <script src="specific/ChatMulti.js" defer></script>
         <script src="specific/ChatKick.js" defer></script>
         <script src="specific/ChatYouTube.js" defer></script>
+        <script src="specific/ChatLinkDialog.js" defer></script>
         <script src="specific/ChatLiveControls.js" defer></script>
         <script src="specific/ChatVod.js" defer></script>
         <script src="thirdparty/irc-message.js" defer></script>

@@ -5,7 +5,7 @@ const assert = require('assert');
 let checks = 0;
 function check(value, label) { assert.ok(value, label); checks++; }
 // Append later files (ChatMulti.js, ChatKick.js, ChatYouTube.js) here; missing ones are skipped.
-const FILES = ['ChatLink.js', 'ChatMulti.js', 'ChatKick.js', 'ChatYouTube.js'];
+const FILES = ['ChatLink.js', 'ChatMulti.js', 'ChatKick.js', 'ChatYouTube.js', 'ChatLinkDialog.js'];
 function sandbox() {
     const store = {};
     const s = {
@@ -739,6 +739,25 @@ function coreSandbox() {
     var m0 = lines[lines.length - 1].message;
     check(m0.indexOf('<img src=x') === -1 && m0.indexOf('<script>') === -1 && m0.indexOf("alert(1)'") === -1 && m0.indexOf('id="yt_abc"') !== -1 && m0.indexOf('chat_pi_yt') !== -1, 'rendered YouTube line is escaped');
     s.ChatMulti_Stop(0);
+}
+
+// Linked chats dialog: pure rows and apply
+{
+    const d = sandbox();
+    const ds = d.s;
+    ds.STR_CHAT_LINK_FROM_DIR = 'from UnityChat'; ds.STR_CHAT_LINK_MANUAL = 'manual'; ds.STR_CHAT_LINK_NONE = 'not found';
+    ds.STR_CHAT_LINK_EDIT = 'Edit'; ds.STR_CHAT_LINK_ENABLED = 'Link this streamer'; ds.STR_CHAT_LINK_RESET = 'Back to UnityChat';
+    ds.STR_CLOSE = 'Close'; ds.STR_YES = 'Yes'; ds.STR_NO = 'No';
+    var rows = ds.ChatLinkDialog_Rows({enabled: true, kick: 'robdiesalot'}, {yt: {value: '@arcadebulls', source: 'dir'}, kick: {value: 'robdiesalot', source: 'manual'}});
+    check(rows.map(function (r) { return r.kind; }).join() === 'yt,kick,enabled,reset,close', 'rows with reset when a manual value exists');
+    check(rows[0].value === '@arcadebulls' && rows[0].source === 'dir' && rows[1].source === 'manual', 'rows carry value and source');
+    check(ds.ChatLinkDialog_Rows({enabled: true}, {yt: null, kick: null}).map(function (r) { return r.kind; }).join() === 'yt,kick,enabled,close', 'no reset without manual values');
+    check(ds.ChatLinkDialog_Rows({enabled: true}, {yt: null, kick: null})[0].source === 'none', 'unresolved row has source none');
+    check(ds.ChatLinkDialog_Apply('arcadebulls', 'yt', 'https://youtube.com/@ArcadeBulls') && ds.ChatLink_Get('arcadebulls').yt === '@arcadebulls', 'apply normalizes');
+    check(ds.ChatLinkDialog_Apply('arcadebulls', 'kick', '') && ds.ChatLink_Get('arcadebulls').kick === '', 'empty input means do not link');
+    check(!ds.ChatLinkDialog_Apply('arcadebulls', 'kick', 'a b c') && ds.ChatLink_Get('arcadebulls').kick === '', 'invalid input rejected and not saved');
+    check(ds.ChatLink_Get('arcadebulls').yt === '@arcadebulls' && ds.ChatLink_Get('arcadebulls').enabled === true, 'apply keeps other fields');
+    check(!ds.ChatLinkDialog_Apply('arcadebulls', 'enabled', 'x'), 'unknown kind rejected');
 }
 
 console.log(checks + ' merged chat checks passed');
