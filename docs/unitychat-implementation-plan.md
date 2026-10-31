@@ -47,7 +47,7 @@ K tomu `ChatLinkDialog.js` (dialog v přehrávači). Cizí zprávy jdou stejnou 
 
 ---
 
-### Úloha 1: Prostředí pro APK a ověření na zařízení (go/no-go)
+### Task 1: Prostředí pro APK a ověření na zařízení (go/no-go)
 
 Bez kódu aplikace. Výsledkem je funkční debug APK na TV, ověřená síťová volání a reálné vzorky dat pro testy.
 
@@ -115,7 +115,7 @@ git commit -m "Record on-device network probe and sample payloads for YouTube an
 
 ---
 
-### Úloha 2: Propojení kanálů (`ChatLink.js`)
+### Task 2: Propojení kanálů (`ChatLink.js`)
 
 **Soubory:**
 - Vytvořit: `app/specific/ChatLink.js`, `release/scripts/chat-multi-tests.js`
@@ -172,7 +172,7 @@ check(s.ChatLink_DirCache.robdiesalot === null, 'stale generation ignored');
 
 ---
 
-### Úloha 3: Společné jádro, zapojení do ChatLive a nastavení (`ChatMulti.js`)
+### Task 3: Společné jádro, zapojení do ChatLive a nastavení (`ChatMulti.js`)
 
 **Soubory:**
 - Vytvořit: `app/specific/ChatMulti.js`
@@ -283,7 +283,7 @@ check(order(box).join() === 'tw-10,yt-20,tw-30,live-1', 'late history interleave
 
 ---
 
-### Úloha 4: Kick (`ChatKick.js`)
+### Task 4: Kick (`ChatKick.js`)
 
 **Soubory:**
 - Vytvořit: `app/specific/ChatKick.js`
@@ -341,7 +341,7 @@ Doplň testy pro `SubscriptionEvent`, `GiftedSubscriptionsEvent`, `MessageDelete
 
 ---
 
-### Úloha 5: YouTube (`ChatYouTube.js`)
+### Task 5: YouTube (`ChatYouTube.js`)
 
 **Soubory:**
 - Vytvořit: `app/specific/ChatYouTube.js`
@@ -408,7 +408,7 @@ Doplň testy pro `liveChatMembershipItemRenderer`, `liveChatPaidStickerRenderer`
 
 ---
 
-### Úloha 6: Dialog „Propojené chaty“ v přehrávači (`ChatLinkDialog.js`)
+### Task 6: Dialog „Propojené chaty“ v přehrávači (`ChatLinkDialog.js`)
 
 **Soubory:**
 - Vytvořit: `app/specific/ChatLinkDialog.js`
@@ -460,7 +460,7 @@ check(!s.ChatLinkDialog_Apply('arcadebulls', 'kick', 'a b c'), 'invalid input re
 
 ---
 
-### Úloha 7: Akceptace na TV a vydání APK a webu
+### Task 7: Akceptace na TV a vydání APK a webu
 
 **Soubory:**
 - Upravit:
