@@ -1,4 +1,3 @@
-/* global ChatYouTube_Start: false, ChatYouTube_Stop: false -- defined in ChatKick.js / ChatYouTube.js (added later), remove the matching names then */
 /*
  * Merged chat core: starts and stops the YouTube / Kick sources of a chat and renders their lines
  * through the Twitch line pipeline (delay, pause, spam merge, cleanup, moderation).

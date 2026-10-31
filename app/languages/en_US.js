@@ -763,6 +763,10 @@ function en_USLang() {
         'Show YouTube and Kick messages of a streamer who multistreams, with their history (channels from the UnityChat directory, editable in Linked chats)';
     STR_CHAT_KICK_SUB = 'subscribed for %x months';
     STR_CHAT_KICK_GIFT = 'gifted %x subscriptions';
+    STR_CHAT_YT_SUPERCHAT = 'Super Chat';
+    STR_CHAT_YT_SUPERSTICKER = 'Super Sticker';
+    STR_CHAT_YT_MEMBERSHIP = 'New member';
+    STR_CHAT_YT_GIFT = 'gifted memberships';
     STR_CHAT_CLEAR_MSG = 'Clear chat, delete user messages';
     STR_CHAT_SHOW_BADGES = 'Show user badges (excluding the ones below)';
     STR_CHAT_SHOW_BADGES_MOD = 'Show Moderator badges';

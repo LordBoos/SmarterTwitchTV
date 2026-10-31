@@ -429,4 +429,234 @@ function coreSandbox() {
     s.ChatMulti_Stop(0);
 }
 
+// YouTube source (ChatYouTube.js) with fixtures from the device probe
+{
+    const s = coreSandbox();
+    const lines = [], http = [], timers = [], deleted = [], banned = [];
+    const json = f => JSON.parse(fs.readFileSync('jsonreferences/' + f, 'utf8'));
+    const acts = json('youtube_chat_initial_actions.json'), polls = json('youtube_get_live_chat.json');
+    s.STR_CHAT_YT_SUPERCHAT = 'Super Chat'; s.STR_CHAT_YT_SUPERSTICKER = 'Super Sticker'; s.STR_CHAT_YT_MEMBERSHIP = 'New member'; s.STR_CHAT_YT_GIFT = 'gifted memberships';
+    s.ChatLive_LineAddCheckDelay = (n, m) => lines.push(m);
+    s.ChatLive_Show_SUB = 1; s.ChatLive_Custom_Nick_Color = 0;
+    s.FullxmlHttpGet = (url, headers, ok, err, key, check, method, body) => /lookup/.test(url) || http.push({url, headers, ok: ok.name, key, check, method, body});
+    s.Main_setTimeout = (fn, d) => { timers.push({fn, d, live: true}); return timers.length - 1; };
+    s.Main_clearTimeout = id => { if (timers[id]) timers[id].live = false; };
+    s.ChatMulti_DeleteMsg = (p, id) => deleted.push(p + ':' + id);
+    s.ChatMulti_DeleteAuthor = (n, p, id) => banned.push(n + ':' + p + ':' + id);
+    s.ChatMulti_SetLinked = () => {};
+    const pending = () => timers.filter(x => x.live).length;
+    const fire = () => { const t = timers.filter(x => x.live).pop(); t.live = false; t.fn(); return t; };
+    const start = (target, withHistory) => { s.ChatMulti_Start(0, 7, withHistory); const seq = s.ChatMulti_State[0].seq; s.ChatYouTube_Start(0, seq, target, withHistory); return seq; };
+    const reset = () => { lines.length = http.length = timers.length = deleted.length = banned.length = 0; };
+    const first = f => acts.filter(a => a.addChatItemAction && a.addChatItemAction.item[f])[0].addChatItemAction.item;
+    const LIVE = '"isLiveNow":true,"videoId":"-a9764YAN_8"';
+
+    check(s.ChatYouTube_LiveUrl('UCROnsopSryzM2WaxxeNICOA') === 'https://www.youtube.com/channel/UCROnsopSryzM2WaxxeNICOA/live' && s.ChatYouTube_LiveUrl('@robdiesalot') === 'https://www.youtube.com/@robdiesalot/live', 'live urls');
+    check(s.ChatYouTube_ParseLive('..."isLiveNow":true..."videoId":"-a9764YAN_8"...') === '-a9764YAN_8', 'live detected');
+    check(s.ChatYouTube_ParseLive('..."isLive":true..."videoId":"-a9764YAN_8"...') === '-a9764YAN_8', 'second live marker works');
+    check(s.ChatYouTube_ParseLive('..."videoId":"-a9764YAN_8"...') === null, 'not live without marker');
+
+    // fixtures: history, ms timestamps, every renderer type is handled or ignored
+    var msgs = acts.map(a => a.addChatItemAction && s.ChatYouTube_ToMsg(a.addChatItemAction.item, true)).filter(Boolean);
+    check(msgs.length > 0 && msgs.every(m => m.history && m.ts > 1.7e12 && typeof m.ts === 'number'), 'initial actions become history with ms timestamps');
+    check(msgs.filter(m => m.special).length === 2 && msgs.length === 74, 'text messages and the two gift view models render, banner does not');
+    var gift = msgs.filter(m => m.special)[0];
+    check(/savetoad521/.test(gift.special) && gift.special.indexOf('<') === -1, 'gift view model: escaped author and text');
+    check(s.ChatYouTube_ToMsg({giftMessageViewModel: {id: 'g', text: {content: 'x'}}}, false) === null && s.ChatYouTube_ToMsg({giftMessageViewModel: {id: 'g', authorName: {content: 'a'}, text: {content: ' '}}}, false) === null, 'gift without author or text is ignored');
+    check(s.ChatYouTube_ToMsg({liveChatViewerEngagementMessageRenderer: {id: 'x'}}, false) === null && s.ChatYouTube_ToMsg(first('liveChatViewerEngagementMessageRenderer'), true) === null, 'system banner ignored');
+    var removed = acts.filter(a => a.removeChatItemAction)[0];
+    check(s.ChatYouTube_Moderation(removed).del === removed.removeChatItemAction.targetItemId && s.ChatYouTube_Moderation(acts.filter(a => a.liveChatReportModerationStateCommand)[0]) === null, 'removeChatItemAction deletes, report state command ignored');
+    check(s.ChatYouTube_Moderation({markChatItemAsDeletedAction: {targetItemId: 'm1'}}).del === 'm1', 'delete action');
+    check(s.ChatYouTube_Moderation({markChatItemsByAuthorAsDeletedAction: {externalChannelId: 'UCx'}}).ban === 'UCx', 'ban action'); // shape not yet seen live
+    check(s.ChatYouTube_Moderation({something: 1}) === null, 'unknown action ignored');
+
+    // emoji: the fixture uses fonts.gstatic.com (not whitelisted), the unicode emoji is used instead of an image from there
+    var emojiMsg = acts.map(a => a.addChatItemAction && a.addChatItemAction.item.liveChatTextMessageRenderer).filter(r => r && r.message.runs.some(x => x.emoji))[0];
+    var tk = s.ChatYouTube_Tokens(emojiMsg.message.runs);
+    check(tk.join('').indexOf('fonts.gstatic.com') === -1 && tk.join('').indexOf('🎃') !== -1, 'notoemoji host is not whitelisted, unicode emoji used');
+    var tok = s.ChatYouTube_Tokens([{text: 'a'}, {emoji: {image: {thumbnails: [{url: 'https://evil.example/e.png'}]}, shortcuts: [':x:']}}]);
+    check(tok.join('').indexOf('evil.example') === -1 && tok.join('').indexOf(':x:') !== -1, 'emoji from foreign host falls back to shortcut');
+    tok = s.ChatYouTube_Tokens([{emoji: {image: {thumbnails: [{url: 'https://yt3.ggpht.com/a=w24-h24'}, {url: '//yt3.ggpht.com/b=w48-h48'}]}, shortcuts: [':x:']}}]);
+    check(tok.length === 1 && Array.isArray(tok[0]) && tok[0][0].indexOf('src="https://yt3.ggpht.com/b=w48-h48"') !== -1, 'allowed emoji image, protocol relative url made https, largest thumbnail');
+    // the word after an emoji survives the real tokenizer
+    const IMG = n => ({emoji: {image: {thumbnails: [{url: 'https://yt3.ggpht.com/' + n + '=w24'}]}}});
+    var html = s.ChatLive_extraMessageTokenize(s.ChatYouTube_Tokens([IMG('a'), {text: 'hello there friend'}]), 0, 0);
+    check(/<img[^>]*>\s+hello there friend/.test(html), 'word after an emoji survives');
+    html = s.ChatLive_extraMessageTokenize(s.ChatYouTube_Tokens([{text: 'hi '}, IMG('a'), IMG('b'), {text: 'yelling in texts'}]), 0, 0);
+    check(html.indexOf('hi ') === 0 && /<img[^>]*>\s*<img[^>]*>\s+yelling in texts/.test(html), 'text after two emoji and before them survives');
+    html = s.ChatLive_extraMessageTokenize(s.ChatYouTube_Tokens([IMG('a'), {text: ' already spaced'}]), 0, 0);
+    check(/<img[^>]*>\s+already spaced/.test(html), 'text with its own leading space survives');
+
+    // badges
+    var b = s.ChatYouTube_Badges([{liveChatAuthorBadgeRenderer: {icon: {iconType: 'OWNER'}}}, {liveChatAuthorBadgeRenderer: {icon: {iconType: 'VERIFIED'}}}]);
+    check(b.role === 'owner' && b.html.indexOf('chat_b_yt_owner') !== -1 && b.html.indexOf('chat_b_yt_verified') !== -1, 'owner and verified badge');
+    b = s.ChatYouTube_Badges([{liveChatAuthorBadgeRenderer: {icon: {iconType: 'MODERATOR'}}}, {liveChatAuthorBadgeRenderer: {customThumbnail: {thumbnails: [{url: 'https://yt3.ggpht.com/m=s16-c-k'}]}}}]);
+    check(b.role === 'mod' && b.html.indexOf('chat_b_yt_mod') !== -1 && b.html.indexOf('url(https://yt3.ggpht.com/m=s16-c-k)') !== -1, 'moderator and member image badge');
+    b = s.ChatYouTube_Badges([{liveChatAuthorBadgeRenderer: {customThumbnail: {thumbnails: [{url: 'https://evil.example/m.png'}]}}}, {liveChatAuthorBadgeRenderer: {icon: {iconType: 'constructor'}}}]);
+    check(b.role === '' && b.html === '', 'foreign member badge and unknown icon dropped');
+    b = s.ChatYouTube_Badges([{liveChatAuthorBadgeRenderer: {customThumbnail: {thumbnails: [{url: 'https://yt3.ggpht.com/m=s16'}]}}}]);
+    check(b.role === 'member', 'member role');
+
+    // special items, shapes not yet seen live (spec 6.3 point 4)
+    var paid = s.ChatYouTube_ToMsg({liveChatPaidMessageRenderer: {id: 'p', timestampUsec: '1793476496725195', authorName: {simpleText: 'A'},
+        authorExternalChannelId: 'UCx', purchaseAmountText: {simpleText: '100,00 Kč'}, bodyBackgroundColor: 4280150454, message: {runs: [{text: 'hi'}]}}}, false);
+    check(paid.special.indexOf('100,00 Kč') !== -1 && /^rgba?\(/.test(paid.highlight), 'super chat amount and color');
+    check(paid.ts === 1793476496725 && paid.highlight === 'rgba(29,233,182,1.00)' && paid.tokens.join('') === 'hi' && paid.special.indexOf('A ') === -1, 'super chat: ms timestamp, ARGB to rgba, body keeps the nick');
+    paid = s.ChatYouTube_ToMsg({liveChatPaidMessageRenderer: {id: 'p', authorName: {simpleText: '"><img src=x onerror=1>'}, purchaseAmountText: {simpleText: '<b>1</b>'}, bodyBackgroundColor: 'red;background:url(x)'}}, false);
+    check(paid.special.indexOf('<') === -1 && paid.highlight === null && paid.special.indexOf('&quot;') !== -1, 'super chat: escaped nick and amount, junk color dropped, nick in special without a body');
+    var st = s.ChatYouTube_ToMsg({liveChatPaidStickerRenderer: {id: 's', timestampUsec: '1793476496725195', authorName: {simpleText: 'S'}, authorExternalChannelId: 'UCs',
+        purchaseAmountText: {simpleText: '$2.00'}, moneyChipBackgroundColor: 4278190335, sticker: {thumbnails: [{url: 'https://lh3.googleusercontent.com/st=s72'}]}}}, false);
+    check(st.special.indexOf('Super Sticker $2.00') !== -1 && st.special.indexOf('src="https://lh3.googleusercontent.com/st=s72"') !== -1 && st.highlight === 'rgba(0,0,255,1.00)', 'super sticker: amount, image, color');
+    st = s.ChatYouTube_ToMsg({liveChatPaidStickerRenderer: {id: 's', authorName: {simpleText: 'S'}, purchaseAmountText: {simpleText: '$2'}, sticker: {thumbnails: [{url: 'https://evil.example/s.png'}]}}}, false);
+    check(st.special.indexOf('evil.example') === -1 && st.special.indexOf('<img') === -1, 'super sticker: foreign host dropped');
+    var mem = s.ChatYouTube_ToMsg({liveChatMembershipItemRenderer: {id: 'mm', timestampUsec: '1793476496725195', authorName: {simpleText: 'M'}, authorExternalChannelId: 'UCm',
+        headerSubtext: {runs: [{text: 'Welcome to <b>X</b>!'}]}, headerPrimaryText: {runs: [{text: 'Member for 2 months'}]}, message: {runs: [{text: 'thanks'}]},
+        authorBadges: [{liveChatAuthorBadgeRenderer: {customThumbnail: {thumbnails: [{url: 'https://yt3.ggpht.com/m=s16'}]}}}]}}, false);
+    check(mem.special.indexOf('Member for 2 months Welcome to &lt;b>X&lt;/b>!') !== -1 && mem.special.indexOf('<b') === -1 && mem.tokens.join('') === 'thanks' && mem.role === 'member', 'membership: escaped YouTube texts and message');
+    check(s.ChatYouTube_ToMsg({liveChatMembershipItemRenderer: {id: 'mm', authorName: {simpleText: 'M'}}}, false).special === 'M New member', 'membership: fallback label with nick');
+    var gp = s.ChatYouTube_ToMsg({liveChatSponsorshipsGiftPurchaseAnnouncementRenderer: {id: 'gp', timestampUsec: '1793476496725195', authorExternalChannelId: 'UCg',
+        header: {liveChatSponsorshipsHeaderRenderer: {authorName: {simpleText: 'G'}, primaryText: {runs: [{text: 'Sent '}, {text: '5'}, {text: ' gift memberships'}]}}}}}, false);
+    check(gp.nick === 'G' && gp.special === 'G Sent 5 gift memberships' && gp.ts === 1793476496725, 'gift purchase announcement');
+    check(s.ChatYouTube_ToMsg({liveChatSponsorshipsGiftPurchaseAnnouncementRenderer: {id: 'gp'}}, false) === null, 'gift purchase without header ignored');
+    var gr = s.ChatYouTube_ToMsg({liveChatSponsorshipsGiftRedemptionAnnouncementRenderer: {id: 'gr', timestampUsec: '1793476496725195', authorName: {simpleText: 'R'}, authorExternalChannelId: 'UCr',
+        message: {runs: [{text: 'received a gift membership by '}, {text: 'G'}]}}}, false);
+    check(gr.special === 'R received a gift membership by G', 'gift redemption announcement');
+
+    // the page: ytInitialData, key, context, continuation
+    var page = '<script>ytcfg.set({"INNERTUBE_API_KEY":"AIzaKey-1","INNERTUBE_CONTEXT":{"client":{"clientName":"WEB","x":"a}b"}},"INNERTUBE_CONTEXT_CLIENT_NAME":1});</script>' +
+        '<script>window["ytInitialData"] = ' + JSON.stringify({contents: {liveChatRenderer: {continuations: [{invalidationContinuationData: {continuation: 'TOK1'}}], actions: acts}}}) + ';</script>';
+    var pr = s.ChatYouTube_ParseChatPage(page);
+    check(pr.key === 'AIzaKey-1' && pr.context.client.x === 'a}b' && pr.continuation === 'TOK1' && pr.actions.length === acts.length, 'chat page parsed (braces inside strings ok)');
+    pr = s.ChatYouTube_ParseChatPage(page.replace('invalidationContinuationData', 'timedContinuationData').replace('window["ytInitialData"] = ', 'var ytInitialData = '));
+    check(pr && pr.continuation === 'TOK1', 'timed continuation and var ytInitialData form');
+    check(s.ChatYouTube_ParseChatPage('<html>consent</html>') === null && s.ChatYouTube_ParseChatPage(page.replace('"continuations"', '"x"')) === null, 'unusable page gives null');
+    var pp = s.ChatYouTube_ParsePoll(JSON.stringify(polls[1]));
+    check(pp.actions.length === 3 && pp.continuation.length > 20 && s.ChatYouTube_ParsePoll('{}') === null && s.ChatYouTube_ParsePoll('<html>') === null, 'poll parsed from the fixture, junk gives null');
+    check(s.ChatYouTube_ParsePoll(JSON.stringify(polls[0])).actions.length === 0, 'poll without actions');
+
+    // flow: live page -> chat page (history) -> polling
+    reset();
+    var seq = start('@robdiesalot', true);
+    check(http.length === 1 && http[0].url === 'https://www.youtube.com/@robdiesalot/live' && http[0].ok === 'ChatYouTube_LiveResult' && http[0].check === seq && http[0].key === 0, 'live page by named callback with the session seq');
+    check(JSON.stringify(http[0].headers) === JSON.stringify(s.ChatYouTube_Headers) && /Chrome\/130/.test(http[0].headers[0][1]) && http[0].headers[1][1] === 'SOCS=CAI', 'YouTube headers on the live request');
+    s.ChatYouTube_LiveResult({status: 200, responseText: '"videoId":"-a9764YAN_8"'}, 0, seq);
+    check(http.length === 1 && pending() === 1 && timers[0].d === s.ChatYouTube_RetryMs && lines.length === 0, 'not live: one retry timer, no request, nothing in the chat');
+    fire();
+    check(http.length === 2 && http[1].url === http[0].url, 'retry looks for the live video again');
+    s.ChatYouTube_LiveResult({status: 500, responseText: ''}, 0, seq);
+    check(http.length === 2 && pending() === 1 && timers[timers.length - 1].d === s.ChatYouTube_RetryMs, 'failed live request: retry timer');
+    fire();
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    check(http[3].url === 'https://www.youtube.com/live_chat?is_popout=1&v=-a9764YAN_8' && http[3].ok === 'ChatYouTube_PageResult' && http[3].check === seq, 'live: chat page requested');
+    s.ChatYouTube_PageResult({status: 200, responseText: '<html>'}, 0, seq);
+    check(http.length === 4 && pending() === 1 && timers[timers.length - 1].d === s.ChatYouTube_RetryMs && lines.length === 0, 'bad chat page: retry timer, silent');
+    fire();
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    var hl = http.length;
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq - 1);
+    check(lines.length === 0 && http.length === hl, 'stale page result is ignored');
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    check(lines.length === 74 && lines.every(l => l.addToStart === true && l.historyTs > 1.7e12), 'page actions rendered as history with times');
+    check(lines.filter(l => l.sub).length === 2, 'gift lines are special');
+    var poll = http[http.length - 1];
+    check(http.length === hl + 1 && poll.url === 'https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?prettyPrint=false&key=AIzaKey-1' && poll.method === 'POST' &&
+        poll.ok === 'ChatYouTube_PollResult' && poll.check === seq && poll.key === 0, 'poll: POST with named callback and seq');
+    check(JSON.parse(poll.body).continuation === 'TOK1' && JSON.parse(poll.body).context.client.clientName === 'WEB', 'poll body carries context and continuation');
+    check(poll.headers.some(h => h[0] === 'Content-Type' && h[1] === 'application/json') && poll.headers.some(h => h[0] === 'Cookie' && h[1] === 'SOCS=CAI'), 'poll headers: json plus YouTube headers');
+
+    // poll result: ordered, spread by time differences, next poll after it, continuation advances
+    reset();
+    var A = (id, usec, text) => ({addChatItemAction: {item: {liveChatTextMessageRenderer: {id, timestampUsec: String(usec), authorName: {simpleText: 'n' + id}, authorExternalChannelId: 'UC' + id, message: {runs: [{text}]}}}}});
+    var body = {continuationContents: {liveChatContinuation: {continuations: [{timedContinuationData: {continuation: 'TOK2'}}], actions: [
+        A('c', 1793000003500000, 'third'), A('a', 1793000001000000, 'first'), A('b', 1793000001400000, 'second'), {markChatItemAsDeletedAction: {targetItemId: 'old1'}},
+        {markChatItemsByAuthorAsDeletedAction: {externalChannelId: 'UCbad'}}]}}};
+    s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify(body)}, 0, seq);
+    check(lines.length === 1 && /first/.test(lines[0].message), 'first message is shown at once');
+    check(deleted.join() === 'yt:old1' && banned.join() === '0:yt:UCbad', 'moderation applied');
+    check(timers.map(x => x.d).join() === '400,1000,1000', 'others are spread by time differences, capped at the poll interval, then the next poll');
+    timers[0].live = false; timers[0].fn(); timers[1].live = false; timers[1].fn();
+    check(lines.length === 3 && /second/.test(lines[1].message) && /third/.test(lines[2].message), 'spread messages arrive in time order');
+    check(lines.every(l => !l.addToStart), 'live lines are not history');
+    timers[2].live = false; timers[2].fn();
+    var req = http[http.length - 1];
+    check(req.ok === 'ChatYouTube_PollResult' && JSON.parse(req.body).continuation === 'TOK2', 'next poll uses the returned continuation');
+
+    // broken chain: missing token or error -> chat page again after one timer
+    reset();
+    s.ChatYouTube_PollResult({status: 200, responseText: '{}'}, 0, seq);
+    check(pending() === 1 && timers[0].d === s.ChatYouTube_PollMs && lines.length === 0, 'missing continuation: reload timer, silent');
+    fire();
+    check(http.length === 1 && http[0].ok === 'ChatYouTube_PageResult' && http[0].url.indexOf('v=-a9764YAN_8') !== -1, 'chat page reloaded');
+    s.ChatYouTube_PollResult({status: 0, responseText: ''}, 0, seq);
+    check(pending() === 1, 'network error: one reload timer');
+    fire();
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    timers.filter(x => x.live).forEach(x => { x.live = false; x.fn(); });
+    check(http[http.length - 1].ok === 'ChatYouTube_PollResult' && lines.length === 0, 'reload re-sends the page actions as live lines, ChatMulti drops the ones already shown, polling continues');
+
+    // no history wanted: first page actions are not shown
+    reset();
+    seq = start('UCROnsopSryzM2WaxxeNICOA', false);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    check(lines.length === 0 && http[http.length - 1].ok === 'ChatYouTube_PollResult', 'withHistory false: page actions skipped, polling starts');
+
+    // history drops deleted items and banned authors
+    reset();
+    seq = start('UCROnsopSryzM2WaxxeNICOA', true);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    var hp = JSON.stringify({contents: {liveChatRenderer: {continuations: [{invalidationContinuationData: {continuation: 'T'}}], actions: [A('a', 1793000001000000, 'x'), A('b', 1793000002000000, 'y'), A('c', 1793000003000000, 'z'),
+        {removeChatItemAction: {targetItemId: 'a'}}, {markChatItemsByAuthorAsDeletedAction: {externalChannelId: 'UCc'}}]}}});
+    s.ChatYouTube_PageResult({status: 200, responseText: '"INNERTUBE_API_KEY":"k","INNERTUBE_CONTEXT":{} ytInitialData"] = ' + hp + ';'}, 0, seq);
+    check(lines.length === 1 && />y</.test(lines[0].message) && deleted.length === 0, 'history: deleted item and banned author are not shown');
+
+    // Review Focus 2: stale / stopped sessions do nothing, every timer is cleared by Stop
+    reset();
+    s.Chat_Id[0] = 9; s.ChatYouTube_PollResult({status: 200, responseText: '{}'}, 0, 8);
+    check(pending() === 0 && http.length === 0, 'stale poll stops');
+    s.Chat_Id[0] = 7;
+    seq = start('@robdiesalot', true);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    reset();
+    s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify(body)}, 0, seq);
+    check(pending() === 3, 'spread timers and next poll pending');
+    s.ChatMulti_Stop(0);
+    check(pending() === 0, 'Stop clears every timer of the slot');
+    var l0 = lines.length;
+    s.ChatYouTube_PollResult({status: 200, responseText: JSON.stringify(body)}, 0, seq);
+    s.ChatYouTube_PageResult({status: 200, responseText: page}, 0, seq);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seq);
+    check(lines.length === l0 && pending() === 0 && http.length === 0, 'results after stop are dropped');
+    // a timer that slipped through (Chat_Id changed, no Stop) does nothing
+    reset();
+    seq = start('@robdiesalot', false);
+    s.ChatYouTube_LiveResult({status: 200, responseText: ''}, 0, seq);
+    var tt = timers[timers.length - 1];
+    s.Chat_Id[0] = 8; http.length = 0; tt.fn(); s.Chat_Id[0] = 7;
+    check(http.length === 0, 'stale retry timer does nothing');
+    s.ChatMulti_Stop(0);
+    // restart (same Chat_Id, new seq) drops the old session
+    reset();
+    var seqA = start('@a', false);
+    start('@b', false);
+    s.ChatYouTube_LiveResult({status: 200, responseText: LIVE}, 0, seqA);
+    check(http.length === 2 && pending() === 0, 'old session result after restart is ignored');
+    // junk targets never request
+    reset();
+    s.ChatYouTube_Start(0, seqA, '"><img>', false); s.ChatYouTube_Start(0, seqA, 'x y', false);
+    check(http.length === 0 && !s.ChatYouTube_State[0], 'invalid target ignored');
+    s.ChatMulti_Stop(0);
+
+    // XSS through a rendered line (ChatMulti core): nick, text, ids, badges
+    reset();
+    seq = start('@robdiesalot', false);
+    var evil = s.ChatYouTube_ToMsg({liveChatTextMessageRenderer: {id: 'a"b c', timestampUsec: '1793000001000000', authorName: {simpleText: '"><img src=x onerror=alert(1)>'}, authorExternalChannelId: 'U C"1',
+        message: {runs: [{text: '<script>alert(1)</script>'}]}, authorBadges: [{liveChatAuthorBadgeRenderer: {customThumbnail: {thumbnails: [{url: 'https://yt3.ggpht.com/x\');alert(1)//'}]}}}]}}, false);
+    s.ChatMulti_Line(0, seq, evil);
+    var m0 = lines[lines.length - 1].message;
+    check(m0.indexOf('<img src=x') === -1 && m0.indexOf('<script>') === -1 && m0.indexOf("alert(1)'") === -1 && m0.indexOf('id="yt_abc"') !== -1 && m0.indexOf('chat_pi_yt') !== -1, 'rendered YouTube line is escaped');
+    s.ChatMulti_Stop(0);
+}
+
 console.log(checks + ' merged chat checks passed');
