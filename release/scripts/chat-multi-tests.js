@@ -256,4 +256,151 @@ function coreSandbox() {
     check(s.Chat_div[0].kids.map(k => k.chatTs || 0).join() === '10,20,20,0', 'ElementAdd inserts history and its extra line by time');
 }
 
+// Kick source (ChatKick.js) with fixtures from the device probe
+{
+    const s = coreSandbox();
+    const lines = [], sockets = [], xhrs = [], http = [], timers = [], cleared = [], deleted = [], banned = [];
+    const json = f => JSON.parse(fs.readFileSync('jsonreferences/' + f, 'utf8'));
+    const hist = json('kick_history.json'), chan = json('kick_channel.json'), events = json('kick_pusher_events.json');
+    s.STR_CHAT_KICK_SUB = 'subscribed for %x months'; s.STR_CHAT_KICK_GIFT = 'gifted %x subscriptions';
+    s.ChatLive_LineAddCheckDelay = (n, m) => lines.push(m);
+    s.ChatLive_Show_SUB = 1; s.ChatLive_Custom_Nick_Color = 0;
+    s.FullxmlHttpGet = (url, h, ok, err, key, check) => /lookup/.test(url) || http.push({url, ok: ok.name, key, check});
+    s.Main_setTimeout = (fn, d) => { timers.push({fn, d}); return timers.length; };
+    s.Main_clearTimeout = id => cleared.push(id);
+    s.ChatMulti_DeleteMsg = (p, id) => deleted.push(p + ':' + id);
+    s.ChatMulti_DeleteAuthor = (n, p, id) => banned.push(n + ':' + p + ':' + id);
+    s.WebSocket = function (url) { this.url = url; this.sent = []; this.closed = null; sockets.push(this); };
+    s.WebSocket.prototype.send = function (d) { this.sent.push(JSON.parse(d)); };
+    s.WebSocket.prototype.close = function (c) { this.closed = c; };
+    s.XMLHttpRequest = function () { xhrs.push(this); };
+    s.XMLHttpRequest.prototype.open = function (m, u) { this.url = u; };
+    s.XMLHttpRequest.prototype.send = function () {};
+    s.XMLHttpRequest.prototype.reply = function (status, text) { this.readyState = 4; this.status = status; this.responseText = text; this.onreadystatechange(); };
+    const start = (id, slug, withHistory) => { s.ChatMulti_Start(0, id, withHistory); const seq = s.ChatMulti_State[0].seq; s.ChatKick_Start(0, seq, slug, withHistory); return seq; };
+    const frame = (ws, ev, data, channel) => ws.onmessage({data: JSON.stringify({event: ev, data: typeof data === 'string' ? data : JSON.stringify(data), channel})});
+    const V2 = 'chatrooms.32806.v2';
+    s.ChatMulti_SetLinked = () => {};
+
+    // pure helpers
+    var m = s.ChatKick_ToMsg(hist.data.messages[0], [], true);
+    check(m.platform === 'kick' && m.history === true && m.ts === Date.parse(hist.data.messages[0].created_at), 'kick history message maps with timestamp');
+    var t = s.ChatKick_Tokens('hi [emote:37226:KEKW] there [emote:x:bad]');
+    check(t[1][0].indexOf('https://files.kick.com/emotes/37226/fullsize') !== -1 && t.join('').indexOf('[emote:x:bad]') !== -1, 'numeric emote ids only');
+    check(s.ChatKick_SubBadgeUrl([{months: 1, badge_image: {src: 'https://files.kick.com/a.png'}}, {months: 6, badge_image: {src: 'https://files.kick.com/b.png'}}], 10) === 'https://files.kick.com/b.png', 'best sub badge');
+    check(s.ChatKick_SubBadgeUrl([{months: 6, badge_image: {src: 'https://files.kick.com/b.png'}}], 3) === null, 'no sub badge above the months');
+    var b = s.ChatKick_Badges({badges: [{type: 'moderator'}], badges_v2: [{image_url: 'https://evil.example/x.png', selected: true}]}, []);
+    check(b.role === 'mod' && b.html.indexOf('evil.example') === -1 && b.html.indexOf('chat_b_kick_moderator') !== -1, 'role badge, foreign badge host dropped');
+    b = s.ChatKick_Badges({badges: [{type: 'broadcaster'}, {type: 'subscriber', count: 3}], badges_v2: [{name: 'level', image_url: 'https://ext.cdn.kick.com/chat/badges/40_a.png', selected: true}, {name: 'x', image_url: 'https://ext.cdn.kick.com/y.png', selected: false}]},
+        [{months: 1, badge_image: {src: 'https://files.kick.com/s.png'}}]);
+    check(b.role === 'owner' && b.html.indexOf('files.kick.com/s.png') !== -1 && b.html.indexOf('40_a.png') !== -1 && b.html.indexOf('y.png') === -1, 'owner, sub image and selected kick badge');
+    check(s.ChatKick_EventName('App\\Events\\ChatMessageEvent') === 'ChatMessageEvent' && s.ChatKick_EventName('RewardRedeemedEvent') === 'RewardRedeemedEvent', 'event prefix stripped');
+    var ev = (n, i) => events.filter(e => s.ChatKick_EventName(e.event) === n).map(e => JSON.parse(e.data))[i || 0];
+    var d = s.ChatKick_EventToMsg('MessageDeletedEvent', ev('MessageDeletedEvent'));
+    check(d.del === ev('MessageDeletedEvent').message.id, 'deleted event gives the message id');
+    d = s.ChatKick_EventToMsg('UserBannedEvent', ev('UserBannedEvent'));
+    check(d.ban === ev('UserBannedEvent').user.id, 'banned event gives the user id');
+    check(s.ChatKick_EventToMsg('RewardRedeemedEvent', ev('RewardRedeemedEvent')) === null, 'reward redeemed ignored');
+    var reply = events.map(e => JSON.parse(e.data || '{}')).filter(x => x.type === 'reply')[0];
+    check(s.ChatKick_EventToMsg('ChatMessageEvent', reply).platform === 'kick', 'reply renders as a normal message');
+    // shape not yet seen live: hand-built per spec 6.2 point 6
+    m = s.ChatKick_EventToMsg('SubscriptionEvent', {username: '"><img src=x onerror=1>', months: 3});
+    check(m.special.indexOf('<img') === -1 && m.special.indexOf('subscribed for 3 months') !== -1 && !m.history, 'sub event: escaped special line');
+    m = s.ChatKick_EventToMsg('GiftedSubscriptionsEvent', {gifter_username: 'Bob', gifted_usernames: ['a', 'b', 'c']});
+    check(m.special === 'Bob gifted 3 subscriptions', 'gift event: special line with the count');
+    check(s.ChatKick_EventToMsg('SubscriptionEvent', {months: 3}) === null && s.ChatKick_EventToMsg('Nope', {}) === null, 'bad event shapes give null');
+
+    // start: channel by XHR, then key, then socket
+    var seq = start(7, 'buddha', true);
+    check(xhrs[0].url === 'https://kick.com/api/v2/channels/buddha', 'channel info by XHR');
+    xhrs[0].reply(200, JSON.stringify(chan));
+    check(xhrs[1].url === 'https://kick.com/api/v2/channels/32807/messages', 'history uses the channel id, not the chatroom id');
+    check(http.length === 1 && http[0].url === 'https://api.jouki.cz/kick/realtime' && http[0].ok === 'ChatKick_KeyResult' && http[0].check === seq && http[0].key === 0, 'key by FullxmlHttpGet with named callback and session seq');
+    s.ChatKick_KeyResult({status: 500, responseText: ''}, 0, seq - 1);
+    check(sockets.length === 0, 'stale key result ignored');
+    s.ChatKick_KeyResult({status: 200, responseText: '{"ok":true,"key":"<bad>","cluster":"us2"}'}, 0, seq);
+    check(sockets.length === 1 && sockets[0].url.indexOf('/app/34bf7a0ff419a2a775b9?') !== -1 && sockets[0].url.indexOf('ws-us2.pusher.com') !== -1, 'invalid key shape uses the fallback');
+    var ws = sockets[0];
+    frame(ws, 'pusher:connection_established', {socket_id: '1.2', activity_timeout: 120});
+    check(ws.sent.map(x => x.data.channel).join() === V2 + ',chatroom_32806', 'subscribes both channels');
+    frame(ws, 'pusher:ping', {});
+    check(ws.sent[2].event === 'pusher:pong', 'ping answered with pong');
+
+    // history: lines with history flag and time
+    xhrs[1].reply(200, JSON.stringify(hist));
+    check(lines.length === hist.data.messages.length && lines[0].addToStart && lines[0].historyTs > 0, 'history rendered with time');
+    var n = lines.length;
+    // live: the real events, remapped to our chatroom
+    events.forEach(e => { if (e.channel) frame(ws, e.event, e.data, /v2$/.test(e.channel) ? V2 : e.channel.replace(/\d+/, '32806')); });
+    var liveMsgs = events.filter(e => /ChatMessageEvent/.test(e.event) && /v2$/.test(e.channel)).length;
+    check(liveMsgs > 0 && lines.length > n && lines.length <= n + liveMsgs, 'live messages render once each');
+    check(deleted.length >= 1 && deleted[0].indexOf('kick:') === 0 && banned.length >= 1 && /^0:kick:\d+$/.test(banned[0]), 'moderation events are forwarded');
+    n = lines.length;
+    frame(ws, 'App\\Events\\ChatMessageEvent', JSON.stringify(reply), 'chatroom_32806');
+    frame(ws, 'App\\Events\\ChatMessageEvent', JSON.stringify(reply), 'chatrooms.999.v2');
+    check(lines.length === n, 'chat message only from our .v2 channel');
+    frame(ws, 'App\\Events\\SubscriptionEvent', {username: 'Ann', months: 2}, 'chatroom_32806');
+    frame(ws, 'App\\Events\\SubscriptionEvent', {username: 'Ann', months: 2}, V2);
+    check(lines.length === n + 1 && lines[n].sub, 'sub on both channels shows once');
+    frame(ws, 'pusher:subscription_garbage', '{bad json');
+    ws.onmessage({data: '<html>'});
+
+    // reconnect: backoff, 4001 drops the key and fetches it again
+    ChatKickBackoff();
+    function ChatKickBackoff() {
+        s.ChatKick_Key = {key: 'abcdef0123456789abcd', cluster: 'eu'};
+        ws.onclose({code: 1006});
+        var delays = [timers[timers.length - 1].d];
+        timers[timers.length - 1].fn();
+        sockets[sockets.length - 1].onclose({code: 1006});
+        delays.push(timers[timers.length - 1].d);
+        check(delays.join() === '2000,4000', 'reconnect backoff doubles from 2 s');
+        check(sockets[sockets.length - 1].url.indexOf('ws-eu.pusher.com/app/abcdef0123456789abcd?') !== -1, 'good key is cached for reconnects');
+    }
+    var before = http.length;
+    timers[timers.length - 1].fn();
+    sockets[sockets.length - 1].onclose({code: 4001});
+    check(s.ChatKick_Key === null, 'error 4001 drops the key');
+    timers[timers.length - 1].fn();
+    check(http.length === before + 1 && http[http.length - 1].url === 'https://api.jouki.cz/kick/realtime', 'key is fetched again after 4001');
+    for (var i = 0; i < 10; i++) { s.ChatKick_Key = s.ChatKick_PusherFallback; timers[timers.length - 1].fn(); sockets[sockets.length - 1].onclose({code: 1006}); }
+    check(timers[timers.length - 1].d === 60000, 'backoff is capped at 60 s');
+
+    // stop: socket closed without reconnect, timers cleared, late frames ignored
+    timers[timers.length - 1].fn();
+    ws = sockets[sockets.length - 1];
+    n = lines.length;
+    s.ChatMulti_Stop(0);
+    check(ws.closed === 1000 && ws.onclose === null && cleared.length > 0, 'stop closes the socket with 1000, no reconnect handler, clears the timer');
+    var timersBefore = timers.length;
+    if (ws.onmessage) frame(ws, 'App\\Events\\ChatMessageEvent', JSON.stringify(reply), V2);
+    check(lines.length === n && timers.length === timersBefore, 'nothing happens after stop');
+
+    // Review Focus 2: restart closes the previous socket, stale XHR / native results are ignored
+    s.ChatKick_Key = s.ChatKick_PusherFallback;
+    var sCount = sockets.length, xCount = xhrs.length;
+    var seq1 = start(7, 'robdiesalot', false);
+    var xhr1 = xhrs[xCount];
+    xhr1.reply(200, JSON.stringify(chan));
+    var ws1 = sockets[sCount];
+    var seq2 = start(7, 'xqc', false);
+    check(ws1.closed === 1000 && seq2 !== seq1, 'restart closes previous socket');
+    xhrs[xCount].reply(200, JSON.stringify(chan));
+    check(sockets.length === sCount + 1, 'stale channel response does not connect');
+    // channel XHR blocked: native fallback with named callback, later stale native result ignored
+    var xhr3 = xhrs[xCount + 1];
+    var hCount = http.length;
+    xhr3.reply(0, '');
+    check(http.length === hCount + 1 && http[hCount].ok === 'ChatKick_ChannelNative' && http[hCount].url === 'https://kick.com/api/v2/channels/xqc' && http[hCount].check === seq2, 'blocked XHR falls back to native with the seq');
+    s.ChatKick_ChannelNative({status: 200, responseText: JSON.stringify(chan)}, 0, seq1);
+    check(sockets.length === sCount + 1, 'stale native channel result ignored');
+    s.ChatKick_ChannelNative({status: 200, responseText: JSON.stringify(chan)}, 0, seq2);
+    check(sockets.length === sCount + 2, 'native channel result connects');
+    // failures are silent
+    var l = lines.length; start(7, 'x y', false); start(7, 'ok', false);
+    xhrs[xhrs.length - 1].reply(500, 'err'); xhrs[xhrs.length - 1].reply(200, '<html>');
+    check(lines.length === l, 'failures add nothing to the chat');
+    s.ChatMulti_Stop(0);
+}
+
 console.log(checks + ' merged chat checks passed');

@@ -761,6 +761,8 @@ function en_USLang() {
     STR_CHAT_MULTI = 'YouTube and Kick chat';
     STR_CHAT_MULTI_SUMMARY =
         'Show YouTube and Kick messages of a streamer who multistreams, with their history (channels from the UnityChat directory, editable in Linked chats)';
+    STR_CHAT_KICK_SUB = 'subscribed for %x months';
+    STR_CHAT_KICK_GIFT = 'gifted %x subscriptions';
     STR_CHAT_CLEAR_MSG = 'Clear chat, delete user messages';
     STR_CHAT_SHOW_BADGES = 'Show user badges (excluding the ones below)';
     STR_CHAT_SHOW_BADGES_MOD = 'Show Moderator badges';
