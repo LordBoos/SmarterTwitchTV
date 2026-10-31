@@ -49,6 +49,11 @@ Device and browser verification is also required (below). After a full build, co
 
 Requires Android Studio with the `apk/` folder open **and** a clone of https://github.com/fgl27/media as a sibling `media/` folder (custom AndroidX Media3 — see `apk/Media3 changes.md`). Firebase / Crashlytics / google-services were removed from the build (Web 768), so a plain build works with no private keys. Debug builds use applicationId suffix `.debug`.
 
+### Hosting and releases (LordBoos fork)
+
+- The APK loads the web app from this fork's GitHub Pages (`https://lordboos.github.io/SmarterTwitchTV/release/index.html`, see `Constants.java`); Pages serves `master` as is, so a pushed full build of `release/` is the web release.
+- `.github/workflows/release.yml` builds, signs and publishes the APK as GitHub release `<publishVersionCode>` (asset `SmarterPurpleTV_3_0_<code>.apk`, notes from `apk/Changelog.md`) when `apk/versions.gradle` changes on `master`; "Run workflow" with `dry_run` builds and signs into a workflow artifact only. It needs the secrets `SPTV_KEYSTORE_BASE64`, `SPTV_KEYSTORE_PASSWORD` and `SPTV_KEY_PASSWORD` (keystore alias `sptv`); the media checkout is pinned by `MEDIA_REF` in the workflow.
+
 ## Architecture: web ↔ APK bridge
 
 - Web → APK: every function in `app/specific/OSInterface.js` mirrors a Java method annotated `@JavascriptInterface` in `WebAppInterface` inside `apk/app/src/main/java/com/fgl27/twitch/PlayerActivity.java`. Adding a bridge call means touching **both** sides.
