@@ -8410,7 +8410,8 @@
                     'The feature can be turned off in Settings > Chat ("YouTube and Kick chat")',
                     "The app now loads its web part from the LordBoos fork's GitHub Pages and checks updates there",
                     'Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat',
-                    'Fix: closing the Linked chats or phone chat dialog with OK no longer reopens it'
+                    'Fix: closing the Linked chats or phone chat dialog with OK no longer reopens it',
+                    'Fix: the Twitch chat history shown when a stream opens loads again (the history service changed its message format)'
                 ]
             },
             {
@@ -56968,7 +56969,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 // If there's no equals, we assign the tag a value of true.
                 var tag = rawTags[i];
                 var pair = tag.split('=');
-                message.tags[pair[0]] = tag.substring(tag.indexOf('=') + 1) || true;
+                // A tag without '=' (recent-messages history sends ";emotes;") has no value: indexOf is -1 and
+                // substring would return the tag name itself, so only take a value after the first '='.
+                message.tags[pair[0]] = (tag.indexOf('=') === -1 ? '' : tag.substring(tag.indexOf('=') + 1)) || true;
             }
 
             position = nextspace + 1;

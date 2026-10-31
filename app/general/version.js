@@ -35,7 +35,8 @@ var version = {
                 'The feature can be turned off in Settings > Chat ("YouTube and Kick chat")',
                 'The app now loads its web part from the LordBoos fork\'s GitHub Pages and checks updates there',
                 'Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat',
-                'Fix: closing the Linked chats or phone chat dialog with OK no longer reopens it'
+                'Fix: closing the Linked chats or phone chat dialog with OK no longer reopens it',
+                'Fix: the Twitch chat history shown when a stream opens loads again (the history service changed its message format)'
             ]
         },
         {
