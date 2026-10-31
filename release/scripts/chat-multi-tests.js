@@ -116,14 +116,19 @@ function coreSandbox() {
     const started = [];
     s.ChatLive_LineAddCheckDelay = (n, m) => lines.push(m);
     s.ChatKick_Stop = s.ChatYouTube_Stop = () => stopCalls++;
-    s.ChatKick_Start = (n, id, slug, withHistory) => started.push('kick:' + slug + ':' + withHistory);
-    s.ChatYouTube_Start = (n, id, target, withHistory) => started.push('yt:' + target + ':' + withHistory);
+    s.ChatKick_Start = (n, id, slug, withHistory) => started.push('kick:' + id + ':' + slug + ':' + withHistory);
+    s.ChatYouTube_Start = (n, id, target, withHistory) => started.push('yt:' + id + ':' + target + ':' + withHistory);
     const msgWithId = id => ({platform: 'yt', msgId: id, authorId: 'UC1', nick: 'bob', color: null, role: '', badges: '',
         tokens: ['hi'], text: 'hi', ts: 1, history: false, special: null, highlight: null});
 
+    // every rendered line needs a live session seq; seqs start above any Chat_Id so a seq / id mixup fails
+    s.ChatMulti_Seq = 100;
+    s.ChatMulti_Start(0, 7, true);
+    let seq = s.ChatMulti_State[0].seq;
+
     // Review Focus 1
     s.ChatLive_Custom_Nick_Color = 0;
-    s.ChatMulti_Line(0, 7, {platform: 'kick', msgId: 'a"b', authorId: '1 2', nick: '"><img src=x onerror=1>', color: 'red;x:url(y)',
+    s.ChatMulti_Line(0, seq, {platform: 'kick', msgId: 'a"b', authorId: '1 2', nick: '"><img src=x onerror=1>', color: 'red;x:url(y)',
         role: '', badges: '', tokens: ['<script>x</script>'], text: 't', ts: 1, history: false, special: null, highlight: null});
     var html = lines.pop().message;
     check(html.indexOf('<img src=x') === -1 && html.indexOf('<script>') === -1 && html.indexOf('url(y)') === -1, 'foreign line is escaped');
@@ -140,31 +145,31 @@ function coreSandbox() {
     s.ChatLive_Custom_Nick_Color = 1;
     check(s.ChatMulti_NickStyle('yt', 'bob', null, 'owner') === 'style="color: ' + s.defaultColors['b'.charCodeAt(0) % s.defaultColorsLength] + ';"', 'readable palette overrides roles');
     // dedupe
-    s.ChatMulti_Line(0, 7, msgWithId('x1')); s.ChatMulti_Line(0, 7, msgWithId('x1'));
+    s.ChatMulti_Line(0, seq, msgWithId('x1')); s.ChatMulti_Line(0, seq, msgWithId('x1'));
     check(lines.length === 1, 'same platform message shown once');
     // Review Focus 2: stale generation
-    s.ChatMulti_Line(0, 6, msgWithId('x2')); check(lines.length === 1, 'stale generation dropped');
+    s.ChatMulti_Line(0, seq - 1, msgWithId('x2')); check(lines.length === 1, 'stale session dropped');
 
     // highlights follow the Twitch settings and order
     s.ChatLive_Highlight_AtStreamer = 1; s.ChatLive_Highlight_Mod = 1;
-    s.ChatMulti_Line(0, 7, Object.assign(msgWithId('x3'), {tokens: ['@streamer', 'hi'], text: '@streamer hi', role: 'mod'}));
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x3'), {tokens: ['@streamer', 'hi'], text: '@streamer hi', role: 'mod'}));
     var obj = lines.pop();
     check(obj.atstreamer && !obj.mod && obj.nick === 'bob' && obj.message.indexOf('#4eff42') !== -1, 'mention of the Twitch login highlights first');
-    s.ChatMulti_Line(0, 7, Object.assign(msgWithId('x4'), {role: 'mod'}));
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x4'), {role: 'mod'}));
     check(lines.pop().mod, 'moderator highlight');
     s.ChatLive_Highlight_AtStreamer = 0; s.ChatLive_Highlight_Mod = 0;
     // special lines follow show_sub
     s.ChatLive_Show_SUB = 0;
-    s.ChatMulti_Line(0, 7, Object.assign(msgWithId('x5'), {special: 'SC $5', highlight: '#1565c0'}));
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x5'), {special: 'SC $5', highlight: '#1565c0'}));
     check(lines.length === 1, 'special line hidden when subs are hidden');
     s.ChatLive_Show_SUB = 1;
-    s.ChatMulti_Line(0, 7, Object.assign(msgWithId('x6'), {special: 'SC $5', highlight: '#1565c0'}));
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x6'), {special: 'SC $5', highlight: '#1565c0'}));
     obj = lines.pop();
     check(obj.sub && obj.message.indexOf('SC $5') !== -1 && obj.message.indexOf('background-color: #1565c0') !== -1 && obj.message.indexOf('hi') !== -1, 'special line with header, body and background');
-    s.ChatMulti_Line(0, 7, Object.assign(msgWithId('x7'), {highlight: 'red;x:url(y)'}));
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x7'), {highlight: 'red;x:url(y)'}));
     check(lines.pop().message.indexOf('url(y)') === -1, 'invalid highlight dropped');
     // history line keeps its time for the ordered insert
-    s.ChatMulti_Line(0, 7, Object.assign(msgWithId('x8'), {history: true, ts: 1234}));
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x8'), {history: true, ts: 1234}));
     obj = lines.pop();
     check(obj.addToStart && obj.historyTs === 1234, 'foreign history carries its time');
     // moderation
@@ -181,10 +186,26 @@ function coreSandbox() {
     s.ChatMulti_Start(0, 7, true);
     s.ChatMulti_OnLinks(0, 6);
     check(started.length === 0, 'stale links ignored');
-    s.ChatMulti_OnLinks(0, 7);
-    check(started.join() === 'kick:kickslug:true' && s.Chat_div[0].classes.has('chat_linked'), 'links start sources and mark the chat');
+    seq = s.ChatMulti_State[0].seq;
+    s.ChatMulti_OnLinks(0, 7); s.ChatMulti_OnLinks(0, 7);
+    check(started.join() === 'kick:' + seq + ':kickslug:true' && s.Chat_div[0].classes.has('chat_linked'), 'links start sources once, with the session seq, and mark the chat');
     s.ChatMulti_Stop(0); s.ChatMulti_OnLinks(0, 7);
     check(started.length === 1 && !s.Chat_div[0].classes.has('chat_linked'), 'stop unmarks and ignores late links');
+    // Ruling 8: the session seq drops lines of a stopped or restarted session even when Chat_Id did not change
+    let n = lines.length;
+    s.ChatMulti_Start(0, 7, true); let oldSeq = s.ChatMulti_State[0].seq;
+    s.ChatMulti_Stop(0); s.ChatMulti_Line(0, oldSeq, msgWithId('s1'));
+    check(lines.length === n, 'stopped session renders nothing');
+    s.ChatMulti_Start(0, 7, true); oldSeq = s.ChatMulti_State[0].seq;
+    s.ChatMulti_Restart(0); const newSeq = s.ChatMulti_State[0].seq;
+    s.ChatMulti_Line(0, oldSeq, msgWithId('s2'));
+    check(lines.length === n && newSeq !== oldSeq && s.ChatMulti_State[0].withHistory === false, 'restart drops the old session, no history');
+    s.ChatMulti_Line(0, newSeq, msgWithId('s3'));
+    check(lines.length === n + 1, 'restarted session renders');
+    check(s.ChatMulti_IsActive(0, newSeq), 'current session is active');
+    s.Chat_Id[0] = 8;
+    check(!s.ChatMulti_IsActive(0, newSeq), 'session inactive after Chat_Id changes');
+    s.Chat_Id[0] = 7;
     s.Settings_value.chat_multi.defaultValue = 0;
     var requests = 0; s.FullxmlHttpGet = () => requests++;
     s.ChatMulti_Start(0, 7, true);

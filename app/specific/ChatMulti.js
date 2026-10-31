@@ -7,7 +7,8 @@
  */
 
 //Variable initialization
-var ChatMulti_State = []; // per chat_number {id, withHistory} while the foreign sources belong to that generation
+var ChatMulti_State = []; // per chat_number {id (Chat_Id), seq, withHistory, started} of the running session
+var ChatMulti_Seq = 0; // session counter, a new value on every Start / Restart
 var ChatMulti_Seen = []; // per chat_number {count, ids}, dedupes a message present in history and live
 var ChatMulti_SeenMax = 500;
 var ChatMulti_RoleColors = {owner: '#ffd600', mod: '#5e84f1', member: '#2ba640'}; // YouTube has role colors only
@@ -21,8 +22,17 @@ function ChatMulti_Start(chat_number, id, withHistory) {
     ChatMulti_Stop(chat_number);
     if (!id || !Settings_value.chat_multi.defaultValue) return;
 
-    ChatMulti_State[chat_number] = {id: id, withHistory: withHistory};
+    ChatMulti_State[chat_number] = {id: id, seq: ++ChatMulti_Seq, withHistory: withHistory, started: false};
     ChatLink_Lookup(chat_number, id);
+}
+
+// Contract for ChatKick.js / ChatYouTube.js: their Start gets the session seq as its id, passes it as the
+// FullxmlHttpGet checkResult and checks ChatMulti_IsActive before rendering, reconnecting or rescheduling.
+// Turning the setting off and ChatMulti_Restart end a session without changing Chat_Id, so a Chat_Id check
+// alone would let in-flight requests through.
+function ChatMulti_IsActive(chat_number, seq) {
+    var state = ChatMulti_State[chat_number];
+    return !!state && state.seq === seq && state.id === Chat_Id[chat_number];
 }
 
 // Only ChatLive_Clear stops the sources, a Twitch IRC reconnect (ChatLive_Close) keeps them
@@ -42,13 +52,14 @@ function ChatMulti_Restart(chat_number) {
 
 function ChatMulti_OnLinks(chat_number, id) {
     var state = ChatMulti_State[chat_number];
-    if (!state || state.id !== id || id !== Chat_Id[chat_number]) return;
+    if (!state || state.id !== id || id !== Chat_Id[chat_number] || state.started) return;
+    state.started = true;
 
     var links = ChatLink_Current(chat_number);
     ChatMulti_SetLinked(chat_number, !!(links.yt || links.kick));
 
-    if (links.kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, id, links.kick.value, state.withHistory);
-    if (links.yt && typeof ChatYouTube_Start === 'function') ChatYouTube_Start(chat_number, id, links.yt.value, state.withHistory);
+    if (links.kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, links.kick.value, state.withHistory);
+    if (links.yt && typeof ChatYouTube_Start === 'function') ChatYouTube_Start(chat_number, state.seq, links.yt.value, state.withHistory);
 }
 
 // The Twitch icon of every line is only visible inside a linked chat (css .chat_linked .chat_pi_tw)
@@ -84,13 +95,14 @@ function ChatMulti_NickStyle(platform, nick, color, role) {
     return 'style="color: ' + value + ';"';
 }
 
+// seq: the session seq the source got in its Start (see ChatMulti_IsActive)
 // msg = {platform, msgId, authorId, nick, color, role, badges (html), tokens (strings and [html]), text, ts (ms),
 //        history (bool), special (html header or null), highlight (css background color or null)}
 // nick, color, ids, highlight and string tokens are sanitized here; badges, special and [html] tokens
 // must be built by the source from escaped text and ChatMulti_SafeUrl urls only
 
-function ChatMulti_Line(chat_number, id, msg) {
-    if (id !== Chat_Id[chat_number]) return;
+function ChatMulti_Line(chat_number, seq, msg) {
+    if (!ChatMulti_IsActive(chat_number, seq)) return;
 
     var platform = msg.platform,
         msgId = ChatMulti_SafeId(msg.msgId),
