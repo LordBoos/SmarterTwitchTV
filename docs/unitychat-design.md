@@ -279,6 +279,7 @@ Po otevření chatu se do bloku historie, který dnes plní Twitch z robotty (30
 
 ## 10. Ověření
 
+- **Výsledek ověření na zařízení (2026-10-31):** Sony BRAVIA 4K VH22, Android 12 (SDK 31), debug APK se zabaleným webem, sonda přes WebView DevTools. Prošlo všech pět bodů: (1) adresář `api.jouki.cz` 200, (2) Kick `/api/v2/channels/<slug>` 200 přes XHR i `FullxmlHttpGet`, (3) Kick historie `/channels/<id kanálu>/messages` 200, (4) Pusher websocket drží spojení a přijímá `chatrooms.<id>.v2` (tisíce zpráv za několik minut), (5) YouTube `@handle/live` 200 s `isLiveNow`, `live_chat?is_popout=1` s `INNERTUBE_API_KEY` a `get_live_chat` polling 200. Pozor: `FullxmlHttpGet` musí dostat `postMessage = null` (ne `undefined`), jinak nativní vrstva pošle POST s tělem `undefined`; `key` se přenáší jako číslo. Vzorky jsou v `jsonreferences/kick_*.json` a `youtube_*.json`.
 - **Úplně první krok je ověření na zařízení.** Na skutečné Android TV (nebo emulátoru) se ověří, že z aplikace projdou volání adresáře, Kick API, Pusher websocketu a YouTube (krok 1–3 z 6.3). Teprve potom se staví zbytek. Když něco neprojde, řeší se to nejdřív (případně změnou APK, viz oddíl 7). Z desktopového Chrome to otestovat nejde, protože `FullxmlHttpGet` tam spadne na XHR a CORS ho zablokuje.
 - Testovací harness v `release/scripts/` (vzor: existující `*-tests.js`, bez frameworku), který pokrývá:
   - rozhodování o propojení z oddílu 6.1, včetně prázdné ruční hodnoty a vypnutého streamera,

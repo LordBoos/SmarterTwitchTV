@@ -1,0 +1,541 @@
+[
+ {
+  "event": "pusher:connection_established",
+  "data": "{\"socket_id\":\"1676977.13728654\",\"activity_timeout\":120}"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatroom_32806"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatrooms.25951243.v2"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatroom_25951243"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatroom_5856901"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatrooms.10181332.v2"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatroom_10181332"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatrooms.29224752.v2"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatroom_29224752"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"c5c3b721-cef0-42c6-847a-b1c5b55143ee\",\"message\":{\"id\":\"517d755b-d33e-4b98-957a-9d30969ba596\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatrooms.39928801.v2"
+ },
+ {
+  "event": "pusher_internal:subscription_succeeded",
+  "data": "{}",
+  "channel": "chatroom_39928801"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"61f7f5c7-056d-4a0c-abf9-2f9c43d01aae\",\"user\":{\"id\":64544481,\"username\":\"la01mz\",\"slug\":\"la01mz\"},\"banned_by\":{\"id\":0,\"username\":\"turkie180\",\"slug\":\"turkie180\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:56:39+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"42aedb0a-6483-4a8c-8c01-40289434b03c\",\"user\":{\"id\":125214539,\"username\":\"DR_am7\",\"slug\":\"dr-am7\"},\"banned_by\":{\"id\":0,\"username\":\"carnatiion\",\"slug\":\"carnatiion\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:56:46+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"c5bc1c14-b7ac-45fb-b96f-8cf4ee388314\",\"user\":{\"id\":111427033,\"username\":\"TURKI_799\",\"slug\":\"turki-799\"},\"banned_by\":{\"id\":0,\"username\":\"carnatiion\",\"slug\":\"carnatiion\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:56:56+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"be745771-d4ac-4cce-910c-df1cfbe318f6\",\"user\":{\"id\":78646548,\"username\":\"abugaht_1\",\"slug\":\"abugaht-1\"},\"banned_by\":{\"id\":0,\"username\":\"Jourryy\",\"slug\":\"jourryy\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:57:02+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"2e9dfe8b-8546-44c2-bb49-bc5a61f67dae\",\"message\":{\"id\":\"c8e81918-84f6-46a7-a534-5a7b95233c1b\"},\"aiModerated\":true,\"violatedRules\":[\"hate\"]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"98e888b1-df1a-4226-bcd7-a536c2146171\",\"message\":{\"id\":\"41b9416c-91e9-47ec-9705-4d2b18aa32bb\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"46f5306a-0da3-4212-8fb0-3d5b1151ac65\",\"message\":{\"id\":\"86a2a215-68d6-4276-a631-4a2ce60f1358\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.29224752.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"c8f1356d-92e1-4b25-85d9-c096d21186b9\",\"message\":{\"id\":\"a3d11545-7cb3-4a2d-a7a0-e70d415e03d1\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.25951243.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"099b6999-1ab4-451b-ba30-caf6b5dc2661\",\"user\":{\"id\":29255673,\"username\":\"Joudree\",\"slug\":\"joudree\"},\"banned_by\":{\"id\":0,\"username\":\"BotRix\",\"slug\":\"botrix\"},\"permanent\":false,\"duration\":1,\"expires_at\":\"2026-10-31T20:53:21+00:00\"}",
+  "channel": "chatrooms.25951243.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"31a0d102-65e3-4f08-8ae7-360e3ef5d268\",\"message\":{\"id\":\"cc4f1002-ad5a-4b4f-bcde-6fb84798ca4c\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"d16f63fc-ed6b-4903-bae3-e51982521444\",\"user\":{\"id\":136686254,\"username\":\"FD55H55\",\"slug\":\"fd55h55\"},\"banned_by\":{\"id\":0,\"username\":\"carnatiion\",\"slug\":\"carnatiion\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:57:25+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"4a9051c4-39ef-4693-af41-431ac68b0b00\",\"user\":{\"id\":136686254,\"username\":\"FD55H55\",\"slug\":\"fd55h55\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:57:27+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"e1d1a44c-d94c-49c3-aac5-b0dac1c3fc47\",\"message\":{\"id\":\"316a6591-cbd6-461a-b7d1-79c5252e5848\"},\"aiModerated\":true,\"violatedRules\":[\"hate\"]}",
+  "channel": "chatrooms.25951243.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"e2ac1664-cb00-492d-8a03-5f6261303260\",\"user\":{\"id\":1000470600,\"username\":\"OMAR_ECOTO\",\"slug\":\"omar-ecoto\"},\"banned_by\":{\"id\":0,\"username\":\"SONIC_71\",\"slug\":\"sonic-71\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:57:43+00:00\"}",
+  "channel": "chatrooms.29224752.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"ae592ef2-84e3-48d6-a872-df3caf416973\",\"user\":{\"id\":22661045,\"username\":\"TMESALYAMY91\",\"slug\":\"tmesalyamy91\"},\"banned_by\":{\"id\":0,\"username\":\"carnatiion\",\"slug\":\"carnatiion\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:57:43+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"98846c79-071b-460b-b20b-bcc2950b46e3\",\"user\":{\"id\":92477969,\"username\":\"mazko702\",\"slug\":\"mazko702\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:57:59+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"401b132e-55da-4659-9b8f-e8753116c7d3\",\"user\":{\"id\":92477969,\"username\":\"mazko702\",\"slug\":\"mazko702\"},\"banned_by\":{\"id\":0,\"username\":\"turkie180\",\"slug\":\"turkie180\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:58:00+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"77253772-c334-4b6e-9439-9354b3c2e25a\",\"user\":{\"id\":8963017,\"username\":\"Tkoj\",\"slug\":\"tkoj\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:58:52+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"7bef98ba-8c38-44dd-9f57-a4ba11137b23\",\"message\":{\"id\":\"e4d0aa52-21f0-4a85-8a54-83721ea1df0e\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"1df7583c-3271-4ee6-86d8-056361f2ab8d\",\"user\":{\"id\":55271235,\"username\":\"HBEB0123\",\"slug\":\"hbeb0123\"},\"banned_by\":{\"id\":0,\"username\":\"turkie180\",\"slug\":\"turkie180\"},\"permanent\":false,\"duration\":10080,\"expires_at\":\"2026-11-07T20:54:14+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"a48f2a4d-6e6c-4a90-82cd-8bca9ea02316\",\"user\":{\"id\":55271235,\"username\":\"HBEB0123\",\"slug\":\"hbeb0123\"},\"banned_by\":{\"id\":0,\"username\":\"Jourryy\",\"slug\":\"jourryy\"},\"permanent\":true}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"4a88bc98-d04c-4141-82e4-916f8b616c53\",\"user\":{\"id\":34127447,\"username\":\"Abdullah0755\",\"slug\":\"abdullah0755\"},\"banned_by\":{\"id\":0,\"username\":\"carnatiion\",\"slug\":\"carnatiion\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:59:30+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"608c7bcb-3385-4d13-8c16-67f5296bcbde\",\"user\":{\"id\":34127447,\"username\":\"Abdullah0755\",\"slug\":\"abdullah0755\"},\"banned_by\":{\"id\":0,\"username\":\"turkie180\",\"slug\":\"turkie180\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:59:31+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"a418e4f7-8a32-4d2c-b638-8ad87bb8a58e\",\"user\":{\"id\":36569127,\"username\":\"mohmmadalhaliba\",\"slug\":\"mohmmadalhaliba\"},\"banned_by\":{\"id\":0,\"username\":\"turkie180\",\"slug\":\"turkie180\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:59:43+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"5fde7365-0487-4069-8400-553c106656ea\",\"user\":{\"id\":94744954,\"username\":\"X_5111\",\"slug\":\"x-5111\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:59:46+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"b70d4c17-b6f4-4408-8951-1fcdb9ce1c4a\",\"user\":{\"id\":72551739,\"username\":\"92999Sa\",\"slug\":\"92999sa\"},\"banned_by\":{\"id\":0,\"username\":\"turkie180\",\"slug\":\"turkie180\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T20:59:52+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"7c50d765-afa9-4b85-b800-fad2833d3b5e\",\"message\":{\"id\":\"53d1d6ea-5ce2-4b97-b689-14c29e5408c4\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"7ad78052-c9ff-434d-871f-a2fc4480508b\",\"message\":{\"id\":\"53d1d6ea-5ce2-4b97-b689-14c29e5408c4\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"87843ea1-4dc3-47a4-b791-ad8eeec7e083\",\"message\":{\"id\":\"53d1d6ea-5ce2-4b97-b689-14c29e5408c4\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"71e946ec-3160-4f9c-95d1-c935f9b6bf5a\",\"user\":{\"id\":16415692,\"username\":\"hamzaalsud\",\"slug\":\"hamzaalsud\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:00:04+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"62f643fa-cf02-4d62-b014-e25ef41f93b1\",\"user\":{\"id\":81022943,\"username\":\"HusseinFaj\",\"slug\":\"husseinfaj\"},\"banned_by\":{\"id\":0,\"username\":\"carnatiion\",\"slug\":\"carnatiion\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:00:07+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"daa93bcf-8a67-45a7-97c8-14ab884a7e3d\",\"user\":{\"id\":84374928,\"username\":\"I7O5\",\"slug\":\"i7o5\"},\"banned_by\":{\"id\":0,\"username\":\"carnatiion\",\"slug\":\"carnatiion\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:00:21+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"d6303d55-a93c-4dab-9fe8-9239997446a0\",\"user\":{\"id\":59900443,\"username\":\"8ZF1\",\"slug\":\"8zf1\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:00:25+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "RewardRedeemedEvent",
+  "data": "{\"reward_title\":\"خرطوم ملك الظرط فى مصر\",\"user_id\":1000766330,\"channel_id\":29513073,\"username\":\"river7623\",\"user_input\":\"\",\"reward_background_color\":\"#FF9D00\"}",
+  "channel": "chatroom_29224752"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"f46b52f3-ee45-465c-bce8-c541be85e71d\",\"user\":{\"id\":112282684,\"username\":\"Yusuf_sal\",\"slug\":\"yusuf-sal\"},\"banned_by\":{\"id\":0,\"username\":\"0Cycas\",\"slug\":\"0cycas\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:00:41+00:00\"}",
+  "channel": "chatrooms.25951243.v2"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"e38aeeb9-2b92-450e-bbe9-0d57aa775c7a\",\"message\":{\"id\":\"9d22c134-f0c2-47eb-89e7-f7ea70c3a798\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"6f60d4e0-87cc-48c2-929d-297c326d32a1\",\"user\":{\"id\":5753393,\"username\":\"0559066712\",\"slug\":\"0559066712\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:00:57+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "RewardRedeemedEvent",
+  "data": "{\"reward_title\":\"احباب الشرسه بيو بيو ❤️\",\"user_id\":49840173,\"channel_id\":29513073,\"username\":\"Amr_hagag12\",\"user_input\":\"\",\"reward_background_color\":\"#F2708A\"}",
+  "channel": "chatroom_29224752"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"8948cd54-77b7-4767-9e4d-98b543ea1ab4\",\"user\":{\"id\":99602835,\"username\":\"xxixv\",\"slug\":\"xxixv\"},\"banned_by\":{\"id\":0,\"username\":\"Jourryy\",\"slug\":\"jourryy\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:01:24+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "RewardRedeemedEvent",
+  "data": "{\"reward_title\":\"KIFFLOM\",\"user_id\":135633110,\"channel_id\":32807,\"username\":\"Phantomcost\",\"user_input\":\"\",\"reward_background_color\":\"#E9113C\"}",
+  "channel": "chatroom_32806"
+ },
+ {
+  "event": "RewardRedeemedEvent",
+  "data": "{\"reward_title\":\"احباب الشرسه بيو بيو ❤️\",\"user_id\":96670707,\"channel_id\":29513073,\"username\":\"af1gj\",\"user_input\":\"\",\"reward_background_color\":\"#F2708A\"}",
+  "channel": "chatroom_29224752"
+ },
+ {
+  "event": "RewardRedeemedEvent",
+  "data": "{\"reward_title\":\"المعلم كروان رقم 1\",\"user_id\":96670707,\"channel_id\":29513073,\"username\":\"af1gj\",\"user_input\":\"\",\"reward_background_color\":\"#00F1FF\"}",
+  "channel": "chatroom_29224752"
+ },
+ {
+  "event": "App\\Events\\MessageDeletedEvent",
+  "data": "{\"id\":\"328f51d9-ee91-4a44-826d-6afe65f7402b\",\"message\":{\"id\":\"403e7179-bed7-4cb6-be6c-92aca154c96e\"},\"aiModerated\":false,\"violatedRules\":[]}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "RewardRedeemedEvent",
+  "data": "{\"reward_title\":\"خرطوم ملك الظرط فى مصر\",\"user_id\":111794302,\"channel_id\":29513073,\"username\":\"reno3215\",\"user_input\":\"\",\"reward_background_color\":\"#FF9D00\"}",
+  "channel": "chatroom_29224752"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"5f18f11e-e23e-4ca3-8303-91d12604c937\",\"user\":{\"id\":46444892,\"username\":\"F1aris\",\"slug\":\"f1aris\"},\"banned_by\":{\"id\":0,\"username\":\"eyan_xxx\",\"slug\":\"eyan-xxx\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:03:18+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"f4054e47-d437-4f27-9f5a-264bdab94d8d\",\"user\":{\"id\":133422327,\"username\":\"Bat502\",\"slug\":\"bat502\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:03:34+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "App\\Events\\UserBannedEvent",
+  "data": "{\"id\":\"b60e61e7-c690-4a13-b12b-d011a34e7b16\",\"user\":{\"id\":46239098,\"username\":\"haythem188\",\"slug\":\"haythem188\"},\"banned_by\":{\"id\":0,\"username\":\"AK_ALNENJA\",\"slug\":\"ak-alnenja\"},\"permanent\":false,\"duration\":5,\"expires_at\":\"2026-10-31T21:03:46+00:00\"}",
+  "channel": "chatrooms.5856901.v2"
+ },
+ {
+  "event": "RewardRedeemedEvent",
+  "data": "{\"reward_title\":\"خرطوم بتاع الناس\",\"user_id\":86512442,\"channel_id\":29513073,\"username\":\"fgghnn\",\"user_input\":\"\",\"reward_background_color\":\"#E9113C\"}",
+  "channel": "chatroom_29224752"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"71131fbc-9d80-4639-9bf5-25a2529cece4\",\"chatroom_id\":32806,\"content\":\"what class u playing?\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:47:35+00:00\",\"sender\":{\"id\":51941292,\"username\":\"Fynomenal\",\"slug\":\"fynomenal\",\"identity\":{\"color\":\"#72ACED\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/40_b719135d-a9a8-4994-8f51-a7cce555c41c.png\",\"metadata\":{\"level\":40},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":839412,\"username\":\"conzfearacy\"},\"original_message\":{\"id\":\"260634dc-cc64-4ac6-b962-4bd219e7bbe4\",\"content\":\"5 more days till wow forever you hyped\"},\"message_ref\":\"1793479655121\"},\"thread_parent_id\":\"260634dc-cc64-4ac6-b962-4bd219e7bbe4\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"9d4ed3e6-ac4d-408c-9f8d-e0650f8e7137\",\"chatroom_id\":32806,\"content\":\"wait its today?\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:47:37+00:00\",\"sender\":{\"id\":55760591,\"username\":\"JUICERPK\",\"slug\":\"juicerpk\",\"identity\":{\"color\":\"#BDFF28\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/29_36298231-50cc-41fa-b3e6-5401d216386d.png\",\"metadata\":{\"level\":29},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":37865791,\"username\":\"ChaeHenny\"},\"original_message\":{\"id\":\"f6c74b1e-bd1f-4b76-bbf1-5926b2e5ea06\",\"content\":\"Nobody else live 2 hours before a rockstar sponsored event [emote:5748000:collectiblesGoldenKEKLEO]\"},\"message_ref\":\"1793479656842\"},\"thread_parent_id\":\"f6c74b1e-bd1f-4b76-bbf1-5926b2e5ea06\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"4b5ecd94-458a-4bd4-8364-a37069c98d54\",\"chatroom_id\":32806,\"content\":\"mage into huntard\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:47:47+00:00\",\"sender\":{\"id\":839412,\"username\":\"conzfearacy\",\"slug\":\"conzfearacy\",\"identity\":{\"color\":\"#1475E1\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/51_e5f3239c-b268-48b9-8ce9-3a270fc07b91.png\",\"metadata\":{\"level\":51},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":51941292,\"username\":\"Fynomenal\"},\"original_message\":{\"id\":\"71131fbc-9d80-4639-9bf5-25a2529cece4\",\"content\":\"what class u playing?\"},\"message_ref\":\"1793479667859\"},\"thread_parent_id\":\"260634dc-cc64-4ac6-b962-4bd219e7bbe4\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"960c6408-e3b4-4ce3-abd2-64c68c7d50ad\",\"chatroom_id\":32806,\"content\":\"Yeah its at 7pm est\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:47:53+00:00\",\"sender\":{\"id\":37865791,\"username\":\"ChaeHenny\",\"slug\":\"chaehenny\",\"identity\":{\"color\":\"#FF55B3\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/37_019f35ce-472c-749c-8e50-5f53afb1de7b.png\",\"metadata\":{\"level\":37},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":55760591,\"username\":\"JUICERPK\"},\"original_message\":{\"id\":\"9d4ed3e6-ac4d-408c-9f8d-e0650f8e7137\",\"content\":\"wait its today?\"},\"message_ref\":\"1793479673087\"},\"thread_parent_id\":\"f6c74b1e-bd1f-4b76-bbf1-5926b2e5ea06\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"1b66c880-08d5-4a69-ad42-bacdad655d7a\",\"chatroom_id\":32806,\"content\":\"he put in the holdings account\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:48:01+00:00\",\"sender\":{\"id\":7444708,\"username\":\"NoviceMedicalGrower\",\"slug\":\"novicemedicalgrower\",\"identity\":{\"color\":\"#F2708A\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/39_019f35ce-472d-7926-bc7d-bd31729b18bb.png\",\"metadata\":{\"level\":39},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":99240645,\"username\":\"sweezie218z\"},\"original_message\":{\"id\":\"d1784287-4b52-4a18-abc3-3b548f0679b2\",\"content\":\"did he ever pay the squad for those radios?\"},\"message_ref\":\"1793479677059\"},\"thread_parent_id\":\"d1784287-4b52-4a18-abc3-3b548f0679b2\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"c9e3252a-67d5-4ba9-b9f2-78ae6c0ce3d1\",\"chatroom_id\":32806,\"content\":\"what is the event?\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:48:11+00:00\",\"sender\":{\"id\":88876663,\"username\":\"Bumberz\",\"slug\":\"bumberz\",\"identity\":{\"color\":\"#FF2C56\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/33_019f35ce-472b-7d58-83fa-2675b04a99bc.png\",\"metadata\":{\"level\":33},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":37865791,\"username\":\"ChaeHenny\"},\"original_message\":{\"id\":\"960c6408-e3b4-4ce3-abd2-64c68c7d50ad\",\"content\":\"Yeah its at 7pm est\"},\"message_ref\":\"1793479690900\"},\"thread_parent_id\":\"f6c74b1e-bd1f-4b76-bbf1-5926b2e5ea06\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"36ec4e62-404e-471f-ac48-167fa50c6a61\",\"chatroom_id\":32806,\"content\":\"nice, i wanna play lock but also hunter\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:48:16+00:00\",\"sender\":{\"id\":51941292,\"username\":\"Fynomenal\",\"slug\":\"fynomenal\",\"identity\":{\"color\":\"#72ACED\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/40_b719135d-a9a8-4994-8f51-a7cce555c41c.png\",\"metadata\":{\"level\":40},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":839412,\"username\":\"conzfearacy\"},\"original_message\":{\"id\":\"4b5ecd94-458a-4bd4-8364-a37069c98d54\",\"content\":\"mage into huntard\"},\"message_ref\":\"1793479696737\"},\"thread_parent_id\":\"260634dc-cc64-4ac6-b962-4bd219e7bbe4\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"f1e3249b-931a-42d7-9f82-53b6f5c06ada\",\"chatroom_id\":32806,\"content\":\"Nobody really knows yet, something halloween themed haha\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:48:27+00:00\",\"sender\":{\"id\":37865791,\"username\":\"ChaeHenny\",\"slug\":\"chaehenny\",\"identity\":{\"color\":\"#FF55B3\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/37_019f35ce-472c-749c-8e50-5f53afb1de7b.png\",\"metadata\":{\"level\":37},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":88876663,\"username\":\"Bumberz\"},\"original_message\":{\"id\":\"c9e3252a-67d5-4ba9-b9f2-78ae6c0ce3d1\",\"content\":\"what is the event?\"},\"message_ref\":\"1793479707062\"},\"thread_parent_id\":\"f6c74b1e-bd1f-4b76-bbf1-5926b2e5ea06\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"b8f8496d-a2db-46e6-aa41-6efeae3d3523\",\"chatroom_id\":32806,\"content\":\"ooooo\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:48:41+00:00\",\"sender\":{\"id\":88876663,\"username\":\"Bumberz\",\"slug\":\"bumberz\",\"identity\":{\"color\":\"#FF2C56\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/33_019f35ce-472b-7d58-83fa-2675b04a99bc.png\",\"metadata\":{\"level\":33},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":37865791,\"username\":\"ChaeHenny\"},\"original_message\":{\"id\":\"f1e3249b-931a-42d7-9f82-53b6f5c06ada\",\"content\":\"Nobody really knows yet, something halloween themed haha\"},\"message_ref\":\"1793479721192\"},\"thread_parent_id\":\"f6c74b1e-bd1f-4b76-bbf1-5926b2e5ea06\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"2f2fbd15-6746-448a-ab85-481b40de8354\",\"chatroom_id\":32806,\"content\":\"yes\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:49:10+00:00\",\"sender\":{\"id\":1296146,\"username\":\"kyzo4pf\",\"slug\":\"kyzo4pf\",\"identity\":{\"color\":\"#E5FFAB\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/20_8778162c-8b1f-4b3a-88fe-4dbddb629d16.png\",\"metadata\":{\"level\":20},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":14001009,\"username\":\"MilkyWay123456789\"},\"original_message\":{\"id\":\"fa0efcd1-eeff-4ccf-b5cd-5e3d4cb49b52\",\"content\":\"Is Mr C perma dead???????\"},\"message_ref\":\"1793479750128\"},\"thread_parent_id\":\"fa0efcd1-eeff-4ccf-b5cd-5e3d4cb49b52\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"3cbff659-17d7-4707-b513-768683e04717\",\"chatroom_id\":32806,\"content\":\"No he lost an eye.\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:49:24+00:00\",\"sender\":{\"id\":132628180,\"username\":\"atomic_robot\",\"slug\":\"atomic-robot\",\"identity\":{\"color\":\"#00F1FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/26_963742d0-50b9-4a94-a723-d022ed87e50e.png\",\"metadata\":{\"level\":26},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":14001009,\"username\":\"MilkyWay123456789\"},\"original_message\":{\"id\":\"fa0efcd1-eeff-4ccf-b5cd-5e3d4cb49b52\",\"content\":\"Is Mr C perma dead???????\"},\"message_ref\":\"1793479766956\"},\"thread_parent_id\":\"fa0efcd1-eeff-4ccf-b5cd-5e3d4cb49b52\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"a59915ea-454f-4572-890d-20e2f02d805c\",\"chatroom_id\":32806,\"content\":\"what type\",\"type\":\"reply\",\"created_at\":\"2026-10-31T20:50:37+00:00\",\"sender\":{\"id\":16699994,\"username\":\"Shakenbbake\",\"slug\":\"shakenbbake\",\"identity\":{\"color\":\"#E5FFAB\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/24_0aa9e9ff-8f0c-42cd-9d95-09b4800348ee.png\",\"metadata\":{\"level\":24},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"original_sender\":{\"id\":131382166,\"username\":\"JohnBoy_07\"},\"original_message\":{\"id\":\"1b3de1c5-741d-464c-abba-efeb690c9fc6\",\"content\":\"ask what type of guns dickhead lol\"},\"message_ref\":\"1793479835885\"},\"thread_parent_id\":\"1b3de1c5-741d-464c-abba-efeb690c9fc6\"}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"1546fd79-ed8d-4aa5-ba09-13a020798d71\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW] yelling in texts aswell\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:27+00:00\",\"sender\":{\"id\":131542916,\"username\":\"Juan2Kick\",\"slug\":\"juan2kick\",\"identity\":{\"color\":\"#E4D88F\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/21_45650ac2-eab5-4ec8-a295-a939b4ef9f0f.png\",\"metadata\":{\"level\":21},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479647402\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"a3466024-c263-406e-acbf-bd62d12703d2\",\"chatroom_id\":32806,\"content\":\"[emote:5470844:kickclassic]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:36+00:00\",\"sender\":{\"id\":26874102,\"username\":\"NaemanxD\",\"slug\":\"naemanxd\",\"identity\":{\"color\":\"#6F87FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/21_45650ac2-eab5-4ec8-a295-a939b4ef9f0f.png\",\"metadata\":{\"level\":21},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479655448\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"0850ed93-35c9-49bc-b630-2bcfa477a1a2\",\"chatroom_id\":32806,\"content\":\"i thought they didn't even have 200k [emote:37225:KEKLEO]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:48+00:00\",\"sender\":{\"id\":226653,\"username\":\"powerfeiz\",\"slug\":\"powerfeiz\",\"identity\":{\"color\":\"#00F1FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":true,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/53_5ab08f1d-5e24-4824-a4db-10ebb0af392d.png\",\"metadata\":{\"level\":53},\"selected\":true,\"sort_order\":1},{\"name\":\"WorldofWarcraftForeverBeta\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/WorldofWarcraftForeverBeta_c4ae6085-8ec5-4905-bca5-23c56b9787d8.png\",\"selected\":true,\"sort_order\":4}]}},\"metadata\":{\"message_ref\":\"1793479663981\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"e6fb435e-e4f9-4fd3-9ee9-d9baed4dbb48\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:52+00:00\",\"sender\":{\"id\":1090315,\"username\":\"simpledimple\",\"slug\":\"simpledimple\",\"identity\":{\"color\":\"#DEB2FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/45_82077115-61cb-4b5d-b036-31f13b96cfeb.png\",\"metadata\":{\"level\":45},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479671902\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"9c053ffb-cfba-45ed-8143-21be20e8c4c4\",\"chatroom_id\":32806,\"content\":\"[emote:37225:KEKLEO]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:52+00:00\",\"sender\":{\"id\":4497702,\"username\":\"JustinCaesar\",\"slug\":\"justincaesar\",\"identity\":{\"color\":\"#6F87FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/28_2a14f4f6-7793-431b-8ffc-79f045c425fc.png\",\"metadata\":{\"level\":28},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479672670\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"a78a7b23-2cab-49e4-901a-5d95095bcd59\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:54+00:00\",\"sender\":{\"id\":85728559,\"username\":\"RomanvonUS\",\"slug\":\"romanvonus\",\"identity\":{\"color\":\"#F2708A\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/33_019f35ce-472b-7d58-83fa-2675b04a99bc.png\",\"metadata\":{\"level\":33},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479675094\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"d2f2e90d-e2fd-4e2f-a3d5-0d694ffeb642\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:58+00:00\",\"sender\":{\"id\":25796965,\"username\":\"alaouskie\",\"slug\":\"alaouskie\",\"identity\":{\"color\":\"#DEB2FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/31_019f35ce-472a-74da-b3bc-69e3f2363639.png\",\"metadata\":{\"level\":31},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479679789\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"6af6392b-c8a6-4b35-9b74-e38db0886a6a\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:00+00:00\",\"sender\":{\"id\":255476,\"username\":\"CharliWooo\",\"slug\":\"charliwooo\",\"identity\":{\"color\":\"#BC66FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":true,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/52_72872aa8-77d8-4688-a9d1-a68fb7b27feb.png\",\"metadata\":{\"level\":52},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479680535\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"e5c854a6-b499-47aa-8c81-7b9808c05fe3\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:02+00:00\",\"sender\":{\"id\":41236101,\"username\":\"FlashCannon\",\"slug\":\"flashcannon\",\"identity\":{\"color\":\"#FF9D00\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/33_019f35ce-472b-7d58-83fa-2675b04a99bc.png\",\"metadata\":{\"level\":33},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479681712\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"861b158c-7a8e-4bd7-89a4-d2d48f0bae8a\",\"chatroom_id\":32806,\"content\":\"[emote:37225:KEKLEO]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:02+00:00\",\"sender\":{\"id\":4497702,\"username\":\"JustinCaesar\",\"slug\":\"justincaesar\",\"identity\":{\"color\":\"#6F87FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/28_2a14f4f6-7793-431b-8ffc-79f045c425fc.png\",\"metadata\":{\"level\":28},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479682528\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"8f805f2d-13f3-4cc4-961a-51cecba8c6ca\",\"chatroom_id\":32806,\"content\":\"[emote:37227:LULW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:02+00:00\",\"sender\":{\"id\":234850,\"username\":\"chefs\",\"slug\":\"chefs\",\"identity\":{\"color\":\"#F2708A\",\"badges\":[],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":false,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/52_72872aa8-77d8-4688-a9d1-a68fb7b27feb.png\",\"metadata\":{\"level\":52},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479682787\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"12622883-3934-4900-800b-99fa40890187\",\"chatroom_id\":32806,\"content\":\"[emote:5748031:collectibleswideKEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:03+00:00\",\"sender\":{\"id\":1978471,\"username\":\"Deweius\",\"slug\":\"deweius\",\"identity\":{\"color\":\"#FF2C56\",\"badges\":[],\"badges_v2\":[{\"name\":\"GOAT\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/GOAT_019f591b-30ae-7285-8377-293e708a5e30.png\",\"selected\":false,\"sort_order\":4},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/62_019f35ce-472f-7a55-82a2-7aff0f08194c.png\",\"metadata\":{\"level\":62},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479682168\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"e156c2c0-0de6-4b97-9187-eca42a195163\",\"chatroom_id\":32806,\"content\":\"spending all their money on an apartment sounds crazy\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:50+00:00\",\"sender\":{\"id\":609740,\"username\":\"Martymagoo78\",\"slug\":\"martymagoo78\",\"identity\":{\"color\":\"#72ACED\",\"badges\":[{\"type\":\"founder\",\"text\":\"Founder\",\"sort_order\":6}],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/48_1bb061b0-08bb-41fd-94f0-d88c151f164f.png\",\"metadata\":{\"level\":48},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479670059\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"1ac76881-f29c-46c5-829a-2b317663e26b\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:06+00:00\",\"sender\":{\"id\":3092703,\"username\":\"alexpgnz0r\",\"slug\":\"alexpgnz0r\",\"identity\":{\"color\":\"#75FD46\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":1,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/23_9d2886b2-cddf-410f-9af5-424c72d7d4a9.png\",\"metadata\":{\"level\":23},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479685812\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"5e0df200-e8db-4909-b88e-c2705f856350\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:06+00:00\",\"sender\":{\"id\":1000085362,\"username\":\"joddha007\",\"slug\":\"joddha007\",\"identity\":{\"color\":\"#FFFFFF\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":1,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/19_5d6341dc-feee-4a6d-becd-1f9cdef30a53.png\",\"metadata\":{\"level\":19},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479687618\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"7df39b2c-bd97-457e-8064-7f74070124c8\",\"chatroom_id\":32806,\"content\":\"[emote:5747996:collectiblesGoldenKEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:12+00:00\",\"sender\":{\"id\":236224,\"username\":\"Legacy_7\",\"slug\":\"legacy-7\",\"identity\":{\"color\":\"#AAA9FF\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":1,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":true,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/34_019f35ce-472b-7c85-b482-8e7b7ed343b1.png\",\"metadata\":{\"level\":34},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479691884\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"0b5c2f10-3ba6-4a76-9844-961d1c087562\",\"chatroom_id\":32806,\"content\":\"got no pls no casino. x is finally doin shit\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:18+00:00\",\"sender\":{\"id\":8004105,\"username\":\"Sellio\",\"slug\":\"sellio\",\"identity\":{\"color\":\"#E26EFF\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":1,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/22_f0dcac43-ed99-482b-a0ff-d9048b25475d.png\",\"metadata\":{\"level\":22},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479696828\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"ab683b7f-2de1-44b8-bcc2-7495554a1d64\",\"chatroom_id\":32806,\"content\":\"money cleaning turf is probabaly insane, id love to see how much rolled bills are on the server rn\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:49:04+00:00\",\"sender\":{\"id\":8004105,\"username\":\"Sellio\",\"slug\":\"sellio\",\"identity\":{\"color\":\"#E26EFF\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":1,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/22_f0dcac43-ed99-482b-a0ff-d9048b25475d.png\",\"metadata\":{\"level\":22},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479743291\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"3d8d41f2-0b71-4aa9-b6e1-f2ac2605bb44\",\"chatroom_id\":32806,\"content\":\"[emote:5747996:collectiblesGoldenKEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:49:38+00:00\",\"sender\":{\"id\":228062,\"username\":\"Jaspr\",\"slug\":\"Jaspr\",\"identity\":{\"color\":\"#BDFF28\",\"badges\":[{\"type\":\"moderator\",\"text\":\"Moderator\",\"sort_order\":12}],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":true,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/54_29009a6a-53b8-42ab-acae-9ff8df811110.png\",\"metadata\":{\"level\":54},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479786639\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"c4e0d71b-fb60-4c51-b8db-7ed14227dfff\",\"chatroom_id\":32806,\"content\":\"[emote:37225:KEKLEO]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:50:01+00:00\",\"sender\":{\"id\":1000085362,\"username\":\"joddha007\",\"slug\":\"joddha007\",\"identity\":{\"color\":\"#FFFFFF\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":1,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/19_5d6341dc-feee-4a6d-becd-1f9cdef30a53.png\",\"metadata\":{\"level\":19},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479802921\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"97cd67ab-88c0-4843-bba4-d8b18e027a57\",\"chatroom_id\":32806,\"content\":\"[emote:5756627:politeCat]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:50:01+00:00\",\"sender\":{\"id\":3092703,\"username\":\"alexpgnz0r\",\"slug\":\"alexpgnz0r\",\"identity\":{\"color\":\"#75FD46\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":1,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/23_9d2886b2-cddf-410f-9af5-424c72d7d4a9.png\",\"metadata\":{\"level\":23},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479801506\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"c8892b04-093c-4da1-904a-f9698aa96712\",\"chatroom_id\":32806,\"content\":\"[emote:37225:KEKLEO]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:50:01+00:00\",\"sender\":{\"id\":219928,\"username\":\"shurke\",\"slug\":\"shurke\",\"identity\":{\"color\":\"#FFD899\",\"badges\":[{\"type\":\"founder\",\"text\":\"Founder\",\"sort_order\":6}],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":false,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/16_d3bd37f4-2442-43cb-99b8-eeaec77d1e61.png\",\"metadata\":{\"level\":16},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479801454\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"2b631f35-0db3-4d73-8e18-0d631a81b563\",\"chatroom_id\":32806,\"content\":\"why? maynard is why.\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:50:03+00:00\",\"sender\":{\"id\":8004105,\"username\":\"Sellio\",\"slug\":\"sellio\",\"identity\":{\"color\":\"#E26EFF\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":1,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/22_f0dcac43-ed99-482b-a0ff-d9048b25475d.png\",\"metadata\":{\"level\":22},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479802230\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"ea55e287-9e4d-488e-93c6-9b08b6bcedb9\",\"chatroom_id\":32806,\"content\":\"[emote:37226:KEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:50:04+00:00\",\"sender\":{\"id\":165799,\"username\":\"cr4ck3rs\",\"slug\":\"cr4ck3rs\",\"identity\":{\"color\":\"#BC66FF\",\"badges\":[{\"type\":\"subscriber\",\"text\":\"Subscriber\",\"count\":3,\"sort_order\":9}],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":true,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/33_019f35ce-472b-7d58-83fa-2675b04a99bc.png\",\"metadata\":{\"level\":33},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479803981\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"1087ce8b-c3f5-4845-b495-0ec6881c28b9\",\"chatroom_id\":32806,\"content\":\"they got a new pawn ?\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:45+00:00\",\"sender\":{\"id\":8479695,\"username\":\"juiker\",\"slug\":\"juiker\",\"identity\":{\"color\":\"#FFFFFF\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/15_61050dae-2221-4500-aca7-0d3793fe98e0.png\",\"metadata\":{\"level\":15},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479666447\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"69db00fc-2c0d-443d-97fa-38c37e02b779\",\"chatroom_id\":32806,\"content\":\"u are missing one arrow\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:45+00:00\",\"sender\":{\"id\":164664,\"username\":\"uqiv\",\"slug\":\"uqiv\",\"identity\":{\"color\":\"#75FD46\",\"badges\":[],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":true,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/42_226c6c94-f3c1-476a-80b5-f58e5e656a47.png\",\"metadata\":{\"level\":42},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479736640\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"4277a7dd-2ac3-4418-a5b1-a3df0df24fee\",\"chatroom_id\":32806,\"content\":\"welp, time to clean\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:48+00:00\",\"sender\":{\"id\":225968,\"username\":\"bankai_mofo\",\"slug\":\"bankai_mofo\",\"identity\":{\"color\":\"#4CFF75\",\"badges\":[],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":false,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/31_019f35ce-472a-74da-b3bc-69e3f2363639.png\",\"metadata\":{\"level\":31},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479670896\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"368ee1a7-8941-42fc-bcce-745c4344c398\",\"chatroom_id\":32806,\"content\":\"Saab sounds different today\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:49+00:00\",\"sender\":{\"id\":7416340,\"username\":\"autismso\",\"slug\":\"autismso\",\"identity\":{\"color\":\"#FFFFFF\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/25_f055d38e-8e80-4a99-8419-467bad3eb1ab.png\",\"metadata\":{\"level\":25},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479740636\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"084bef83-3d4c-4f33-bdc0-20cc00c4d4e1\",\"chatroom_id\":32806,\"content\":\"And CJ I'm buying a car KEKW\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:51+00:00\",\"sender\":{\"id\":234099,\"username\":\"burningflag\",\"slug\":\"burningflag\",\"identity\":{\"color\":\"#75FD46\",\"badges\":[],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":false,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/28_2a14f4f6-7793-431b-8ffc-79f045c425fc.png\",\"metadata\":{\"level\":28},\"selected\":false,\"sort_order\":1}]}}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"d1df6e5b-0bd6-43ee-bee4-b2c1d234e21c\",\"chatroom_id\":32806,\"content\":\"they only have 700k all together?\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:53+00:00\",\"sender\":{\"id\":22203078,\"username\":\"WrestlingJunkie\",\"slug\":\"wrestlingjunkie\",\"identity\":{\"color\":\"#FF55B3\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/36_019f35ce-472c-788f-b36a-dbedaa04d6c5.png\",\"metadata\":{\"level\":36},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479674904\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"559e6bb4-a50b-49c0-8d40-fe080b7e83a6\",\"chatroom_id\":32806,\"content\":\"do what u did again\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:47:59+00:00\",\"sender\":{\"id\":164664,\"username\":\"uqiv\",\"slug\":\"uqiv\",\"identity\":{\"color\":\"#75FD46\",\"badges\":[],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":true,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/42_226c6c94-f3c1-476a-80b5-f58e5e656a47.png\",\"metadata\":{\"level\":42},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479750757\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"ef1ce2f4-9d39-428e-ac31-063f432f5d22\",\"chatroom_id\":32806,\"content\":\"are you dress as Harry lol\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:00+00:00\",\"sender\":{\"id\":226104,\"username\":\"jaylinna\",\"slug\":\"jaylinna\",\"identity\":{\"color\":\"#BC66FF\",\"badges\":[],\"badges_v2\":[{\"name\":\"kick_founder22\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/kick_founder22_2a2d3875-276e-4d87-ab63-d7578d2e10c0.png\",\"selected\":false,\"sort_order\":2},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/28_2a14f4f6-7793-431b-8ffc-79f045c425fc.png\",\"metadata\":{\"level\":28},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479680070\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"e31ecc9f-727b-4d1b-a503-c60ac0631dde\",\"chatroom_id\":32806,\"content\":\"is the bird business dead?\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:02+00:00\",\"sender\":{\"id\":3008522,\"username\":\"realAbdulla\",\"slug\":\"realabdulla\",\"identity\":{\"color\":\"#55FFC7\",\"badges\":[],\"badges_v2\":[{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/22_f0dcac43-ed99-482b-a0ff-d9048b25475d.png\",\"metadata\":{\"level\":22},\"selected\":false,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479682612\"}}",
+  "channel": "chatrooms.32806.v2"
+ },
+ {
+  "event": "App\\Events\\ChatMessageEvent",
+  "data": "{\"id\":\"0d26f0c5-5ccc-4af6-8b4c-2c464ca4177c\",\"chatroom_id\":32806,\"content\":\"[emote:5748031:collectibleswideKEKW]\",\"type\":\"message\",\"created_at\":\"2026-10-31T20:48:04+00:00\",\"sender\":{\"id\":1978471,\"username\":\"Deweius\",\"slug\":\"deweius\",\"identity\":{\"color\":\"#FF2C56\",\"badges\":[],\"badges_v2\":[{\"name\":\"GOAT\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/GOAT_019f591b-30ae-7285-8377-293e708a5e30.png\",\"selected\":false,\"sort_order\":4},{\"name\":\"level\",\"badge_type\":\"global\",\"image_url\":\"https:\\/\\/ext.cdn.kick.com\\/chat\\/badges\\/62_019f35ce-472f-7a55-82a2-7aff0f08194c.png\",\"metadata\":{\"level\":62},\"selected\":true,\"sort_order\":1}]}},\"metadata\":{\"message_ref\":\"1793479682304\"}}",
+  "channel": "chatrooms.32806.v2"
+ }
+]
