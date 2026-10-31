@@ -195,7 +195,7 @@ function ChatKick_Reconnect(chat_number, st) {
     var delay = Math.min(60000, 2000 * Math.pow(2, st.retry++));
     st.timer = Main_setTimeout(
         function () {
-            ChatKick_Open(chat_number, st);
+            if (ChatKick_Live(chat_number, st)) ChatKick_Open(chat_number, st);
         },
         delay,
         st.timer
@@ -264,13 +264,14 @@ function ChatKick_Tokens(content) {
     ChatKick_EmoteRegex.lastIndex = 0;
     while ((match = ChatKick_EmoteRegex.exec(text))) {
         before = text.slice(last, match.index).trim();
-        if (before) tokens.push(before);
+        // text after an emote keeps a leading space: extraMessageTokenize overwrites the first word with the previous emote otherwise
+        if (before) tokens.push(last ? ' ' + before : before);
         tokens.push([emoteTemplate('https://files.kick.com/emotes/' + match[1] + '/fullsize')]);
         last = match.index + match[0].length;
     }
 
     before = text.slice(last).trim();
-    if (before) tokens.push(before);
+    if (before) tokens.push(last ? ' ' + before : before);
 
     return tokens;
 }

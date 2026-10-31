@@ -370,11 +370,37 @@ function coreSandbox() {
     timers[timers.length - 1].fn();
     ws = sockets[sockets.length - 1];
     n = lines.length;
+    var lateHandler = ws.onmessage;
+    check(typeof lateHandler === 'function', 'socket had a message handler before stop');
     s.ChatMulti_Stop(0);
     check(ws.closed === 1000 && ws.onclose === null && cleared.length > 0, 'stop closes the socket with 1000, no reconnect handler, clears the timer');
     var timersBefore = timers.length;
-    if (ws.onmessage) frame(ws, 'App\\Events\\ChatMessageEvent', JSON.stringify(reply), V2);
+    lateHandler({data: JSON.stringify({event: 'App\\Events\\ChatMessageEvent', data: JSON.stringify(reply), channel: V2})});
     check(lines.length === n && timers.length === timersBefore, 'nothing happens after stop');
+
+    // reconnect timer of a stale session (Chat_Id changed, no Stop) does nothing
+    {
+        var seqS = start(7, 'buddha', false);
+        xhrs[xhrs.length - 1].reply(200, JSON.stringify(chan));
+        s.ChatKick_Key = s.ChatKick_PusherFallback; s.ChatKick_KeyResult({status: 200, responseText: '{}'}, 0, seqS);
+        var wsS = sockets[sockets.length - 1];
+        wsS.onclose({code: 1006});
+        var timerS = timers[timers.length - 1], sc = sockets.length, hc = http.length;
+        s.ChatKick_Key = null; s.Chat_Id[0] = 8;
+        timerS.fn();
+        s.Chat_Id[0] = 7;
+        check(sockets.length === sc && http.length === hc, 'stale reconnect timer opens nothing');
+        s.ChatMulti_Stop(0);
+    }
+    // Kick tokens through the real tokenizer: the word after an emote survives
+    {
+        var tok = s.ChatLive_extraMessageTokenize(s.ChatKick_Tokens('hi [emote:37226:KEKW] there friend'), 0, 0);
+        check(/<img[^>]*> there friend/.test(tok), 'word after emote survives');
+        tok = s.ChatLive_extraMessageTokenize(s.ChatKick_Tokens('[emote:37226:KEKW] yelling in texts aswell'), 0, 0);
+        check(tok.indexOf('yelling in texts aswell') !== -1, 'fixture style message keeps its first word');
+        tok = s.ChatLive_extraMessageTokenize(s.ChatKick_Tokens('a [emote:1:x][emote:2:y]b'), 0, 0);
+        check(/>\s*b/.test(tok), 'text glued to an emote survives');
+    }
 
     // Review Focus 2: restart closes the previous socket, stale XHR / native results are ignored
     s.ChatKick_Key = s.ChatKick_PusherFallback;
