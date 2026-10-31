@@ -110,6 +110,44 @@ plainLegacy(legacyEvent(39));
 check(legacyPrevented === 1, 'legacy keys that open nothing keep their default action');
 s.UIFocus_Clear();
 
+/* A legacy key-down that resumes the suspended top owner (same object) also refocuses controls: no default action. */
+s.UIFocus_Dispatch(legacyEvent(13), true);
+let resumePrevented = 0;
+function resumeEvent(key) {
+    return {keyCode: key, preventDefault: () => resumePrevented++, stopImmediatePropagation: () => {}};
+}
+const resumeOwner = {id: 'player', handle: () => false, suspended: true};
+s.UIFocus_Push(resumeOwner);
+resumeOwner.suspended = true;
+let resumeHandled = 0;
+const resumeListener = s.UIFocus_Listener('keydown', () => {
+    resumeOwner.suspended = false;
+});
+resumeListener(resumeEvent(13));
+check(resumePrevented === 1, 'resuming a suspended top owner cancels the key-down default action');
+check(s.UIFocus_SuppressedKeys[13], 'resuming key stays suppressed until key-up');
+resumeOwner.handle = () => {
+    resumeHandled++;
+    return true;
+};
+check(s.UIFocus_Dispatch(resumeEvent(13), false) && resumeHandled === 0, 'held resuming Enter repeat is swallowed');
+s.UIFocus_Dispatch(resumeEvent(13), true);
+s.UIFocus_Dispatch(resumeEvent(13), false);
+check(resumeHandled === 1, 'owner handles keys normally after key-up');
+s.UIFocus_Clear();
+s.UIFocus_Dispatch(resumeEvent(13), true);
+resumePrevented = 0;
+const steadyOwner = {id: 'player', handle: () => false, suspended: false};
+s.UIFocus_Push(steadyOwner);
+s.UIFocus_Listener('keydown', () => {})(resumeEvent(13));
+check(resumePrevented === 0 && !s.UIFocus_SuppressedKeys[13], 'handler leaving owner state unchanged keeps default action');
+const suspendedOwner = {id: 'player', handle: () => false, suspended: true};
+s.UIFocus_Clear();
+s.UIFocus_Push(suspendedOwner);
+s.UIFocus_Listener('keydown', () => {})(resumeEvent(13));
+check(resumePrevented === 0, 'still suspended owner keeps default action');
+s.UIFocus_Clear();
+
 /* DOM focus handoff helpers over a minimal document stub: transfer, skip and release rules. */
 s.document = {activeElement: null, body: {tagName: 'BODY'}};
 function fakeElement(name, inside) {

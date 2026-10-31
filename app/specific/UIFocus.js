@@ -105,12 +105,15 @@ function UIFocus_Listener(type, handler) {
     var property = type === 'keydown' ? 'uiFocusDown' : 'uiFocusUp';
     if (!handler[property]) {
         handler[property] = function (event) {
-            var previous = UIFocus_Stack[UIFocus_Stack.length - 1];
+            var previous = UIFocus_Stack[UIFocus_Stack.length - 1],
+                wasSuspended = !!(previous && previous.suspended);
             if (!UIFocus_Dispatch(event, type === 'keyup')) {
                 handler(event);
-                if (type === 'keydown' && UIFocus_Stack[UIFocus_Stack.length - 1] !== previous) {
-                    // A legacy key-down that opens an overlay still owns the held press.
-                    UIFocus_SuppressedKeys[event.keyCode] = previous || {};
+                var current = UIFocus_Stack[UIFocus_Stack.length - 1];
+                if (type === 'keydown' && (current !== previous || (wasSuspended && current && !current.suspended))) {
+                    // A legacy key-down that opens an overlay, or resumes the suspended top owner, still owns the held press.
+                    // A fresh marker for the resume case keeps the unchanged owner from seeing the auto-repeat.
+                    UIFocus_SuppressedKeys[event.keyCode] = current !== previous ? previous || {} : {};
                     // Its default action (Enter activation) must not reach the control the new owner just focused.
                     if (event.preventDefault) event.preventDefault();
                 }
