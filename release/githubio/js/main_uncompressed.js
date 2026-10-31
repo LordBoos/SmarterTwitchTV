@@ -8409,7 +8409,8 @@
                     'Channel links come from the UnityChat directory (jouki.cz) and can be overridden per streamer with the new "Linked chats" player button',
                     'The feature can be turned off in Settings > Chat ("YouTube and Kick chat")',
                     "The app now loads its web part from the LordBoos fork's GitHub Pages and checks updates there",
-                    'Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat'
+                    'Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat',
+                    'Fix: closing the Linked chats or phone chat dialog with OK no longer reopens it'
                 ]
             },
             {
@@ -52969,12 +52970,15 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         var property = type === 'keydown' ? 'uiFocusDown' : 'uiFocusUp';
         if (!handler[property]) {
             handler[property] = function (event) {
-                var previous = UIFocus_Stack[UIFocus_Stack.length - 1];
+                var previous = UIFocus_Stack[UIFocus_Stack.length - 1],
+                    wasSuspended = !!(previous && previous.suspended);
                 if (!UIFocus_Dispatch(event, type === 'keyup')) {
                     handler(event);
-                    if (type === 'keydown' && UIFocus_Stack[UIFocus_Stack.length - 1] !== previous) {
-                        // A legacy key-down that opens an overlay still owns the held press.
-                        UIFocus_SuppressedKeys[event.keyCode] = previous || {};
+                    var current = UIFocus_Stack[UIFocus_Stack.length - 1];
+                    if (type === 'keydown' && (current !== previous || (wasSuspended && current && !current.suspended))) {
+                        // A legacy key-down that opens an overlay, or resumes the suspended top owner, still owns the held press.
+                        // A fresh marker for the resume case keeps the unchanged owner from seeing the auto-repeat.
+                        UIFocus_SuppressedKeys[event.keyCode] = current !== previous ? previous || {} : {};
                         // Its default action (Enter activation) must not reach the control the new owner just focused.
                         if (event.preventDefault) event.preventDefault();
                     }

@@ -48,6 +48,7 @@ October 31 2026 (3.0.395)
 * The feature can be turned off in Settings > Chat ("YouTube and Kick chat").
 * The app now loads its web part from the LordBoos fork's GitHub Pages and checks updates there.
 * Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat.
+* Fix: closing the Linked chats or phone chat dialog with OK no longer reopens it.
 
 October 11 2026 (3.0.390)
 ==============

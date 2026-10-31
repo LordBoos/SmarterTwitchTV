@@ -34,7 +34,8 @@ var version = {
                 'Channel links come from the UnityChat directory (jouki.cz) and can be overridden per streamer with the new "Linked chats" player button',
                 'The feature can be turned off in Settings > Chat ("YouTube and Kick chat")',
                 'The app now loads its web part from the LordBoos fork\'s GitHub Pages and checks updates there',
-                'Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat'
+                'Fix: stopping the player with the Stop key in picture-in-picture now also stops the second chat',
+                'Fix: closing the Linked chats or phone chat dialog with OK no longer reopens it'
             ]
         },
         {
