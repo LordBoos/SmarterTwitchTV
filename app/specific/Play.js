@@ -2261,6 +2261,8 @@ function Play_Exit() {
     PlayVod_previews_clear();
     Play_CleanHideExit();
     Play_hideChat();
+    //Play_ClearPlay clears only chat 0, stop the picture-in-picture chat (IRC, YouTube, Kick) here
+    ChatLive_Clear(1);
     PlayExtra_ClearExtra();
     Play_shutdownStream();
 }

@@ -17,10 +17,10 @@ var ChatLinkDialog_OriginControl = -1;
 
 function ChatLinkDialog_Rows(entry, resolved) {
     var rows = [
-            ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved),
-            ChatLinkDialog_PlatformRow('kick', 'Kick', entry, resolved),
-            {kind: 'enabled', label: STR_CHAT_LINK_ENABLED, value: entry.enabled === false ? STR_NO : STR_YES, source: ''}
-        ];
+        ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved),
+        ChatLinkDialog_PlatformRow('kick', 'Kick', entry, resolved),
+        {kind: 'enabled', label: STR_CHAT_LINK_ENABLED, value: entry.enabled === false ? STR_NO : STR_YES, source: ''}
+    ];
 
     if (typeof entry.yt === 'string' || typeof entry.kick === 'string') {
         rows.push({kind: 'reset', label: STR_CHAT_LINK_RESET, value: '', source: ''});
@@ -48,7 +48,10 @@ function ChatLinkDialog_PlatformRow(kind, label, entry, resolved) {
 function ChatLinkDialog_Resolved(login) {
     var entry = ChatLink_Get(login);
 
-    return ChatLink_Resolve({enabled: true, yt: entry.yt, kick: entry.kick}, ChatLink_DirCache.hasOwnProperty(login) ? ChatLink_DirCache[login] : null);
+    return ChatLink_Resolve(
+        {enabled: true, yt: entry.yt, kick: entry.kick},
+        ChatLink_DirCache.hasOwnProperty(login) ? ChatLink_DirCache[login] : null
+    );
 }
 
 //Saves a manual value: normalized, '' = do not link. Returns false (nothing saved) for unusable input
@@ -79,9 +82,14 @@ function ChatLinkDialog_Apply(login, kind, rawInput) {
     return true;
 }
 
+//Login of a chat from the player data, as ChatLive_SetOptions sets it (ChatLive_selectedChannel is stale while chat is force-disabled)
+function ChatLinkDialog_ChatLogin(chat_number) {
+    return ((!chat_number ? Play_data : PlayExtra_data).data[6] || '').toLowerCase();
+}
+
 function ChatLinkDialog_Restart() {
     ChatMulti_Restart(0);
-    if (PlayExtra_PicturePicture && ChatLive_selectedChannel[1] && ChatLive_selectedChannel[1] === ChatLinkDialog_Login) ChatMulti_Restart(1);
+    if (PlayExtra_PicturePicture && ChatLinkDialog_ChatLogin(1) === ChatLinkDialog_Login) ChatMulti_Restart(1);
 }
 
 function ChatLinkDialog_SourceText(source) {
@@ -119,7 +127,7 @@ function ChatLinkDialog_Render() {
 }
 
 function ChatLinkDialog_Show() {
-    var login = ChatLive_selectedChannel[0];
+    var login = ChatLinkDialog_ChatLogin(0);
 
     if (!login) {
         Play_showWarningMiddleDialog(STR_CHAT_LINK_NO_CHANNEL, 2000);
@@ -168,7 +176,11 @@ function ChatLinkDialog_Hide(skipFocusRestore) {
         if (ChatLinkDialog_PanelWasShowing) {
             Play_ForceShowPannel();
 
-            if (ChatLinkDialog_OriginControl > -1 && Play_controls[ChatLinkDialog_OriginControl] && Play_controls[ChatLinkDialog_OriginControl].visible) {
+            if (
+                ChatLinkDialog_OriginControl > -1 &&
+                Play_controls[ChatLinkDialog_OriginControl] &&
+                Play_controls[ChatLinkDialog_OriginControl].visible
+            ) {
                 Play_PanelCounter = ChatLinkDialog_OriginControl;
             }
 

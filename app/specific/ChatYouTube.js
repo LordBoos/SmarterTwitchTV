@@ -1,5 +1,3 @@
-/* global ChatMulti_IsActive, ChatMulti_Line, ChatMulti_DeleteMsg, ChatMulti_DeleteAuthor, ChatMulti_SafeUrl, emoteTemplate, Screens_AriaEscape, FullxmlHttpGet,
-   Main_setTimeout, Main_clearTimeout, STR_CHAT_YT_SUPERCHAT, STR_CHAT_YT_SUPERSTICKER, STR_CHAT_YT_MEMBERSHIP, STR_CHAT_YT_GIFT */
 /*
  * YouTube chat source of the merged chat: finds the live video of a channel, reads the chat page (history and
  * innertube data) and polls get_live_chat. Everything from YouTube is untrusted: names and header texts are escaped,

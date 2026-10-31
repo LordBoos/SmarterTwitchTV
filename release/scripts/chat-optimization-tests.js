@@ -301,6 +301,10 @@ for (const rate of [20, 100]) for (const delay of [0, 5000, 30000]) {
     spam('hello', 'a');
     h.advance(94000);
     check(h.rendered.length === 9 && s.ChatLive_SpamLast[0].count === 1, 'spam: identical message after switch is a new line');
+
+    //A history line with the same nick and text never merges into the latest live line
+    spam('hello', 'a', {addToStart: true});
+    check(h.rendered.length === 10 && s.ChatLive_SpamLast[0] === null, 'spam: history line never merges into the latest live line');
 }
 {
     //A burst drain is split into batches so one task never appends every line

@@ -2228,6 +2228,7 @@ function ChatLive_SpamMerge(messageObj) {
         !last ||
         !last.el ||
         !last.el.parentNode || //line removed by Chat_Clean, show a new one instead of merging into a detached node
+        messageObj.addToStart || //a history line never merges into the latest live line
         messageObj.text === undefined ||
         now - last.time > ChatLive_SpamWindow ||
         last.nick !== messageObj.nick ||

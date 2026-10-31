@@ -126,6 +126,8 @@ function ChatMulti_Line(chat_number, seq, msg) {
         mod = false;
 
     if ((ChatLive_HideBots && KnowBots.hasOwnProperty(nick)) || (special && !ChatLive_Show_SUB)) return;
+    // Same as Twitch: hide bots also drops a lone !command
+    if (ChatLive_HideBots && !special && text.charAt(0) === '!' && text.indexOf(' ') === -1) return;
 
     if (ChatLive_Highlight_AtStreamer && ChatLive_Channel_Regex_Search[chat_number].test(text)) atstreamer = true;
     else if (ChatLive_Highlight_FromStreamer && role === 'owner') fromstreamer = true;
@@ -174,7 +176,7 @@ function ChatMulti_Line(chat_number, seq, msg) {
     ChatLive_LineAddCheckDelay(chat_number, {
         chat_number: chat_number,
         message: message,
-        nick: nick.toLowerCase(),
+        nick: platform + ':' + nick.toLowerCase(), // spam merge key: never merges into a Twitch or other-platform line of the same nick
         text: special ? undefined : text, // a Super Chat / sub line never merges as spam
         atstreamer: atstreamer,
         fromstreamer: fromstreamer,

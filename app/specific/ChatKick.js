@@ -1,4 +1,3 @@
-/* global ChatMulti_IsActive, ChatMulti_Line, ChatMulti_DeleteMsg, ChatMulti_DeleteAuthor, ChatMulti_SafeUrl, emoteTemplate, Screens_AriaEscape, FullxmlHttpGet */
 /*
  * Kick chat source of the merged chat: live messages over the Pusher websocket, history, role badges,
  * subs, gifts and moderation. Everything from Kick is untrusted: names are escaped, emote ids are numeric only,
@@ -10,6 +9,7 @@ var ChatKick_State = []; // per chat_number {seq, slug, chatroom, channelId, sub
 var ChatKick_PusherFallback = {key: '34bf7a0ff419a2a775b9', cluster: 'us2'};
 var ChatKick_Key = null; // last good {key, cluster}, dropped on Pusher error 4001
 var ChatKick_ChannelUrl = 'https://kick.com/api/v2/channels/';
+var ChatKick_RetryMs = 120000; // channel info failed: try again after this
 var ChatKick_RealtimeUrl = 'https://api.jouki.cz/kick/realtime';
 var ChatKick_EmoteRegex = /\[emote:(\d{1,12}):[^\]]*\]/g;
 var ChatKick_ImageHostRegex = /^(files\.kick\.com|ext\.cdn\.kick\.com)$/;
@@ -35,16 +35,31 @@ function ChatKick_Start(chat_number, seq, slug, withHistory) {
 
     var st = {seq: seq, slug: slug, chatroom: 0, channelId: 0, subBadges: [], withHistory: withHistory, ws: null, timer: 0, retry: 0};
     ChatKick_State[chat_number] = st;
+    ChatKick_FetchChannel(chat_number, st);
+}
 
-    var url = ChatKick_ChannelUrl + encodeURIComponent(slug);
+function ChatKick_FetchChannel(chat_number, st) {
+    var url = ChatKick_ChannelUrl + encodeURIComponent(st.slug);
 
     ChatKick_Xhr(url, function (status, text) {
         if (!ChatKick_Live(chat_number, st)) return;
 
         // Blocked by Cloudflare or CORS: let the native side try
-        if (status === 0 || status === 403) FullxmlHttpGet(url, null, ChatKick_ChannelNative, noop_fun, chat_number, seq);
+        if (status === 0 || status === 403) FullxmlHttpGet(url, null, ChatKick_ChannelNative, noop_fun, chat_number, st.seq);
         else if (status === 200) ChatKick_Channel(chat_number, st, text);
+        else ChatKick_RetryChannel(chat_number, st);
     });
+}
+
+// Silent: no line in the chat, only a timer in st.timer so Stop clears it
+function ChatKick_RetryChannel(chat_number, st) {
+    st.timer = Main_setTimeout(
+        function () {
+            if (ChatKick_Live(chat_number, st)) ChatKick_FetchChannel(chat_number, st);
+        },
+        ChatKick_RetryMs,
+        st.timer
+    );
 }
 
 function ChatKick_Stop(chat_number) {
@@ -104,6 +119,7 @@ function ChatKick_ChannelNative(obj, chat_number, seq) {
     if (!st || st.seq !== seq || !ChatKick_Live(chat_number, st)) return;
 
     if (obj.status === 200) ChatKick_Channel(chat_number, st, obj.responseText);
+    else ChatKick_RetryChannel(chat_number, st);
 }
 
 function ChatKick_PositiveInt(value) {
@@ -113,12 +129,18 @@ function ChatKick_PositiveInt(value) {
 
 function ChatKick_Channel(chat_number, st, text) {
     var json = ChatKick_ParseJson(text);
-    if (!json) return;
+    if (!json) {
+        ChatKick_RetryChannel(chat_number, st);
+        return;
+    }
 
     st.chatroom = ChatKick_PositiveInt(json.chatroom && json.chatroom.id);
     st.channelId = ChatKick_PositiveInt(json.id);
     st.subBadges = Object.prototype.toString.call(json.subscriber_badges) === '[object Array]' ? json.subscriber_badges : [];
-    if (!st.chatroom) return;
+    if (!st.chatroom) {
+        ChatKick_RetryChannel(chat_number, st);
+        return;
+    }
 
     if (st.withHistory && st.channelId) ChatKick_History(chat_number, st);
     ChatKick_Open(chat_number, st);
@@ -377,7 +399,7 @@ function ChatKick_Special(nick, text) {
 
 // -> msg for ChatMulti_Line | {del: msgId} | {ban: userId} | null
 function ChatKick_EventToMsg(name, data, subBadges) {
-    var msg, months, count;
+    var msg, months, count, gifted;
 
     if (!data) return null;
 
@@ -401,9 +423,10 @@ function ChatKick_EventToMsg(name, data, subBadges) {
     if (name === 'GiftedSubscriptionsEvent') {
         if (typeof data.gifter_username !== 'string') return null;
 
-        count = Object.prototype.toString.call(data.gifted_usernames) === '[object Array]' ? data.gifted_usernames.length : 1;
+        gifted = Object.prototype.toString.call(data.gifted_usernames) === '[object Array]' ? data.gifted_usernames : null;
+        count = gifted ? gifted.length : 1;
         msg = ChatKick_Special(data.gifter_username, STR_CHAT_KICK_GIFT.replace('%x', count || 1));
-        msg.msgId = 'gift_' + data.gifter_username + '_' + (data.id || (data.gifted_usernames && data.gifted_usernames.join('_')) || count);
+        msg.msgId = 'gift_' + data.gifter_username + '_' + (data.id || (gifted && gifted.join('_')) || count);
         return msg;
     }
 

@@ -80,6 +80,20 @@ check(s.ChatLink_Current(0).kick === null, 'current resolves for channel without
     check(args[2] === 'body' && args[3] === 'POST', 'FullxmlHttpGet: explicit POST and body pass through');
 }
 
+// Play_Exit (KEY_STOP) with picture-in-picture: chat 1 (IRC, YouTube, Kick) is cleared before the PiP data is reset
+{
+    const src = fs.readFileSync('app/specific/Play.js', 'utf8');
+    const start = src.indexOf('function Play_Exit(');
+    const calls = [];
+    const x = {ChatLive_Clear: n => calls.push('ChatLive_Clear(' + n + ')')};
+    ['PhoneChat_Cleanup', 'ChatLinkDialog_Cleanup', 'PlayVod_previews_clear', 'Play_CleanHideExit', 'Play_hideChat', 'PlayExtra_ClearExtra', 'Play_shutdownStream']
+        .forEach(n => { x[n] = () => calls.push(n); });
+    vm.createContext(x); vm.runInContext(src.slice(start, src.indexOf('\n}', start) + 2), x);
+    x.Play_Exit();
+    const clear1 = calls.indexOf('ChatLive_Clear(1)');
+    check(clear1 !== -1 && clear1 < calls.indexOf('PlayExtra_ClearExtra'), 'Play_Exit clears chat 1 before the PiP data is reset');
+}
+
 // Core (ChatMulti.js) on the real ChatLive line pipeline, stubs as in chat-optimization-tests.js
 function coreSandbox() {
     const s = {
@@ -154,10 +168,29 @@ function coreSandbox() {
     s.ChatLive_Highlight_AtStreamer = 1; s.ChatLive_Highlight_Mod = 1;
     s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x3'), {tokens: ['@streamer', 'hi'], text: '@streamer hi', role: 'mod'}));
     var obj = lines.pop();
-    check(obj.atstreamer && !obj.mod && obj.nick === 'bob' && obj.message.indexOf('#4eff42') !== -1, 'mention of the Twitch login highlights first');
+    check(obj.atstreamer && !obj.mod && obj.nick === 'yt:bob' && obj.message.indexOf('#4eff42') !== -1, 'mention of the Twitch login highlights first');
     s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x4'), {role: 'mod'}));
     check(lines.pop().mod, 'moderator highlight');
     s.ChatLive_Highlight_AtStreamer = 0; s.ChatLive_Highlight_Mod = 0;
+    // spam merge key carries the platform: Kick "bob: W" never merges into the Twitch "bob: W" line
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('k1'), {platform: 'kick', nick: 'Bob', tokens: ['W'], text: 'W'}));
+    obj = lines.pop();
+    s.ChatLive_SpamLast[0] = {nick: 'bob', text: 'W', count: 1, time: Date.now(), el: {parentNode: {}, lastChild: {className: 'chat_spam_count'}}};
+    check(obj.nick === 'kick:bob' && !s.ChatLive_SpamMerge(obj) && s.ChatLive_SpamLast[0].count === 1, 'foreign line does not merge into the Twitch line of the same nick');
+    s.ChatLive_SpamLast[0] = null;
+    // hide bots: a lone !command is dropped as on Twitch, only for normal lines
+    s.ChatLive_HideBots = 1;
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('b1'), {tokens: ['!uptime'], text: '!uptime'}));
+    check(lines.length === 1, 'hide bots: lone !command dropped');
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('b2'), {tokens: ['!so', 'bob'], text: '!so bob'}));
+    s.ChatLive_Show_SUB = 1;
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('b3'), {text: '!sc', special: 'SC $5'}));
+    check(lines.length === 3 && lines[2].sub, 'hide bots: !command with arguments and special lines stay');
+    lines.length = 1;
+    s.ChatLive_HideBots = 0;
+    s.ChatMulti_Line(0, seq, Object.assign(msgWithId('b4'), {tokens: ['!uptime'], text: '!uptime'}));
+    check(lines.length === 2, 'hide bots off: !command shown');
+    lines.pop();
     // special lines follow show_sub
     s.ChatLive_Show_SUB = 0;
     s.ChatMulti_Line(0, seq, Object.assign(msgWithId('x5'), {special: 'SC $5', highlight: '#1565c0'}));
@@ -308,6 +341,8 @@ function coreSandbox() {
     check(m.special.indexOf('<img') === -1 && m.special.indexOf('subscribed for 3 months') !== -1 && !m.history, 'sub event: escaped special line');
     m = s.ChatKick_EventToMsg('GiftedSubscriptionsEvent', {gifter_username: 'Bob', gifted_usernames: ['a', 'b', 'c']});
     check(m.special === 'Bob gifted 3 subscriptions', 'gift event: special line with the count');
+    m = s.ChatKick_EventToMsg('GiftedSubscriptionsEvent', {gifter_username: 'Bob', gifted_usernames: 'a,b'});
+    check(m.special === 'Bob gifted 1 subscriptions' && m.msgId === 'gift_Bob_1', 'gift event: non-array gifted_usernames does not throw');
     check(s.ChatKick_EventToMsg('SubscriptionEvent', {months: 3}) === null && s.ChatKick_EventToMsg('Nope', {}) === null, 'bad event shapes give null');
 
     // start: channel by XHR, then key, then socket
@@ -427,6 +462,45 @@ function coreSandbox() {
     xhrs[xhrs.length - 1].reply(500, 'err'); xhrs[xhrs.length - 1].reply(200, '<html>');
     check(lines.length === l, 'failures add nothing to the chat');
     s.ChatMulti_Stop(0);
+
+    // channel info failure: one retry timer per failure, refetch while live, nothing when stale, Stop clears it
+    {
+        check(s.ChatKick_RetryMs === 120000, 'kick channel retry delay is 2 minutes');
+        const channelUrl = 'https://kick.com/api/v2/channels/retry';
+        const lastXhr = () => xhrs[xhrs.length - 1];
+        const fail = (label, doFail) => {
+            const tc = timers.length;
+            doFail();
+            check(timers.length === tc + 1 && timers[tc].d === s.ChatKick_RetryMs, label + ': one retry timer');
+            const xc = xhrs.length;
+            timers[tc].fn();
+            check(xhrs.length === xc + 1 && lastXhr().url === channelUrl, label + ': retry refetches the channel');
+        };
+        var sc = sockets.length, l2 = lines.length;
+        var seqR = start(7, 'retry', true);
+        check(lastXhr().url === channelUrl, 'retry session fetches the channel');
+        fail('channel 500', () => lastXhr().reply(500, ''));
+        fail('broken channel json', () => lastXhr().reply(200, '<html>'));
+        fail('missing chatroom id', () => lastXhr().reply(200, '{"id":5,"chatroom":{}}'));
+        fail('native fallback failure', () => {
+            const hc = http.length;
+            lastXhr().reply(403, '');
+            check(http.length === hc + 1 && http[hc].ok === 'ChatKick_ChannelNative', 'blocked channel XHR goes native');
+            s.ChatKick_ChannelNative({status: 0, responseText: ''}, 0, seqR);
+        });
+        check(sockets.length === sc && lines.length === l2, 'channel failures are silent and open nothing');
+        // stale session (Chat_Id changed, no Stop): the retry timer does nothing
+        lastXhr().reply(500, '');
+        var retryId = timers.length, xc = xhrs.length, hc = http.length;
+        s.Chat_Id[0] = 8; timers[retryId - 1].fn(); s.Chat_Id[0] = 7;
+        check(xhrs.length === xc && http.length === hc, 'stale channel retry timer does nothing');
+        // Stop clears the pending retry timer, a late fire does nothing
+        check(cleared.indexOf(retryId) === -1, 'retry timer pending before stop');
+        s.ChatMulti_Stop(0);
+        check(cleared.indexOf(retryId) !== -1, 'stop clears the channel retry timer');
+        timers[retryId - 1].fn();
+        check(xhrs.length === xc && http.length === hc, 'retry timer after stop does nothing');
+    }
 }
 
 // YouTube source (ChatYouTube.js) with fixtures from the device probe
@@ -786,7 +860,7 @@ function coreSandbox() {
     Object.assign(ds, {
         STR_CHAT_LINK_ENABLED: 'Link', STR_CHAT_LINK_RESET: 'Reset', STR_CLOSE: 'Close', STR_YES: 'Yes', STR_NO: 'No', STR_CHAT_LINK_INVALID: 'Invalid',
         STR_CHAT_LINK_NONE: 'none', STR_CHAT_LINK_MANUAL: 'manual', STR_CHAT_LINK_FROM_DIR: 'dir', STR_CHAT_LINK_UNLINKED: 'not linked', STR_CHAT_LINK_EDIT: 'Edit', STR_CHAT_LINK_ENTER: 'Enter', STR_CHAT_LINKED: 'Linked',
-        document: {createElement: el}, Play_isOn: true, Play_PanelCounter: 3, Play_controls: {}, Play_data: {data: [0, 'Arcade']}, PlayExtra_PicturePicture: false,
+        document: {createElement: el}, Play_isOn: true, Play_PanelCounter: 3, Play_controls: {}, Play_data: {data: [0, 'Arcade', 0, 0, 0, 0, 'ArcadeBulls']}, PlayExtra_PicturePicture: false,
         Main_IsOn_OSInterface: false,
         Main_getElementById: id => els[id] || (els[id] = el()),
         Main_addEventListener: (type, fn) => listeners.push(fn),
@@ -799,7 +873,8 @@ function coreSandbox() {
         Play_isPanelShowing: () => false, Play_clearHidePanel: () => {}, Play_hidePanel: () => {}, Play_showWarningMiddleDialog: () => { throw new Error('toast'); },
         OSInterface_AvoidClicks: () => {}, ChatMulti_Restart: n => restarts.push(n)
     });
-    ds.ChatLive_selectedChannel = ['arcadebulls', ''];
+    // chat force-disabled: ChatLive_Init returns before SetOptions, selectedChannel is stale; the dialog reads the player data
+    ds.ChatLive_selectedChannel = ['stale', ''];
     const dlg = () => listeners.filter(f => f === ds.ChatLinkDialog_HandleKeyDown).length;
     const inp = () => listeners.filter(f => f === ds.ChatLinkDialog_InputKey).length;
     const key = (fn, code) => fn({keyCode: code, stopPropagation() {}});
@@ -807,8 +882,8 @@ function coreSandbox() {
 
     ds.ChatLinkDialog_Show();
     check(dlg() === 1 && inp() === 0, 'show registers only the dialog handler');
+    check(ds.ChatLinkDialog_Login === 'arcadebulls' && labels.chat_link_channel === 'Arcade (arcadebulls)', 'dialog login from the player data, lowercased');
     ds.ChatLinkDialog_Show(); ds.ChatLinkDialog_Hide();
-    check(dlg() === 0 || dlg() === 1, 'sanity');
     ds.ChatLinkDialog_Hide(true);
     listeners.length = 0; playRestore = 0;
 
@@ -844,6 +919,19 @@ function coreSandbox() {
     els.chat_link_input.value = 'robdiesalot'; key(ds.ChatLinkDialog_InputKey, ds.KEY_ENTER);
     check(inp() === 0 && dlg() === 1 && restarts.join() === '0' && ds.ChatLink_Get('arcadebulls').yt === '@robdiesalot', 'valid input saved, restart chat 0');
     ds.ChatLinkDialog_Hide(true);
+    // PiP of the same streamer restarts chat 1 too, matched on the player data of chat 1 (selectedChannel may be stale)
+    restarts = [];
+    ds.PlayExtra_PicturePicture = true; ds.PlayExtra_data = {data: [0, 0, 0, 0, 0, 0, 'ARCADEBULLS']}; ds.ChatLive_selectedChannel = ['x', 'y'];
+    ds.ChatLinkDialog_Restart();
+    check(restarts.join() === '0,1', 'PiP of the same streamer restarts both chats');
+    restarts = []; ds.PlayExtra_data = {data: [0, 0, 0, 0, 0, 0, 'other']}; ds.ChatLive_selectedChannel = [ds.ChatLinkDialog_Login, ds.ChatLinkDialog_Login];
+    ds.ChatLinkDialog_Restart();
+    check(restarts.join() === '0', 'PiP of another streamer keeps chat 1');
+    ds.PlayExtra_PicturePicture = false;
+    // no login in the player data: warning, no dialog
+    let warned = 0; ds.STR_CHAT_LINK_NO_CHANNEL = 'No channel'; ds.Play_showWarningMiddleDialog = () => { warned++; }; ds.Play_data = {data: [0, 'Arcade']}; listeners.length = 0;
+    ds.ChatLinkDialog_Show();
+    check(warned === 1 && dlg() === 0, 'no login: warning, no dialog');
 }
 
 console.log(checks + ' merged chat checks passed');
