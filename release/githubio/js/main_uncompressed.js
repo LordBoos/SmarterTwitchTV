@@ -354,6 +354,8 @@
         STR_USER_LIVE,
         STR_PP_WORKAROUND,
         STR_PP_WORKAROUND_SUMMARY,
+        STR_MULTI_HYBRID,
+        STR_MULTI_HYBRID_SUMMARY,
         STR_HISTORY,
         STR_WATCHED,
         STR_UNTIL,
@@ -522,6 +524,26 @@
         STR_CHAT_LINK_NO_CHANNEL,
         STR_CHAT_LINK_UNLINKED,
         STR_CHAT_LINK_ENTER,
+        STR_CHAT_LINK_TWITCH,
+        STR_KICK_NOT_SUPPORTED,
+        STR_KICK_NO_VOD_CHAT,
+        STR_KICK_ADD_USER,
+        STR_KICK_ADD_USER_HINT,
+        STR_KICK_LINK,
+        STR_KICK_UNLINK,
+        STR_KICK_RELOGIN,
+        STR_KICK_LOGIN_TITLE,
+        STR_KICK_LOGIN_TEXT,
+        STR_KICK_LOGIN_WAIT,
+        STR_KICK_LOGIN_EXPIRED,
+        STR_KICK_LOGIN_FAIL,
+        STR_KICK_SESSION_EXPIRED,
+        STR_KICK_FOLLOW_FAIL,
+        STR_KICK_CHAT_SEND_FAIL,
+        STR_KICK_CHAT_NEEDS_USER,
+        STR_PLATFORM,
+        STR_TWITCH,
+        STR_KICK,
         STR_OPEN_HOST_SETTINGS,
         STR_RAID_FOLLOW,
         STR_RAID_FOLLOW_SUMMARY,
@@ -1988,6 +2010,9 @@
         STR_PP_WORKAROUND = 'Multiplayer, PP and preview mode workaround';
         STR_PP_WORKAROUND_SUMMARY =
             "For some devices, it is necessary to enable this to have multiplayer mode working properly. The issue is usually that one of the two players becomes a black screen. Don't enable it if you don't have issues, as it will cause lower image quality and poor performance.";
+        STR_MULTI_HYBRID = '4-way multistream with software decoding';
+        STR_MULTI_HYBRID_SUMMARY =
+            'This device decodes only %x videos in hardware at once. 4-way multistream then decodes the other streams in software, limited to the chosen quality. 720p can stutter on slower devices.';
         STR_HISTORY = 'History';
         STR_WATCHED = 'Watched on';
         STR_UNTIL = 'until';
@@ -2205,10 +2230,30 @@
         STR_CHAT_LINK_EDIT = 'Edit';
         STR_CHAT_LINK_ENABLED = 'Link this streamer';
         STR_CHAT_LINK_RESET = 'Back to UnityChat';
-        STR_CHAT_LINK_INVALID = 'Invalid channel, use a YouTube or Kick link, handle or name';
+        STR_CHAT_LINK_INVALID = 'Invalid channel, use a channel link, handle or name';
         STR_CHAT_LINK_NO_CHANNEL = 'No Twitch channel to link';
         STR_CHAT_LINK_UNLINKED = 'not linked';
         STR_CHAT_LINK_ENTER = 'Enter';
+        STR_CHAT_LINK_TWITCH = 'Twitch';
+        STR_KICK_NOT_SUPPORTED = 'Not available for Kick streams';
+        STR_KICK_NO_VOD_CHAT = 'Chat replay is not available for Kick videos';
+        STR_KICK_ADD_USER = 'Add Kick User';
+        STR_KICK_ADD_USER_HINT = 'Press OK to sign in with Kick instead';
+        STR_KICK_LINK = 'Link Kick account';
+        STR_KICK_UNLINK = 'Unlink Kick account';
+        STR_KICK_RELOGIN = 'Sign in to Kick again';
+        STR_KICK_LOGIN_TITLE = 'Sign in with Kick';
+        STR_KICK_LOGIN_TEXT = 'Scan the code with your phone and confirm in the Kick app';
+        STR_KICK_LOGIN_WAIT = 'Waiting for confirmation';
+        STR_KICK_LOGIN_EXPIRED = 'The code expired, press OK for a new one';
+        STR_KICK_LOGIN_FAIL = 'Kick sign in failed';
+        STR_KICK_SESSION_EXPIRED = 'Kick sign in expired, sign in again in Users';
+        STR_KICK_FOLLOW_FAIL = 'Kick follow failed';
+        STR_KICK_CHAT_SEND_FAIL = 'Message not sent to Kick chat';
+        STR_KICK_CHAT_NEEDS_USER = 'Sign in to Kick in Users to write to Kick chat';
+        STR_PLATFORM = 'Platform';
+        STR_TWITCH = 'Twitch';
+        STR_KICK = 'Kick';
         STR_CHAT_CLEAR_MSG = 'Clear chat, delete user messages';
         STR_CHAT_SHOW_BADGES = 'Show user badges (excluding the ones below)';
         STR_CHAT_SHOW_BADGES_MOD = 'Show Moderator badges';
@@ -8396,11 +8441,25 @@
     //Spacing for release maker not trow errors from jshint
     var version = {
         VersionBase: '3.0',
-        publishVersionCode: 395, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
-        ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/395/SmarterPurpleTV_3_0_395.apk',
-        WebVersion: 'October 31 2026',
-        WebTag: 772, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+        publishVersionCode: 396, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
+        ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/396/SmarterPurpleTV_3_0_396.apk',
+        WebVersion: 'November 1 2026',
+        WebTag: 773, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
         changelog: [
+            {
+                title: 'November 1 2026 (Web 773)',
+                changes: [
+                    'Kick as a second platform: watch Kick live streams, VODs and clips like Twitch ones, with channel pages, history, quality choice and low latency',
+                    'Kick accounts: add a Kick account on its own or link it to a Twitch user by scanning a QR code with the Kick app (User screen, "Add Kick User")',
+                    'Following shows live Twitch and Kick channels together with platform icons, also in the player panel and the side panel; followed Kick channels are listed too',
+                    "Live, Games and Search get a Twitch / Kick switch; follow and unfollow Kick channels; the Kick chat with history is the main chat of a Kick stream and the streamer's Twitch and YouTube chats can be linked; writing in the Kick chat",
+                    '50/50, picture-in-picture and 4-way multistream take any mix of Twitch and Kick',
+                    '4-way multistream on TVs with only two hardware video decoders: two streams are decoded in software at 480p (Settings, "4-way multistream with software decoding", needs APK 3.0.396)',
+                    'Fix: swapping players keeps video, chat and title together',
+                    'Fix: on MTK TVs the small picture-in-picture window stays on top after a swap (needs APK 3.0.396)',
+                    'Fix: the bottom rows of Settings and its dialogs can be reached again, and two screens are no longer shown and controlled at once'
+                ]
+            },
             {
                 title: 'October 31 2026 (Web 772)',
                 changes: [
@@ -9016,6 +9075,12 @@
 
     function AddCode_CheckFollow() {
         AddCode_IsFollowing = false;
+        // A Kick id is never sent to Twitch
+        if (KickApi_IsKickId(AddCode_Channel_id)) {
+            KickFollow_Check(KickApi_Slug(AddCode_Channel_id), AddCode_KickFollowDone);
+            return;
+        }
+
         var theUrl = Main_helix_api + 'channels/followed?user_id=' + AddUser_UsernameArray[0].id + '&broadcaster_id=' + AddCode_Channel_id,
             header;
 
@@ -9026,6 +9091,14 @@
         }
 
         FullxmlHttpGet(theUrl, header, AddCode_RequestCheckFollowSucess, noop_fun, 0, 0, 'GET', null);
+    }
+
+    // Result of a Kick check, follow or unfollow (state null: the change failed), an answer for another channel is dropped
+    function AddCode_KickFollowDone(state, slug) {
+        if (AddCode_Channel_id !== KickApi_Id(slug)) return;
+
+        if (state !== null) AddCode_IsFollowing = state;
+        AddCode_RequestCheckFollowEnd();
     }
 
     function AddCode_RequestCheckFollowSucess(obj) {
@@ -9064,6 +9137,11 @@
         '{"operationName":"FollowButton_FollowUser","variables":{"input":{"disableNotifications":true,"targetID":"%x"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"}}}';
 
     function AddCode_Follow() {
+        if (KickApi_IsKickId(AddCode_Channel_id)) {
+            KickFollow_Set(KickApi_Slug(AddCode_Channel_id), true, AddCode_KickFollowDone);
+            return;
+        }
+
         var header = [
             [clientIdHeader, AddCode_backup_client_id],
             [Bearer_Header, Main_OAuth + AddUser_UsernameArray[0].access_token]
@@ -9102,6 +9180,11 @@
         '{"operationName":"FollowButton_UnfollowUser","variables":{"input":{"targetID":"%x"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880"}}} ';
 
     function AddCode_UnFollow() {
+        if (KickApi_IsKickId(AddCode_Channel_id)) {
+            KickFollow_Set(KickApi_Slug(AddCode_Channel_id), false, AddCode_KickFollowDone);
+            return;
+        }
+
         var header = [
             [clientIdHeader, AddCode_backup_client_id],
             [Bearer_Header, Main_OAuth + AddUser_UsernameArray[0].access_token]
@@ -9190,6 +9273,7 @@
         else Main_values.Main_Go = Main_values.Main_Before !== Main_Users ? Main_values.Main_Before : Main_Live;
 
         AddUser_RemoveinputFocus(false);
+        KickLogin_Hide();
         Main_removeEventListener('keydown', AddUser_handleKeyDown);
         Main_HideElement('add_user_scroll');
         Main_HideLoadDialog();
@@ -9208,10 +9292,19 @@
     function AddUser_handleKeyDown(event) {
         if (Main_values.Main_Go !== Main_addUser) return;
 
+        if (KickLogin_IsVisible()) {
+            KickLogin_HandleKeyDown(event);
+            return;
+        }
+
         switch (event.keyCode) {
             case KEY_KEYBOARD_BACKSPACE:
             case KEY_RETURN:
                 AddUser_handleKeyBack();
+                break;
+            case KEY_ENTER:
+                //A held OK from the Users screen must not open the Kick sign in right away
+                if (!event.repeat) KickLogin_Show({link: -1});
                 break;
             default:
                 break;
@@ -9256,7 +9349,7 @@
 
             AddUser_DeviceCode = data.device_code;
 
-            Main_innerHTML('add_user_text', STR_ADD_USER_TEXT.replace('%site', urlDiv).replace('%code', codeDiv));
+            Main_innerHTML('add_user_text', STR_ADD_USER_TEXT.replace('%site', urlDiv).replace('%code', codeDiv) + STR_KICK_ADD_USER_HINT);
             Main_ShowElement('add_user_text_holder');
             Main_HideLoadDialog();
             AddUser_getCodeCheck(AddUser_DeviceCodeTimeout);
@@ -9501,6 +9594,9 @@
     }
 
     function AddUser_UpdateUser(position) {
+        //A Kick only user has no Twitch account to refresh
+        if (KickUser_IsKickOnly(AddUser_UsernameArray[position])) return;
+
         var theUrl = Main_helix_api + 'users?login=' + encodeURIComponent(AddUser_UsernameArray[position].name);
 
         BaseXmlHttpGet(theUrl, AddUser_UpdateUsersSuccess, noop_fun, position, null, true);
@@ -9570,7 +9666,9 @@
         AddUser_UpdateSidePanel();
         OSInterface_UpdateUserId(AddUser_UsernameArray[position]);
         OSInterface_mCheckRefresh();
-        HttpGetSetUserHeader();
+        //A Kick only main user (after a token validation removal) keeps the anonymous headers, never an empty Twitch authorization
+        if (KickUser_IsKickOnly()) AddUser_SetUserHeaders();
+        else HttpGetSetUserHeader();
         if (Settings_notification_check_any_enable()) OSInterface_RunNotificationService();
     }
 
@@ -9581,6 +9679,8 @@
         if (index > -1) {
             AddUser_UsernameArrayRemoved[AddUser_UsernameArray[index].id] = JSON.parse(JSON.stringify(AddUser_UsernameArray[index]));
             AddUser_UsernameArrayRemoved[AddUser_UsernameArray[index].id].date = new Date().getTime();
+            //The removed list is stored and backed up but only its id and date are read: the Kick session never goes with it
+            delete AddUser_UsernameArrayRemoved[AddUser_UsernameArray[index].id].kick;
 
             Main_clearTimeout(AddUser_UsernameArray[position].timeout_id);
             AddUser_UsernameArray.splice(index, 1);
@@ -9596,6 +9696,7 @@
                 AddUser_UpdateSidePanel();
 
                 OSInterface_UpdateUserId(AddUser_UsernameArray[0]);
+                AddUser_SetUserHeaders();
             }
             Users_status = false;
             if (!skipInitUser) {
@@ -9670,10 +9771,21 @@
         //Reset user emotes on change
         userEmote = {};
 
-        if (AddUser_UsernameArray[0].access_token) {
-            HttpGetSetUserHeader();
-        } else {
+        AddUser_SetUserHeaders();
+        if (!AddUser_UsernameArray[0].access_token && !KickUser_IsKickOnly()) {
             Main_showWarningDialog(STR_NO_TOKEN_WARNING, 5000);
+        }
+    }
+
+    //Twitch user headers follow the main user. A Kick only main user has no Twitch token: the anonymous headers of a start
+    //without a user, so no Twitch token of an earlier main user stays in use (and no [1] lookup on an empty header list)
+    function AddUser_SetUserHeaders() {
+        if (AddUser_UserHasToken()) {
+            HttpGetSetUserHeader();
+        } else if (KickUser_IsKickOnly()) {
+            Main_Bearer_User_Headers = [];
+            Main_OAuth_User_Headers = [];
+            Play_Headers = JSON.stringify([[clientIdHeader, Chat_token]]);
         }
     }
 
@@ -11375,7 +11487,10 @@
             if (Main_A_includes_B(id, 'main_dialog_user_first') && Users_RemoveCursor) {
                 Users_RemoveCursor = 0;
                 Users_UserCursorSet();
-            } else if (Main_A_includes_B(id, 'main_dialog_user_remove') && Users_RemoveCursor !== 2) {
+            } else if (Main_A_includes_B(id, 'main_dialog_user_remove') && Users_RemoveCursor !== 1) {
+                Users_RemoveCursor = 1;
+                Users_UserCursorSet();
+            } else if (Main_A_includes_B(id, 'main_dialog_user_kick') && Users_RemoveCursor !== 2) {
                 Users_RemoveCursor = 2;
                 Users_UserCursorSet();
             }
@@ -12368,7 +12483,7 @@
             ChannelContent_RestoreChannelValue();
         }
 
-        if (ChannelContent_lastselectedChannel !== Main_values.Main_selectedChannel) {
+        if (ChannelContent_lastselectedChannel !== Main_values.Main_selectedChannel_id) {
             ChannelContent_status = false;
         }
 
@@ -12418,7 +12533,7 @@
         ChannelContent_offline_image = null;
         Main_showLoadDialog();
         Main_HideWarningDialog();
-        ChannelContent_lastselectedChannel = Main_values.Main_selectedChannel;
+        ChannelContent_lastselectedChannel = Main_values.Main_selectedChannel_id;
         ChannelContent_status = false;
         ChannelContent_isoffline = false;
         ChannelContent_itemsCountOffset = 0;
@@ -12438,7 +12553,67 @@
         ChannelContent_loadDataRequest();
     }
 
+    var ChannelContent_KickSeq = 0;
+
+    // Kick channel: one public request gives the live card, the logo, banner, followers and bio
+    function ChannelContent_KickRequest() {
+        var slug = KickApi_SafeSlug(KickApi_Slug(Main_values.Main_selectedChannel_id));
+
+        if (!slug) {
+            ChannelContent_responseText = null;
+            ChannelContent_GetStreamerInfoError();
+            return;
+        }
+
+        FullxmlHttpGet(
+            KickApi_Base + 'v2/channels/' + slug,
+            KickApi_Headers(''),
+            ChannelContent_KickResult,
+            noop_fun,
+            0,
+            ++ChannelContent_KickSeq,
+            null, //Method, null for get
+            null
+        );
+    }
+
+    function ChannelContent_KickResult(obj, key, seq) {
+        if (Number(seq) !== ChannelContent_KickSeq) return;
+
+        var json = null;
+
+        try {
+            if (obj.status === 200) json = JSON.parse(obj.responseText);
+        } catch (e) {}
+
+        if (!json || !json.user) {
+            // Silent failure: the page shows as an offline channel without details
+            ChannelContent_responseText = null;
+            ChannelContent_GetStreamerInfoError();
+            return;
+        }
+
+        var cell = KickApi_ChannelLiveCell(json);
+
+        ChannelContent_profile_banner = KickApi_Img(json.banner_image && json.banner_image.url) || IMG_404_BANNER;
+        ChannelContent_offline_image = KickApi_Img(json.offline_banner_image && json.offline_banner_image.src) || null;
+        ChannelContent_selectedChannelViews = '';
+        // Number: the count reaches innerHTML, a string payload must not
+        ChannelContent_selectedChannelFollower = Number(json.followers_count) || '';
+        ChannelContent_description = Screens_AriaEscape((json.user && json.user.bio) || '');
+        Main_values.Main_selectedChannelLogo = KickApi_Img(json.user.profile_pic) || IMG_404_LOGO;
+        Main_values.Main_selectedChannelPartner = false;
+        ChannelContent_responseText = cell ? [{kickCell: cell, is_mature: !!json.livestream.is_mature}] : null;
+
+        ChannelContent_loadDataSuccess();
+    }
+
     function ChannelContent_loadDataRequest() {
+        if (KickApi_IsKickId(Main_values.Main_selectedChannel_id)) {
+            ChannelContent_KickRequest();
+            return;
+        }
+
         var theUrl =
             Main_helix_api +
             'streams?user_id=' +
@@ -12524,6 +12699,11 @@
         ChannelContent_loadDataSuccess();
     }
 
+    // A Kick channel is followed with the Kick account, a Twitch channel with the Twitch user
+    function ChannelContent_canFollow(id) {
+        return KickApi_IsKickId(id) ? !!KickUser_Token() : AddUser_UserIsSet();
+    }
+
     function ChannelContent_setFollow() {
         if (AddCode_IsFollowing) {
             Main_innerHTML(
@@ -12536,7 +12716,7 @@
                 '<i class="icon-heart-o" style="color: #FFFFFF; font-size: 100%; "></i>' +
                     STR_SPACE_HTML +
                     STR_SPACE_HTML +
-                    (AddUser_UserIsSet() ? STR_FOLLOW : STR_NOKEY)
+                    (ChannelContent_canFollow(Main_values.Main_selectedChannel_id) ? STR_FOLLOW : STR_NOKEY)
             );
         }
     }
@@ -12596,7 +12776,7 @@
                 stream.user_name = stream.user_name + STR_USER_HOSTED_BY + Main_values.Main_selectedChannelDisplayname;
             }
 
-            ChannelContent_createCell(ScreensObj_LiveCellArray(stream));
+            ChannelContent_createCell(stream.kickCell || ScreensObj_LiveCellArray(stream));
 
             ChannelContent_cursorX = 1;
         } else ChannelContent_createCellOffline(allowMature);
@@ -12656,8 +12836,12 @@
     function ChannelContent_createCellOffline(allowMature) {
         ChannelContent_isoffline = true;
         ChannelContent_allowMature = allowMature;
+        // A Kick channel has no offline player or chat to open yet
         var offlineString =
-            '<div class="stream_info_live">' + STR_CH_IS_OFFLINE + '</div><div class="stream_info_live_title">' + STR_OPEN_CHAT + '</div>';
+            '<div class="stream_info_live">' +
+            STR_CH_IS_OFFLINE +
+            '</div>' +
+            (KickApi_IsKickId(Main_values.Main_selectedChannel_id) ? '' : '<div class="stream_info_live_title">' + STR_OPEN_CHAT + '</div>');
 
         Main_innerHTML(
             'channel_content_thumbdiv0_0',
@@ -12691,7 +12875,8 @@
     }
 
     function ChannelContent_checkUser() {
-        if (AddUser_UserIsSet()) {
+        // A Kick channel asks Kick (AddCode_CheckFollow), never Twitch
+        if (AddUser_UserIsSet() && ChannelContent_canFollow(Main_values.Main_selectedChannel_id)) {
             AddCode_Channel_id = Main_values.Main_selectedChannel_id;
             AddCode_PlayRequest = false;
             AddCode_CheckFollow();
@@ -12748,7 +12933,7 @@
                     Screens_init(Main_ChannelClip);
                 });
             } else if (ChannelContent_cursorX === 2) {
-                if (AddUser_UserHasToken()) {
+                if (KickApi_IsKickId(Main_values.Main_selectedChannel_id) ? KickUser_Token() : AddUser_UserHasToken()) {
                     AddCode_PlayRequest = false;
                     AddCode_Channel_id = Main_values.Main_selectedChannel_id;
                     if (AddCode_IsFollowing) AddCode_UnFollow();
@@ -12757,6 +12942,9 @@
                     Main_showWarningDialog(STR_NOKEY_WARN, 2000);
                 }
             }
+        } else if (ChannelContent_isoffline && KickApi_IsKickId(Main_values.Main_selectedChannel_id)) {
+            // Offline Kick channel: nothing to play, and the Twitch chat of the same login is not this channel
+            Main_showWarningDialog(STR_CH_IS_OFFLINE, 2000);
         } else {
             Main_removeEventListener('keydown', ChannelContent_handleKeyDown);
             Main_HideElement('channel_content_scroll');
@@ -13019,7 +13207,7 @@
             return;
         }
 
-        PlayHLS_GetPlayListAsync(true, obj[6], null, Main_ChannelContent, ChannelContent_LoadPreviewResult);
+        PlayHLS_GetPlayListAsync(true, PlayHLS_Id(obj), null, Main_ChannelContent, ChannelContent_LoadPreviewResult);
     }
 
     function ChannelContent_LoadPreviewResult(StreamData, x) {
@@ -13549,14 +13737,15 @@
         return null;
     }
     /*
-     * Channel links for merged chat: which YouTube / Kick channel belongs to a Twitch streamer.
+     * Channel links for merged chat: which YouTube / Kick channel belongs to a Twitch streamer, and which
+     * Twitch / YouTube channel belongs to a Kick channel (stored under the key kick:<slug>).
      * Source is the UnityChat directory, overridable per streamer by manual values.
      */
 
     //Variable initialization
     var ChatLink_StoreKey = 'chat_links';
-    var ChatLink_DirCache = {}; // {login: streamer|null}, only successful answers (200 / 404) are cached
-    var ChatLink_LookupUrl = 'https://api.jouki.cz/streamers/lookup?platform=twitch&handle=';
+    var ChatLink_DirCache = {}; // {key (ChatLink_Key): streamer|null}, only successful answers (200 / 404) are cached
+    var ChatLink_LookupUrl = 'https://api.jouki.cz/streamers/lookup?platform=';
     //Variable initialization end
 
     function ChatLink_Get(login) {
@@ -13597,9 +13786,24 @@
         return match ? match[1].toLowerCase() : null;
     }
 
+    // Returns a lowercase Twitch login, null if the input is not usable
+    function ChatLink_NormalizeTwitch(input) {
+        var match = String(input || '')
+            .replace(/^\s+|\s+$/g, '')
+            .match(/^(?:https?:\/\/)?(?:www\.)?(?:twitch\.tv\/)?(\w{3,25})\/?$/i);
+        return match ? match[1].toLowerCase() : null;
+    }
+
+    // Store and directory key of a chat: 'kick:<slug>' for a Kick channel, else the Twitch login
+    function ChatLink_Key(chat_number) {
+        var id = ChatLive_selectedChannel_id[chat_number];
+        return KickApi_IsKickId(id) ? String(id) : ChatLive_selectedChannel[chat_number];
+    }
+
     // entry: stored entry, dir: directory streamer or null. Missing platform = directory, '' = do not link, else manual.
-    function ChatLink_Resolve(entry, dir) {
-        var result = {yt: null, kick: null};
+    // platform 'kick': the channel is a Kick channel, it links Twitch and YouTube (kick is always null)
+    function ChatLink_Resolve(entry, dir, platform) {
+        var result = {tw: null, yt: null, kick: null};
         if (!entry || entry.enabled === false) return result;
 
         if (typeof entry.yt === 'string') {
@@ -13610,6 +13814,20 @@
         } else if (dir) {
             var fromDir = ChatLink_NormalizeYouTube(dir.youtubeChannelId) || ChatLink_NormalizeYouTube(dir.youtubeHandle);
             if (fromDir) result.yt = {value: fromDir, source: 'dir'};
+        }
+
+        if (platform === 'kick') {
+            if (typeof entry.tw === 'string') {
+                if (entry.tw) {
+                    var tw = ChatLink_NormalizeTwitch(entry.tw);
+                    if (tw) result.tw = {value: tw, source: 'manual'};
+                }
+            } else if (dir) {
+                var twDir = ChatLink_NormalizeTwitch(dir.twitchLogin);
+                if (twDir) result.tw = {value: twDir, source: 'dir'};
+            }
+
+            return result;
         }
 
         if (typeof entry.kick === 'string') {
@@ -13626,21 +13844,28 @@
     }
 
     function ChatLink_Lookup(chat_number, id) {
-        var login = ChatLive_selectedChannel[chat_number];
+        var key = ChatLink_Key(chat_number);
 
-        if (login in ChatLink_DirCache) {
+        if (key in ChatLink_DirCache) {
             ChatMulti_OnLinks(chat_number, id);
             return;
         }
 
-        FullxmlHttpGet(ChatLink_LookupUrl + encodeURIComponent(login), null, ChatLink_LookupResult, noop_fun, chat_number, id);
+        FullxmlHttpGet(
+            ChatLink_LookupUrl + (KickApi_IsKickId(key) ? 'kick' : 'twitch') + '&handle=' + encodeURIComponent(ChatLive_selectedChannel[chat_number]),
+            null,
+            ChatLink_LookupResult,
+            noop_fun,
+            chat_number,
+            id
+        );
     }
 
     // Named top-level because FullxmlHttpGet resolves callbacks by name
     function ChatLink_LookupResult(obj, chat_number, id) {
         if (id !== Chat_Id[chat_number]) return;
 
-        var login = ChatLive_selectedChannel[chat_number];
+        var key = ChatLink_Key(chat_number);
         var json;
 
         if (obj.status === 200) {
@@ -13650,9 +13875,9 @@
                 json = null;
             }
             // Invalid JSON is handled like a network error: not cached
-            if (json) ChatLink_DirCache[login] = json.found && json.streamer ? json.streamer : null;
+            if (json) ChatLink_DirCache[key] = json.found && json.streamer ? json.streamer : null;
         } else if (obj.status === 404) {
-            ChatLink_DirCache[login] = null;
+            ChatLink_DirCache[key] = null;
         }
 
         // Directory failures are silent, manual links still work
@@ -13660,11 +13885,12 @@
     }
 
     function ChatLink_Current(chat_number) {
-        var login = ChatLive_selectedChannel[chat_number];
-        return ChatLink_Resolve(ChatLink_Get(login), ChatLink_DirCache[login] || null);
+        var key = ChatLink_Key(chat_number);
+        return ChatLink_Resolve(ChatLink_Get(key), ChatLink_DirCache[key] || null, KickApi_IsKickId(key) ? 'kick' : '');
     }
     /*
-     * "Linked chats" player dialog: shows and overrides the YouTube / Kick channel linked to the Twitch streamer of chat 0.
+     * "Linked chats" player dialog: shows and overrides the YouTube / Kick channel linked to the Twitch streamer of chat 0,
+     * or the Twitch / YouTube channel linked to the Kick channel of chat 0 (store key kick:<slug>, see ChatLink_Key).
      * Rows and Apply are pure (no DOM); the rest drives the dialog with the TV remote.
      */
 
@@ -13680,14 +13906,19 @@
     var ChatLinkDialog_OriginControl = -1;
     //Variable initialization end
 
-    function ChatLinkDialog_Rows(entry, resolved) {
-        var rows = [
-            ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved),
-            ChatLinkDialog_PlatformRow('kick', 'Kick', entry, resolved),
-            {kind: 'enabled', label: STR_CHAT_LINK_ENABLED, value: entry.enabled === false ? STR_NO : STR_YES, source: ''}
-        ];
+    //platform 'kick': rows of a Kick channel (Twitch and YouTube), else of a Twitch channel (YouTube and Kick)
+    function ChatLinkDialog_Rows(entry, resolved, platform) {
+        var rows =
+            platform === 'kick'
+                ? [
+                      ChatLinkDialog_PlatformRow('tw', STR_CHAT_LINK_TWITCH, entry, resolved),
+                      ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved)
+                  ]
+                : [ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved), ChatLinkDialog_PlatformRow('kick', 'Kick', entry, resolved)];
 
-        if (typeof entry.yt === 'string' || typeof entry.kick === 'string') {
+        rows.push({kind: 'enabled', label: STR_CHAT_LINK_ENABLED, value: entry.enabled === false ? STR_NO : STR_YES, source: ''});
+
+        if (typeof entry.yt === 'string' || typeof entry[platform === 'kick' ? 'tw' : 'kick'] === 'string') {
             rows.push({kind: 'reset', label: STR_CHAT_LINK_RESET, value: '', source: ''});
         }
         rows.push({kind: 'close', label: STR_CLOSE, value: '', source: ''});
@@ -13709,28 +13940,34 @@
         };
     }
 
+    function ChatLinkDialog_Platform(login) {
+        return KickApi_IsKickId(login) ? 'kick' : '';
+    }
+
     //Values of the dialog's own streamer, shown regardless of the enabled switch
     function ChatLinkDialog_Resolved(login) {
         var entry = ChatLink_Get(login);
 
         return ChatLink_Resolve(
-            {enabled: true, yt: entry.yt, kick: entry.kick},
-            ChatLink_DirCache.hasOwnProperty(login) ? ChatLink_DirCache[login] : null
+            {enabled: true, tw: entry.tw, yt: entry.yt, kick: entry.kick},
+            ChatLink_DirCache.hasOwnProperty(login) ? ChatLink_DirCache[login] : null,
+            ChatLinkDialog_Platform(login)
         );
     }
 
-    //Saves a manual value: normalized, '' = do not link. Returns false (nothing saved) for unusable input
+    //Saves a manual value: normalized, '' = do not link. Returns false (nothing saved) for unusable input.
+    //login is the store key: a Kick channel links 'tw' and 'yt', a Twitch channel 'yt' and 'kick'
     function ChatLinkDialog_Apply(login, kind, rawInput) {
         var text = String(rawInput || '').replace(/^\s+|\s+$/g, ''),
             value,
             current,
             entry;
 
-        if (kind !== 'yt' && kind !== 'kick') return false;
+        if (kind !== 'yt' && kind !== (ChatLinkDialog_Platform(login) === 'kick' ? 'tw' : 'kick')) return false;
 
         if (text === '') value = '';
         else {
-            value = kind === 'yt' ? ChatLink_NormalizeYouTube(text) : ChatLink_NormalizeKick(text);
+            value = kind === 'yt' ? ChatLink_NormalizeYouTube(text) : kind === 'tw' ? ChatLink_NormalizeTwitch(text) : ChatLink_NormalizeKick(text);
             if (!value) return false;
         }
 
@@ -13747,9 +13984,12 @@
         return true;
     }
 
-    //Login of a chat from the player data, as ChatLive_SetOptions sets it (ChatLive_selectedChannel is stale while chat is force-disabled)
+    //Store key of a chat from the player data, as ChatLink_Key gives it (ChatLive_selectedChannel is stale while chat is force-disabled)
     function ChatLinkDialog_ChatLogin(chat_number) {
-        return ((!chat_number ? Play_data : PlayExtra_data).data[6] || '').toLowerCase();
+        var data = (!chat_number ? Play_data : PlayExtra_data).data,
+            login = (data[6] || '').toLowerCase();
+
+        return login && KickApi_IsKickRow(data) ? KickApi_Id(login) : login;
     }
 
     function ChatLinkDialog_Restart() {
@@ -13768,7 +14008,11 @@
             div,
             text;
 
-        ChatLinkDialog_RowsData = ChatLinkDialog_Rows(ChatLink_Get(ChatLinkDialog_Login), ChatLinkDialog_Resolved(ChatLinkDialog_Login));
+        ChatLinkDialog_RowsData = ChatLinkDialog_Rows(
+            ChatLink_Get(ChatLinkDialog_Login),
+            ChatLinkDialog_Resolved(ChatLinkDialog_Login),
+            ChatLinkDialog_Platform(ChatLinkDialog_Login)
+        );
         if (ChatLinkDialog_Focus >= ChatLinkDialog_RowsData.length) ChatLinkDialog_Focus = ChatLinkDialog_RowsData.length - 1;
 
         Main_emptyWithEle(holder);
@@ -13780,7 +14024,7 @@
 
             //Only textContent: channel names and handles are untrusted
             text = row.label;
-            if (row.kind === 'yt' || row.kind === 'kick') {
+            if (row.kind === 'tw' || row.kind === 'yt' || row.kind === 'kick') {
                 text += ': ' + (row.value ? row.value : row.source === 'manual' ? STR_CHAT_LINK_UNLINKED : STR_CHAT_LINK_NONE);
                 if (row.value || row.source === 'manual') text += ' (' + ChatLinkDialog_SourceText(row.source) + ')';
                 text += ' – ' + (row.action === 'edit' ? STR_CHAT_LINK_EDIT : STR_CHAT_LINK_ENTER);
@@ -13881,6 +14125,7 @@
         if (!row) return;
 
         switch (row.kind) {
+            case 'tw':
             case 'yt':
             case 'kick':
                 ChatLinkDialog_InputOpen(row);
@@ -13895,6 +14140,7 @@
             case 'reset':
                 //Back to the directory values, the enabled switch is kept
                 entry = ChatLink_Get(ChatLinkDialog_Login);
+                delete entry.tw;
                 delete entry.yt;
                 delete entry.kick;
                 ChatLink_Save(ChatLinkDialog_Login, entry);
@@ -14129,6 +14375,11 @@
     var ChatLive_PingId = [];
     var ChatLive_SendPingId;
     var ChatLive_selectedChannel = [];
+    var ChatLive_IrcChannel = []; //Linked Twitch login of a Kick chat, its IRC is anonymous and read-only
+    var ChatLive_PreLoadLogin = []; //Login the history was requested for, a restart keeps Chat_Id
+    var ChatLive_LinkedTries = []; //Failed connects of a linked Twitch chat since its last JOIN
+    var ChatLive_LinkedMaxTries = 4;
+    var ChatLive_LinkedFailRegex = /^(msg_channel_suspended|tos_ban)$/; //NOTICE msg-id: the linked channel cannot be joined
     var ChatLive_sub_replace = new RegExp('\\\\s', 'gi');
     var ChatLive_chat_line_class = '';
 
@@ -14194,6 +14445,27 @@
             !chat_number ? Play_data.data[14] : PlayExtra_data.data[14],
             !chat_number ? Play_data.data[6] : PlayExtra_data.data[6]
         );
+
+        //Kick row: the Kick chat is the main source, never a Twitch IRC for a Twitch channel that happens to share the login.
+        //A linked Twitch channel is joined by ChatMulti (ChatLive_StartLinkedTwitch)
+        if (KickApi_IsKickRow(!chat_number ? Play_data.data : PlayExtra_data.data)) {
+            //Only ChatLive_StartShared resets it, a Kick chat never starts it
+            ChatLive_isShared[chat_number] = false;
+
+            if (!SkipClear) {
+                ChatLive_LineAdd({
+                    chat_number: chat_number,
+                    message:
+                        ChatLive_LineAddSimple(STR_LOADING_CHAT + STR_SPACE_HTML + (!chat_number ? Play_data.data[1] : PlayExtra_data.data[1])) +
+                        STR_SPACE_HTML +
+                        STR_LIVE
+                });
+            }
+
+            ChatMulti_Start(chat_number, Chat_Id[chat_number], !SkipClear);
+            return;
+        }
+
         ChatLive_StartShared(chat_number, Chat_Id[chat_number]);
 
         if (!SkipClear) {
@@ -14286,6 +14558,7 @@
         ChatLive_CacheTouch(Channel_id);
         ChatLive_selectedChannel[chat_number] = selectedChannel;
         if (ChatLive_selectedChannel[chat_number]) ChatLive_selectedChannel[chat_number] = ChatLive_selectedChannel[chat_number].toLowerCase();
+        ChatLive_IrcChannel[chat_number] = '';
 
         ChatLive_User_Set = AddUser_IsUserSet();
 
@@ -14329,11 +14602,15 @@
         ChatLive_sharedChannelBadgeLoaded[chat_number] = {};
 
         Chat_loadBadgesGlobalRequest(chat_number, Chat_Id[chat_number]);
-        ChatLive_loadCheersChannel(chat_number, Chat_Id[chat_number]);
 
-        ChatLive_loadEmotesChannelBTTV(chat_number, Chat_Id[chat_number]);
-        ChatLive_loadEmotesChannelFFZ(chat_number, Chat_Id[chat_number]);
-        ChatLive_loadEmotesChannelSeven_tv(chat_number, Chat_Id[chat_number]);
+        //Per channel Twitch loaders, never for a Kick channel id
+        if (!KickApi_IsKickId(Channel_id)) {
+            ChatLive_loadCheersChannel(chat_number, Chat_Id[chat_number]);
+
+            ChatLive_loadEmotesChannelBTTV(chat_number, Chat_Id[chat_number]);
+            ChatLive_loadEmotesChannelFFZ(chat_number, Chat_Id[chat_number]);
+            ChatLive_loadEmotesChannelSeven_tv(chat_number, Chat_Id[chat_number]);
+        }
     }
 
     function ChatLive_StartShared(chat_number, id) {
@@ -15156,10 +15433,10 @@
     }
 
     function ChatLive_PreLoadChat(chat_number, id) {
+        ChatLive_PreLoadLogin[chat_number] = ChatLive_IrcLogin(chat_number);
+
         BaseXmlHttpGet(
-            'https://recent-messages.robotty.de/api/v2/recent-messages/' +
-                ChatLive_selectedChannel[chat_number] +
-                '?limit=30&hide_moderation_messages=true',
+            'https://recent-messages.robotty.de/api/v2/recent-messages/' + ChatLive_IrcLogin(chat_number) + '?limit=30&hide_moderation_messages=true',
             ChatLive_PreLoadChatSuccess,
             noop_fun,
             chat_number,
@@ -15168,7 +15445,8 @@
     }
 
     function ChatLive_PreLoadChatSuccess(data, chat_number, id) {
-        if (id !== Chat_Id[chat_number]) return;
+        //A relinked or unlinked Twitch chat of a Kick stream keeps Chat_Id: drop the history of the old login
+        if (id !== Chat_Id[chat_number] || ChatLive_PreLoadLogin[chat_number] !== ChatLive_IrcLogin(chat_number)) return;
 
         var obj = JSON.parse(data),
             len = obj.messages.length,
@@ -15201,13 +15479,69 @@
             });
         }
 
-        useToken[chat_number] = ChatLive_Logging && !ChatLive_Banned[chat_number] && AddUser_IsUserSet() && AddUser_UsernameArray[0].access_token;
+        //A linked Twitch chat is always anonymous
+        useToken[chat_number] =
+            !ChatLive_IrcChannel[chat_number] &&
+            ChatLive_Logging &&
+            !ChatLive_Banned[chat_number] &&
+            AddUser_IsUserSet() &&
+            AddUser_UsernameArray[0].access_token;
 
         ChatLive_loadChatRequest(chat_number, id, SkipStartLine);
     }
 
+    //Twitch IRC channel of a chat: the linked Twitch login on a Kick chat, else the stream login
+    function ChatLive_IrcLogin(chat_number) {
+        return ChatLive_IrcChannel[chat_number] || ChatLive_selectedChannel[chat_number];
+    }
+
+    //Linked Twitch chat of a Kick stream (ChatMulti_OnLinks): read-only anonymous IRC with the same lines, badges and moderation
+    function ChatLive_StartLinkedTwitch(chat_number, id, login, withHistory) {
+        if (id !== Chat_Id[chat_number] || !/^\w{3,25}$/.test(login)) return;
+
+        ChatLive_IrcChannel[chat_number] = login;
+        ChatLive_LinkedTries[chat_number] = 0;
+        useToken[chat_number] = false;
+
+        if (withHistory) ChatLive_PreLoadChat(chat_number, id);
+        ChatLive_loadChatRequest(chat_number, id, true);
+    }
+
+    //Ends the linked Twitch chat (ChatMulti_Stop, a channel that cannot be joined); a pending reconnect or history must not outlive it
+    function ChatLive_StopLinkedTwitch(chat_number) {
+        if (!ChatLive_IrcChannel[chat_number]) return;
+
+        ChatLive_CheckClear(chat_number);
+        ChatLive_Close(chat_number);
+        ChatLive_IrcChannel[chat_number] = '';
+        ChatLive_PreLoadLogin[chat_number] = '';
+    }
+
+    //A linked Twitch chat that does not connect (unknown login, network): silent retries with a growing delay, then the link is dropped.
+    //It never adds the timeout / loading lines of a Twitch main chat to the Kick chat
+    function ChatLive_LinkedRetry(chat_number, id) {
+        var tries = (ChatLive_LinkedTries[chat_number] || 0) + 1;
+
+        if (tries > ChatLive_LinkedMaxTries) {
+            ChatLive_StopLinkedTwitch(chat_number);
+            return;
+        }
+
+        ChatLive_LinkedTries[chat_number] = tries;
+        ChatLive_Close(chat_number);
+
+        ChatLive_CheckId[chat_number] = Main_setTimeout(
+            function () {
+                ChatLive_loadChatRequest(chat_number, id, true);
+            },
+            ChatLive_ReTryDelay * Math.pow(4, tries - 1), //1, 4, 16, 64 s
+            ChatLive_CheckId[chat_number]
+        );
+    }
+
     function ChatLive_loadChatRequest(chat_number, id, SkipStartLine) {
-        if (id !== Chat_Id[chat_number]) return;
+        //A Kick chat without a linked Twitch login never joins the Twitch channel of the Kick slug
+        if (id !== Chat_Id[chat_number] || (KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number]) && !ChatLive_IrcChannel[chat_number])) return;
         //Main_Log('ChatLive_loadChatRequest');
 
         ChatLive_socket[chat_number] = new WebSocket('wss://irc-ws.chat.twitch.tv:443', 'irc');
@@ -15223,7 +15557,7 @@
                 ChatLive_socket[chat_number].send('PASS blah');
                 ChatLive_socket[chat_number].send('NICK justinfan12345');
                 ChatLive_socket[chat_number].send('CAP REQ :twitch.tv/commands twitch.tv/tags');
-                ChatLive_socket[chat_number].send('JOIN #' + ChatLive_selectedChannel[chat_number]);
+                ChatLive_socket[chat_number].send('JOIN #' + ChatLive_IrcLogin(chat_number));
             }
         };
 
@@ -15260,7 +15594,7 @@
                         //Delay the joing so the cap get fully accepted
                         ChatLive_JoinID[chat_number] = Main_setTimeout(
                             function () {
-                                ChatLive_socket[chat_number].send('JOIN #' + ChatLive_selectedChannel[chat_number]);
+                                ChatLive_socket[chat_number].send('JOIN #' + ChatLive_IrcLogin(chat_number));
                             },
                             500,
                             ChatLive_JoinID[chat_number]
@@ -15271,6 +15605,7 @@
                     //Main_Log("JOIN");
                     if (!ChatLive_loaded[chat_number]) {
                         ChatLive_loaded[chat_number] = true;
+                        ChatLive_LinkedTries[chat_number] = 0;
 
                         if (!SkipStartLine) {
                             ChatLive_LineAdd({
@@ -15402,14 +15737,14 @@
 
         ChatLive_socket[chat_number].onclose = function (event) {
             //Main_Log(JSON.stringify(event) + ' onclose main ');
-            ChatLive_LineAddErro('Websocket closed remotely... ' + JSON.stringify(event), chat_number);
+            if (!ChatLive_IrcChannel[chat_number]) ChatLive_LineAddErro('Websocket closed remotely... ' + JSON.stringify(event), chat_number);
             ChatLive_loaded[chat_number] = false;
             ChatLive_Check(chat_number, id, ChatLive_ReTryDelay, true);
         };
 
         ChatLive_socket[chat_number].onerror = function (error) {
             //Main_Log(JSON.stringify(error) + ' erro main');
-            ChatLive_LineAddErro('Error... ' + JSON.stringify(error), chat_number);
+            if (!ChatLive_IrcChannel[chat_number]) ChatLive_LineAddErro('Error... ' + JSON.stringify(error), chat_number);
             ChatLive_loaded[chat_number] = false;
             ChatLive_Check(chat_number, id, ChatLive_ReTryDelay, true);
         };
@@ -15439,7 +15774,7 @@
 
     function ChatLive_Close(chat_number) {
         if (ChatLive_socket[chat_number]) {
-            if (ChatLive_socket[chat_number].readyState === 1) ChatLive_socket[chat_number].send('PART #' + ChatLive_selectedChannel[chat_number]);
+            if (ChatLive_socket[chat_number].readyState === 1) ChatLive_socket[chat_number].send('PART #' + ChatLive_IrcLogin(chat_number));
 
             ChatLive_reset(chat_number);
             ChatLive_socket[chat_number].close(1000);
@@ -15450,6 +15785,11 @@
 
     function ChatLive_Check(chat_number, id, timeout, silent) {
         if (!ChatLive_loaded[chat_number] && id === Chat_Id[chat_number]) {
+            if (ChatLive_IrcChannel[chat_number]) {
+                ChatLive_LinkedRetry(chat_number, id);
+                return;
+            }
+
             ChatLive_Close(chat_number);
 
             ChatLive_CheckId[chat_number] = Main_setTimeout(
@@ -15494,7 +15834,7 @@
                 //try a join again so the ROOMSTATE get send
                 ChatLive_JoinID[chat_number] = Main_setTimeout(
                     function () {
-                        ChatLive_socket[chat_number].send('JOIN #' + ChatLive_selectedChannel[chat_number]);
+                        ChatLive_socket[chat_number].send('JOIN #' + ChatLive_IrcLogin(chat_number));
                     },
                     1000,
                     ChatLive_JoinID[chat_number]
@@ -15691,6 +16031,12 @@
         //Main_Log(JSON.stringify(message));
         var msgId = message.tags && message.tags.hasOwnProperty('msg-id');
 
+        //Linked Twitch chat of a Kick stream: read-only, its notices are not shown; a channel that cannot be joined drops the link
+        if (ChatLive_IrcChannel[chat_number]) {
+            if (msgId && ChatLive_LinkedFailRegex.test(message.tags['msg-id'] + '')) ChatLive_StopLinkedTwitch(chat_number);
+            return;
+        }
+
         if (msgId && Main_A_includes_B(message.tags['msg-id'] + '', 'host_on')) {
             ChatLive_UserNoticeWarn(message);
         } else if (msgId && useToken[chat_number] && Main_A_includes_B(message.tags['msg-id'] + '', 'msg_banned')) {
@@ -15726,6 +16072,9 @@
     }
 
     function ChatLive_SendMessage(message, chat_number) {
+        //Kick chat: only the Kick main chat is written to, never the Twitch token to the Twitch channel of the Kick slug
+        if (KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number])) return KickChat_Send(chat_number, message);
+
         //Main_Log('ChatLive_SendMessage ' + ChatLive_socketSendJoin + ' msg ' + message);
 
         if (ChatLive_socketSendJoin && ChatLive_socketSend && ChatLive_socketSend.readyState === 1) {
@@ -15943,7 +16292,7 @@
 
         if (ChatLive_Highlight_AtStreamer && ChatLive_Channel_Regex_Search[chat_number].test(mmessage)) {
             atstreamer = true;
-        } else if (ChatLive_Highlight_FromStreamer && Main_A_equals_B(nickLower, ChatLive_selectedChannel[chat_number])) {
+        } else if (ChatLive_Highlight_FromStreamer && Main_A_equals_B(nickLower, ChatLive_IrcLogin(chat_number))) {
             fromstreamer = true;
         } else if (ChatLive_Highlight_Mod && tags.mod && tags.mod !== '0') {
             mod = true;
@@ -16113,7 +16462,8 @@
         var ret = '',
             isShared = ChatLive_isShared[chat_number] && tags['source-room-id'],
             channelId = isShared ? tags['source-room-id'] : ChatLive_selectedChannel_id[chat_number],
-            badgeTag = isShared && tags['source-badges'] ? 'source-badges' : 'badges'; //shared support
+            badgeTag = isShared && tags['source-badges'] ? 'source-badges' : 'badges', //shared support
+            kickChat = KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number]);
 
         if (ChatLive_Show_Shared_Badge && ChatLive_isShared[chat_number] && ChatLive_sharedProfileImg[channelId]) {
             //TODO add a disable settings option shared chat badge
@@ -16128,7 +16478,13 @@
                 for (var i = 0, len = badges.length; i < len; i++) {
                     badge = badges[i].split('/');
 
-                    if (!badge[0] || !badge[1] || !ChatLive_ShouldShowBadge(badge[0])) {
+                    //Linked Twitch lines of a Kick chat: the per channel sets (subscriber, bits) are never loaded, skip their empty slot
+                    if (
+                        !badge[0] ||
+                        !badge[1] ||
+                        !ChatLive_ShouldShowBadge(badge[0]) ||
+                        (kickChat && (badge[0] === 'subscriber' || badge[0] === 'bits'))
+                    ) {
                         continue;
                     }
 
@@ -17374,6 +17730,22 @@
         ChatLiveControls_CanSendBool = true;
         var streamer = !ChatLiveControls_Channel ? Play_data.data[1] : PlayExtra_data.data[1];
 
+        //Kick chat: the Twitch room state, ban and follow state do not apply, it needs the Kick token and the chatroom
+        if (KickApi_IsKickId(ChatLive_selectedChannel_id[ChatLiveControls_Channel])) {
+            var kickState = ChatKick_State[ChatLiveControls_Channel];
+
+            if (KickUser_Token() && kickState && kickState.chatroom) {
+                ChatLiveControls_PreventInputClear();
+                return true;
+            }
+
+            ChatLiveControls_CanSendText = KickUser_Token() ? STR_CHAT_NOT_READY : STR_KICK_CHAT_NEEDS_USER;
+            ChatLiveControls_CanSendBool = false;
+            ChatLiveControls_PreventInput();
+
+            return false;
+        }
+
         if (ChatLive_Banned[ChatLiveControls_Channel]) {
             ChatLiveControls_CanSendText = STR_CHAT_BANNED + streamer;
             ChatLiveControls_CanSendBool = false;
@@ -17613,6 +17985,7 @@
     /*
      * Merged chat core: starts and stops the YouTube / Kick sources of a chat and renders their lines
      * through the Twitch line pipeline (delay, pause, spam merge, cleanup, moderation).
+     * On a Kick stream the Kick chat is the main source and Twitch (read-only IRC) / YouTube are the linked ones.
      * Everything that comes from YouTube / Kick is untrusted: names are escaped, text goes through
      * ChatLive_extraMessageTokenize, colors, ids and image urls are whitelisted.
      */
@@ -17631,10 +18004,18 @@
 
     function ChatMulti_Start(chat_number, id, withHistory) {
         ChatMulti_Stop(chat_number);
-        if (!id || !Settings_value.chat_multi.defaultValue) return;
+        if (!id) return;
+
+        //The Kick main chat runs with merged chat off too, only its links need the setting.
+        //chat_kick_main: its Kick icons show only while linked, as the Twitch icons of a Twitch chat (css)
+        var kick = KickApi_IsKickId(ChatLink_Key(chat_number));
+        if (kick) Main_AddClassWithEle(Chat_div[chat_number], 'chat_kick_main');
+        else if (!Settings_value.chat_multi.defaultValue) return;
 
         ChatMulti_State[chat_number] = {id: id, seq: ++ChatMulti_Seq, withHistory: withHistory, started: false};
-        ChatLink_Lookup(chat_number, id);
+
+        if (Settings_value.chat_multi.defaultValue) ChatLink_Lookup(chat_number, id);
+        else ChatMulti_OnLinks(chat_number, id);
     }
 
     // Contract for ChatKick.js / ChatYouTube.js: their Start gets the session seq as its id, passes it as the
@@ -17651,9 +18032,11 @@
         ChatMulti_State[chat_number] = null;
         ChatMulti_Seen[chat_number] = null;
         ChatMulti_SetLinked(chat_number, false);
+        Main_RemoveClassWithEle(Chat_div[chat_number], 'chat_kick_main');
 
         if (typeof ChatKick_Stop === 'function') ChatKick_Stop(chat_number);
         if (typeof ChatYouTube_Stop === 'function') ChatYouTube_Stop(chat_number);
+        ChatLive_StopLinkedTwitch(chat_number);
     }
 
     // After the links of the current streamer changed, history is not loaded again
@@ -17666,9 +18049,17 @@
         if (!state || state.id !== id || id !== Chat_Id[chat_number] || state.started) return;
         state.started = true;
 
-        var links = ChatLink_Current(chat_number);
-        ChatMulti_SetLinked(chat_number, !!(links.yt || links.kick));
+        var key = ChatLink_Key(chat_number),
+            links = {tw: null, yt: null, kick: null};
 
+        //Kick channel: its own chat always, the linked ones only with merged chat on
+        if (KickApi_IsKickId(key) && typeof ChatKick_Start === 'function')
+            ChatKick_Start(chat_number, state.seq, KickApi_Slug(key), state.withHistory);
+        if (Settings_value.chat_multi.defaultValue) links = ChatLink_Current(chat_number);
+
+        ChatMulti_SetLinked(chat_number, !!(links.tw || links.yt || links.kick));
+
+        if (links.tw) ChatLive_StartLinkedTwitch(chat_number, state.id, links.tw.value, state.withHistory);
         if (links.kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, links.kick.value, state.withHistory);
         if (links.yt && typeof ChatYouTube_Start === 'function') ChatYouTube_Start(chat_number, state.seq, links.yt.value, state.withHistory);
     }
@@ -17907,6 +18298,11 @@
             return;
         }
 
+        if (KickApi_IsKickId(Main_values.ChannelVod_vodId)) {
+            Chat_SingleLine(STR_KICK_NO_VOD_CHAT);
+            return;
+        }
+
         if (!Main_IsOn_OSInterface) {
             Chat_StartFakeClock();
         }
@@ -18038,7 +18434,7 @@
             BaseXmlHttpGetFull(theUrl, true, id, chat_number + '', channelId + '', null, null, null, Chat_loadBadgesGlobalSuccess, noop_fun);
         } else {
             if (!Chat_GlobalBadges[channelId]) {
-                Chat_GlobalBadges[channelId] = Chat_GlobalBadges[0].replace(/\%x/g, channelId);
+                Chat_GlobalBadges[channelId] = Chat_GlobalBadges[0].replace(/\%x/g, Chat_CssId(channelId));
             }
 
             Chat_tagCSS(Chat_GlobalBadges[channelId], Chat_div[chat_number]);
@@ -18056,7 +18452,7 @@
         Chat_GlobalBadges_Bits_Subs = {};
         Chat_GlobalBadges[0] = Chat_loadBadgesTransform(obj, '%x', false, chat_number);
 
-        Chat_GlobalBadges[channelId] = Chat_GlobalBadges[0].replace(/\%x/g, channelId);
+        Chat_GlobalBadges[channelId] = Chat_GlobalBadges[0].replace(/\%x/g, Chat_CssId(channelId));
 
         Chat_tagCSS(Chat_GlobalBadges[channelId], Chat_div[chat_number]);
 
@@ -18148,6 +18544,11 @@
     function Chat_BaseTagCSS(type, version, url) {
         //a prevent class starting with numbers
         return Chat_BaseTagId(type, version) + url;
+    }
+
+    //Channel id inside a css class selector: the ':' of a Kick chat id (kick:<slug>, linked Twitch lines) must be escaped
+    function Chat_CssId(channelId) {
+        return String(channelId).replace(/:/g, '\\:');
     }
 
     function Chat_BaseTagId(type, version) {
@@ -19342,6 +19743,1242 @@
 
         return null;
     }
+    /* Kick as a second platform: unofficial kick.com API helpers and converters from Kick responses to the app's card rows.
+     * Rows keep the Twitch positions and carry 'kick' in [19]. Every Kick text is escaped and every url is checked here,
+     * the card builders can insert row values as they do for Twitch. */
+
+    var KickApi_Base = 'https://kick.com/api/';
+    var KickApi_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36';
+    var KickApi_ImgHosts = /^(images\.kick\.com|files\.kick\.com|clips\.kick\.com|stream\.kick\.com)$/;
+    var KickApi_ClipHost = /^clips\.kick\.com$/;
+    var KickApi_SlugRegex = /^[\w-]{1,40}$/;
+    var KickApi_IsoRegex = /^\d{4}-\d\d-\d\d[T ]\d\d:\d\d:\d\d(\.\d+)?(Z|[+-]\d\d:?\d\d)?$/;
+    var KickApi_IdRegex = /^[\w-]+$/;
+    //Fresh live rows by slug, filled by the playlist info step (PlayHLS_KickInfo)
+    var KickApi_LiveCache = {};
+
+    // The Kick token goes only to kick.com hosts, callers must never use these headers for another host
+    function KickApi_Headers(token) {
+        var headers = [
+            ['User-Agent', KickApi_UA],
+            ['Accept', 'application/json']
+        ];
+
+        if (token) headers.push(['Authorization', 'Bearer ' + token]);
+
+        return headers;
+    }
+
+    function KickApi_Id(slug) {
+        return 'kick:' + String(slug).toLowerCase();
+    }
+
+    function KickApi_IsKickId(id) {
+        return /^kick:/.test(String(id));
+    }
+
+    function KickApi_Slug(id) {
+        return String(id).slice(5);
+    }
+
+    function KickApi_IsKickRow(data) {
+        return !!data && data[19] === 'kick';
+    }
+
+    function KickApi_SafeSlug(slug) {
+        return typeof slug === 'string' && KickApi_SlugRegex.test(slug) ? slug : '';
+    }
+
+    // Row id [7] from an untrusted Kick id (livestream id, video uuid, clip id), null when unsafe: the builder then drops the row
+    function KickApi_RowId(id) {
+        return id !== null && id !== undefined && KickApi_IdRegex.test(String(id)) ? 'kick:' + id : null;
+    }
+
+    // '2026-10-31 22:33:21' (UTC without zone) -> '2026-10-31T22:33:21Z', unusable input -> ''
+    function KickApi_Iso(str) {
+        if (typeof str !== 'string' || !KickApi_IsoRegex.test(str)) return '';
+
+        str = str.replace(' ', 'T');
+        if (!/(Z|[+-]\d\d:?\d\d)$/.test(str)) str += 'Z';
+
+        return isNaN(new Date(str).getTime()) ? '' : str;
+    }
+
+    function KickApi_Img(url) {
+        if (typeof url !== 'string') return '';
+
+        return ChatMulti_SafeUrl(url.split('?')[0], KickApi_ImgHosts) || '';
+    }
+
+    //Kick sends the full language name ('English') where Twitch sends the iso code, unknown names give no tag
+    var KickApi_LangNames = {
+        arabic: 'ar',
+        chinese: 'zh',
+        czech: 'cs',
+        danish: 'da',
+        dutch: 'nl',
+        english: 'en',
+        finnish: 'fi',
+        french: 'fr',
+        german: 'de',
+        greek: 'el',
+        hindi: 'hi',
+        hungarian: 'hu',
+        indonesian: 'id',
+        italian: 'it',
+        japanese: 'ja',
+        korean: 'ko',
+        norwegian: 'no',
+        polish: 'pl',
+        portuguese: 'pt',
+        romanian: 'ro',
+        russian: 'ru',
+        spanish: 'es',
+        swedish: 'sv',
+        thai: 'th',
+        turkish: 'tr',
+        ukrainian: 'uk',
+        vietnamese: 'vi'
+    };
+
+    function KickApi_Lang(value) {
+        if (typeof value !== 'string') return '';
+        if (/^[a-z]{2}$/i.test(value)) return value.toLowerCase();
+
+        value = value.toLowerCase();
+        return Object.prototype.hasOwnProperty.call(KickApi_LangNames, value) ? KickApi_LangNames[value] : '';
+    }
+
+    function KickApi_LangTag(lang) {
+        return lang ? '[' + lang.toUpperCase() + ']' : '';
+    }
+
+    function KickApi_Num(value) {
+        value = Number(value);
+        return isNaN(value) ? 0 : value;
+    }
+
+    function KickApi_Cat(item) {
+        var cat = item.categories && item.categories[0] ? item.categories[0] : item.category;
+
+        return Screens_AriaEscape(cat && cat.name ? cat.name : '');
+    }
+
+    // Row builders return null when the Kick id is unsafe, callers skip null rows (KickApi_Item(null) is null too)
+    // ls: livestream of v1/user/livestreams, mobile.kick.com/api/v1/livestreams or v2/channels.livestream, ch: optional {slug, username, avatar}
+    function KickApi_LiveCell(ls, ch) {
+        var id = KickApi_RowId(ls.id);
+        if (!id) return null;
+
+        var channel = ls.channel || {},
+            user = channel.user || {},
+            slug = KickApi_SafeSlug(ch ? ch.slug : channel.slug),
+            name = ch ? ch.username : user.username || channel.username,
+            avatar = ch ? ch.avatar : user.profilepic || channel.profile_pic || channel.profile_picture,
+            iso = KickApi_Iso(ls.start_time || ls.created_at),
+            lang = KickApi_Lang(ls.lang_iso || ls.language),
+            viewers = KickApi_Num(ls.viewer_count);
+
+        return [
+            KickApi_Img(ls.thumbnail && (ls.thumbnail.src || ls.thumbnail.url)), //0
+            Screens_AriaEscape(name || slug), //1
+            Screens_AriaEscape(ls.session_title || ls.title), //2
+            KickApi_Cat(ls), //3
+            Main_formatNumber(viewers), //4
+            KickApi_LangTag(lang), //5
+            slug, //6
+            id, //7
+            false, //8
+            KickApi_Img(avatar), //9
+            false, //10
+            iso ? Play_streamLiveAt(iso) : '', //11
+            iso, //12
+            viewers, //13
+            KickApi_Id(slug), //14
+            lang, //15
+            null, //16
+            null, //17
+            null, //18
+            'kick' //19
+        ];
+    }
+
+    // json of v2/channels/<slug>, null when the channel is offline
+    function KickApi_ChannelLiveCell(json) {
+        if (!json || !json.livestream) return null;
+
+        var user = json.user || {};
+
+        return KickApi_LiveCell(json.livestream, {slug: json.slug, username: user.username, avatar: user.profile_pic || user.profilepic});
+    }
+
+    // v: item of v2/channels/<slug>/videos, ch: {slug, name}
+    function KickApi_VodCell(v, ch) {
+        var id = KickApi_RowId(v.video ? v.video.uuid : v.id);
+        if (!id) return null;
+
+        var slug = KickApi_SafeSlug(ch.slug),
+            iso = KickApi_Iso(v.start_time || v.created_at),
+            lang = KickApi_Lang(v.lang_iso || v.language),
+            views = KickApi_Num(v.views),
+            duration = Math.round(KickApi_Num(v.duration) / 1000);
+
+        return [
+            KickApi_Img(v.thumbnail && v.thumbnail.src), //0
+            Screens_AriaEscape(ch.name || slug), //1
+            iso ? Main_videoCreatedAt(iso) : '', //2
+            KickApi_Cat(v), //3
+            Main_formatNumber(views), //4
+            KickApi_LangTag(lang), //5
+            slug, //6
+            id, //7
+            null, //8
+            lang, //9
+            twemoji.parse(Screens_AriaEscape(v.session_title)), //10
+            duration, //11
+            iso, //12
+            views, //13
+            KickApi_Id(slug), //14
+            duration, //15
+            null, //16
+            null, //17
+            null, //18
+            'kick' //19
+        ];
+    }
+
+    function KickApi_ClipCell(c) {
+        var id = KickApi_RowId(c.id);
+        if (!id) return null;
+
+        var channel = c.channel || {},
+            slug = KickApi_SafeSlug(channel.slug),
+            iso = KickApi_Iso(c.created_at),
+            views = KickApi_Num(c.view_count || c.views);
+
+        return [
+            ChatMulti_SafeUrl(c.clip_url, KickApi_ClipHost) || '', //0
+            KickApi_Num(c.duration), //1
+            KickApi_Id(slug), //2
+            c.category && c.category.name ? Screens_AriaEscape(c.category.name) : '', //3
+            Screens_AriaEscape(channel.username || slug), //4
+            KickApi_Img(channel.profile_picture), //5
+            slug, //6
+            id, //7
+            null, //8
+            null, //9
+            twemoji.parse(Screens_AriaEscape(c.title)), //10
+            '', //11
+            iso, //12
+            views, //13
+            Main_formatNumber(views), //14
+            KickApi_Img(c.thumbnail_url), //15
+            iso ? Main_videoCreatedAt(iso) : '', //16
+            '', //17
+            null, //18
+            'kick' //19
+        ];
+    }
+
+    // f: item of v2/channels/followed
+    function KickApi_ChannelCell(f) {
+        var slug = KickApi_SafeSlug(f.channel_slug),
+            cell = [slug, KickApi_Id(slug), KickApi_Img(f.profile_picture), Screens_AriaEscape(f.user_username || slug), false, null];
+
+        cell[19] = 'kick';
+        return cell;
+    }
+
+    // Wrapper for ScreenObj.data: Kick has no Twitch ids, the row is rebuilt from kickCell
+    function KickApi_Item(cell, id, channelId, isMature) {
+        if (!cell) return null;
+
+        return {kickCell: cell, id: id, user_id: channelId, broadcaster_id: channelId, game_id: null, is_mature: !!isMature};
+    }
+
+    //Twitch cards get the Twitch icon only while the main user has a working Kick account (Twitch only users see no change)
+    function KickApi_CardIcon(data) {
+        if (KickApi_IsKickRow(data)) return '<span class="tag chat_pi_kick card_pi"></span>';
+
+        return KickUser_Token() ? '<span class="tag chat_pi_tw card_pi"></span>' : '';
+    }
+
+    //Icon of a user card in Users: Kick only users the Kick icon, Twitch users the Twitch icon only with their own linked Kick account
+    function KickApi_UserIcon(user) {
+        if (KickUser_IsKickOnly(user)) return '<span class="tag chat_pi_kick card_pi"></span>';
+
+        return user && user.kick ? '<span class="tag chat_pi_tw card_pi"></span>' : '';
+    }
+
+    // Category row of Games, 'kick:' + slug in [3] is the game id of the app, the numeric id is kept in KickBrowse_CatIds
+    // because Kick filters livestreams by that id only
+    // cat: item of kick.com/api/v1/subcategories (or categories/top), null for an unsafe slug or id
+    function KickApi_GameCell(cat) {
+        if (!cat || typeof cat !== 'object') return null;
+
+        var slug = KickApi_SafeSlug(cat.slug);
+        if (!slug || !/^\d{1,9}$/.test(String(cat.id))) return null;
+
+        // subcategories have banner and viewers, the search has thumbnail and viewer_count
+        var viewers = KickApi_Num(cat.viewers || cat.viewer_count),
+            image = cat.banner || cat.thumbnail;
+        KickBrowse_CatIds[slug.toLowerCase()] = Number(cat.id);
+
+        return [
+            KickApi_Img(image && (image.src || image.url)), //0
+            Screens_AriaEscape(cat.name || slug), //1
+            STR_FOR + STR_SPACE_HTML + Main_formatNumber(viewers) + STR_SPACE_HTML + Main_GetViewerStrings(viewers), //2
+            KickApi_Id(slug) //3
+        ];
+    }
+
+    // Browsing Kick (public endpoints, no token): the platform switch of Live and Games and the lists behind it
+    var KickBrowse_LiveBase = 'https://mobile.kick.com/api/v1/livestreams';
+    var KickBrowse_GamesBase = 'https://kick.com/api/v1/subcategories';
+    var KickBrowse_GamesLimit = 24;
+    var KickBrowse_CursorRegex = /^[\w-]{1,200}$/;
+    // slug -> numeric subcategory id, filled by KickApi_GameCell, 0 (rejected by Kick with 400) when unknown
+    var KickBrowse_CatIds = {};
+
+    function KickBrowse_On() {
+        return Main_getItemBool('kick_browse', false);
+    }
+
+    function KickBrowse_SwitchLabel() {
+        return STR_PLATFORM + ': ' + (KickBrowse_On() ? STR_KICK : STR_TWITCH);
+    }
+
+    // Saves the other platform and reloads the screen, Live, Games and the search results all follow the one switch
+    function KickBrowse_Toggle(key) {
+        Main_setItem('kick_browse', !KickBrowse_On());
+
+        var keys = [Main_Live, Main_games, Main_SearchLive, Main_SearchGames, Main_SearchChannels, Main_SearchVod],
+            i = 0;
+
+        for (i; i < keys.length; i++) {
+            if (ScreenObj[keys[i]]) ScreenObj[keys[i]].status = false;
+        }
+
+        Screens_StartLoad(key);
+    }
+
+    function KickBrowse_CatId(slug) {
+        slug = String(slug).toLowerCase();
+        return Object.prototype.hasOwnProperty.call(KickBrowse_CatIds, slug) ? KickBrowse_CatIds[slug] : 0;
+    }
+
+    // Cache miss (app restarted inside a category, entry from Blocked): kick.com/api/v1/subcategories/<slug> gives the id, '' for an unsafe slug
+    function KickBrowse_CatUrl(slug) {
+        slug = KickApi_SafeSlug(slug);
+        return slug ? KickBrowse_GamesBase + '/' + slug : '';
+    }
+
+    // json of the single subcategory, true when its id was stored for the slug
+    function KickBrowse_CatResolve(json, slug) {
+        if (!json || typeof json !== 'object' || !/^\d{1,9}$/.test(String(json.id)) || Number(json.id) <= 0 || !KickApi_SafeSlug(slug)) return false;
+
+        KickBrowse_CatIds[String(slug).toLowerCase()] = Number(json.id);
+        return true;
+    }
+
+    // Kick search: one page of 20 (the API refuses more for the enriched search), Search_data goes through encodeURIComponent
+    var KickSearch_Base = 'https://search.kick.com/api/v1/';
+    var KickSearch_Limit = 20;
+
+    // kind: 'channels' and 'live' share the enriched search, 'categories' has its own endpoint
+    function KickSearch_Url(kind, term) {
+        return (
+            KickSearch_Base +
+            (kind === 'categories' ? 'categories/search' : 'search/enriched') +
+            '?query=' +
+            encodeURIComponent(term === null || term === undefined ? '' : term) +
+            '&limit=' +
+            KickSearch_Limit
+        );
+    }
+
+    function KickSearch_List(json, name) {
+        var list = json && json.data ? json.data[name] : null;
+
+        return Array.isArray(list) ? list : [];
+    }
+
+    // json of the enriched search -> channel items, a live channel carries the live mark in [5], unsafe rows are skipped
+    function KickSearch_Channels(json) {
+        var list = KickSearch_List(json, 'channels'),
+            items = [],
+            i = 0,
+            cell;
+
+        for (i; i < list.length; i++) {
+            if (!list[i] || typeof list[i] !== 'object') continue;
+
+            cell = KickApi_ChannelCell({channel_slug: list[i].slug, user_username: list[i].username, profile_picture: list[i].profile_picture});
+            if (!cell[0]) continue;
+
+            cell[5] = list[i].is_live === true ? true : null;
+            items.push({kickCell: cell, id: cell[1]});
+        }
+
+        return items;
+    }
+
+    // json of the enriched search -> its livestreams as live items (Kick has a real live search)
+    function KickSearch_Live(json) {
+        return KickBrowse_Items({data: {livestreams: KickSearch_List(json, 'livestreams')}}).data;
+    }
+
+    // json of categories/search (or the enriched search) -> category items, the numeric ids are cached by KickApi_GameCell
+    function KickSearch_Categories(json) {
+        var list = json && Array.isArray(json.data) ? json.data : KickSearch_List(json, 'categories'),
+            items = [],
+            i = 0,
+            cell;
+
+        for (i; i < list.length; i++) {
+            cell = KickApi_GameCell(list[i]);
+            if (cell) items.push({kickCell: cell, id: cell[3]});
+        }
+
+        return items;
+    }
+
+    // lang: Twitch content language ('' for all), cursor: the next_cursor of the previous page, catId: numeric subcategory id or 0
+    // Kick wants the sort whenever a category is given, so it is always sent
+    function KickBrowse_LiveUrl(limit, lang, cursor, catId) {
+        var iso = KickApi_Lang(lang);
+
+        return (
+            KickBrowse_LiveBase +
+            '?limit=' +
+            Number(limit) +
+            '&sort=viewer_count_desc' +
+            (/^\d{1,9}$/.test(String(catId)) && Number(catId) ? '&category_id=' + catId : '') +
+            (iso ? '&language=' + iso : '') +
+            (typeof cursor === 'string' && KickBrowse_CursorRegex.test(cursor) ? '&after=' + cursor : '')
+        );
+    }
+
+    function KickBrowse_GamesUrl(cursor) {
+        return KickBrowse_GamesBase + '?limit=' + KickBrowse_GamesLimit + '&page=' + (/^\d{1,5}$/.test(String(cursor)) ? cursor : 1);
+    }
+
+    // json of mobile.kick.com/api/v1/livestreams -> {data: items, pagination: {cursor}}, rows with an unsafe id or slug are skipped
+    function KickBrowse_Items(json) {
+        var list = json && json.data && Array.isArray(json.data.livestreams) ? json.data.livestreams : [],
+            next = json && json.data && json.data.pagination ? json.data.pagination.next_cursor : '',
+            items = [],
+            i = 0,
+            cell;
+
+        for (i; i < list.length; i++) {
+            cell = list[i] && typeof list[i] === 'object' ? KickApi_LiveCell(list[i]) : null;
+            if (!cell || !cell[6]) continue;
+
+            items.push(KickApi_Item(cell, cell[7], cell[14], list[i].is_mature));
+            items[items.length - 1].viewer_count = cell[13];
+        }
+
+        return {data: items, pagination: {cursor: typeof next === 'string' && KickBrowse_CursorRegex.test(next) ? next : ''}};
+    }
+
+    // json of kick.com/api/v1/subcategories (paged by number) -> {data: items, pagination: {cursor: next page}}
+    function KickBrowse_Games(json) {
+        var list = json && Array.isArray(json.data) ? json.data : [],
+            items = [],
+            i = 0,
+            cell;
+
+        for (i; i < list.length; i++) {
+            cell = KickApi_GameCell(list[i]);
+            if (cell) items.push({kickCell: cell, id: cell[3]});
+        }
+
+        var page = json ? Number(json.current_page) : 0,
+            last = json ? Number(json.last_page) : 0;
+
+        return {data: items, pagination: {cursor: page > 0 && page < last ? String(page + 1) : ''}};
+    }
+
+    //Opens a live Kick channel by slug (debug entry from CDP for now), offline shows a warning
+    var KickApi_OpenLiveSeq = 0;
+    var KickApi_OpenLiveSlug = '';
+    function KickApi_OpenLive(slug) {
+        slug = KickApi_SafeSlug(slug);
+        if (!slug) return;
+
+        KickApi_OpenLiveSlug = slug;
+        FullxmlHttpGet(
+            KickApi_Base + 'v2/channels/' + slug,
+            KickApi_Headers(''),
+            KickApi_OpenLiveResult,
+            noop_fun,
+            0,
+            ++KickApi_OpenLiveSeq,
+            null,
+            null
+        );
+    }
+
+    function KickApi_OpenLiveResult(obj, key, seq) {
+        if (seq !== KickApi_OpenLiveSeq) return;
+
+        var cell = null;
+
+        try {
+            if (obj.status === 200) cell = KickApi_ChannelLiveCell(JSON.parse(obj.responseText));
+        } catch (e) {}
+
+        if (!cell) {
+            Main_showWarningDialog(KickApi_OpenLiveSlug + ' ' + STR_LIVE + STR_IS_OFFLINE, 3000);
+            return;
+        }
+
+        //Same as the live branch of Main_onNewIntent
+        if (Main_isScene2DocVisible()) Main_onNewIntentClearPlay();
+        else if (ScreenObj[Main_values.Main_Go].exit_fun) ScreenObj[Main_values.Main_Go].exit_fun();
+
+        Play_data = JSON.parse(JSON.stringify(Play_data_base));
+        Play_data.data = cell;
+        Main_values_Play_data = cell;
+        Main_openStream();
+    }
+    /* Kick accounts: QR sign in like the official Kick TV app, a standalone Kick user and a Kick account linked to a Twitch user.
+     * A linked account lives in user.kick = {id, username, slug, logo, token, date, expired?}, a standalone Kick user is a user entry
+     * with platform 'kick' and id 'kick:<user id>' that has no Twitch token. The Kick token goes only to kick.com (KickApi_Headers). */
+
+    //Variable initialization
+    var KickLogin_Session = null; // {seq, uuid, key, mode, ws, timer, started, token, expired}
+    var KickLogin_Seq = 0;
+    var KickLogin_PollMs = 3000;
+    var KickLogin_TimeoutMs = 300000;
+    var KickLogin_AuthUrl = 'https://kick.com/api/tv/link/authenticate/';
+    // Bearer token characters only (Kick sends '<id>|<random>'), nothing that could break the header
+    var KickLogin_TokenRegex = /^[\w.~+\/=|-]{1,512}$/;
+    var KickUser_Warned = false;
+    //Variable initialization end
+
+    // Without an argument: the main user (an explicit undefined, e.g. a stale position, is not Kick only)
+    function KickUser_IsKickOnly(user) {
+        if (!arguments.length) user = AddUser_UsernameArray[0];
+
+        return !!user && user.platform === 'kick';
+    }
+
+    // Token of the main user, '' without a Kick account or after it expired
+    function KickUser_Token() {
+        var kick = AddUser_UsernameArray[0] && AddUser_UsernameArray[0].kick;
+
+        return kick && kick.token && !kick.expired ? kick.token : '';
+    }
+
+    // Kick refused the token (401): no refresh exists, the user signs in again from the user dialog
+    function KickUser_Expired() {
+        var kick = AddUser_UsernameArray[0] && AddUser_UsernameArray[0].kick;
+        if (!kick) return;
+
+        if (!kick.expired) {
+            kick.expired = true;
+            AddUser_SaveUserArray();
+        }
+
+        if (!KickUser_Warned) {
+            KickUser_Warned = true;
+            Main_showWarningDialog(STR_KICK_SESSION_EXPIRED, 5000);
+        }
+    }
+
+    // Third button of the user dialog: unlink a working linked account, otherwise sign in (link, or again)
+    function KickUser_CanUnlink(user) {
+        return !!user && !!user.kick && !user.kick.expired && !KickUser_IsKickOnly(user);
+    }
+
+    // info: json of kick.com/api/v1/user (the email in it is never stored), mode.link >= 0: link to that user, -1: new user
+    function KickUser_Store(info, token, mode) {
+        var id = ChatKick_PositiveInt(info && info.id);
+        if (!id || typeof info.username !== 'string' || !info.username) return false;
+
+        var channel = info.streamer_channel || {},
+            now = new Date().getTime(),
+            kick = {
+                id: id,
+                username: Screens_AriaEscape(info.username),
+                slug: KickApi_SafeSlug(channel.slug) || KickApi_SafeSlug(info.username.toLowerCase()),
+                logo: KickApi_Img(info.profilepic) || IMG_404_LOGO,
+                token: token,
+                date: now
+            },
+            pos = mode.id ? AddUser_UserFindPos(mode.id) : mode.link,
+            user = pos > -1 ? AddUser_UsernameArray[pos] : null;
+
+        if (!kick.slug || (mode.link > -1 && !user)) return false;
+
+        // A standalone user takes only its own account back, any other account becomes a new user
+        if (user && (!KickUser_IsKickOnly(user) || user.id === 'kick:' + id)) {
+            user.kick = kick;
+            user.date = now;
+            if (KickUser_IsKickOnly(user)) {
+                user.name = kick.slug;
+                user.display_name = kick.username;
+                user.logo = kick.logo;
+            }
+        } else {
+            user = {
+                platform: 'kick',
+                id: 'kick:' + id,
+                name: kick.slug,
+                display_name: kick.username,
+                logo: kick.logo,
+                access_token: '',
+                date: now,
+                refresh_token: 0,
+                expires_in: 0,
+                expires_when: 0,
+                timeout_id: null,
+                kick: kick
+            };
+
+            pos = AddUser_UserFindPos(user.id);
+            if (pos > -1) AddUser_UsernameArray[pos] = user;
+            else AddUser_UsernameArray.push(user);
+            delete AddUser_UsernameArrayRemoved[user.id];
+
+            if (!Main_values_History_data[user.id]) Main_values_History_data[user.id] = {live: [], vod: [], clip: []};
+
+            // First user: it is the main user now, no Twitch token of a user removed earlier in this run stays in the headers
+            if (AddUser_UsernameArray.length === 1) {
+                AddUser_UpdateSidePanel();
+                OSInterface_UpdateUserId(user);
+                AddUser_SetUserHeaders();
+            }
+        }
+
+        AddUser_SaveUserArray();
+        Users_status = false;
+        return true;
+    }
+
+    function KickUser_Unlink(pos) {
+        var user = AddUser_UsernameArray[pos];
+        if (!user || !user.kick || KickUser_IsKickOnly(user)) return;
+
+        delete user.kick;
+        user.date = new Date().getTime();
+        AddUser_SaveUserArray();
+        Users_status = false;
+    }
+
+    // random: optional Math.random replacement (tests), the default uses the crypto source when the WebView has one
+    function KickLogin_NewCode(random) {
+        var hex = '0123456789ABCDEF',
+            uuid = '',
+            key = '',
+            i = 0,
+            r;
+
+        random = random || (window.crypto && window.crypto.getRandomValues ? KickLogin_Random : Math.random);
+
+        for (i; i < 36; i++) {
+            r = Math.floor(random() * 16);
+            if (i === 8 || i === 13 || i === 18 || i === 23) uuid += '-';
+            else if (i === 14) uuid += '4';
+            else uuid += hex.charAt(i === 19 ? (r & 3) | 8 : r);
+        }
+
+        for (i = 0; i < 6; i++) key += Math.floor(random() * 10);
+
+        return {uuid: uuid, key: key};
+    }
+
+    function KickLogin_Random() {
+        var value = new Uint32Array(1);
+        window.crypto.getRandomValues(value);
+
+        return value[0] / 4294967296;
+    }
+
+    function KickLogin_QrUrl(code) {
+        return 'https://kick.com/tv/login?uuid=' + code.uuid + '&code=' + code.key;
+    }
+
+    function KickLogin_IsVisible() {
+        return Main_isElementShowing('dialog_kick_login');
+    }
+
+    // The target user is kept by id: a sync of the user list while the dialog is open can not move the account to another user
+    function KickLogin_Begin(mode) {
+        KickLogin_Stop();
+
+        var link = mode && mode.id ? AddUser_UserFindPos(mode.id) : mode && mode.link > -1 ? mode.link : -1;
+        if (!AddUser_UsernameArray[link]) link = -1;
+
+        KickLogin_Session = {
+            seq: ++KickLogin_Seq,
+            uuid: '',
+            key: '',
+            mode: {link: link, id: link > -1 ? AddUser_UsernameArray[link].id : null},
+            ws: null,
+            timer: null,
+            started: new Date().getTime(),
+            token: '',
+            expired: false
+        };
+
+        return KickLogin_Session;
+    }
+
+    function KickLogin_Stop() {
+        var ses = KickLogin_Session;
+        KickLogin_Session = null;
+        if (!ses) return;
+
+        Main_clearTimeout(ses.timer);
+        ChatKick_CloseSocket(ses);
+    }
+
+    function KickLogin_Show(mode) {
+        var ses = KickLogin_Begin(mode),
+            code = KickLogin_NewCode();
+
+        ses.uuid = code.uuid;
+        ses.key = code.key;
+
+        Main_textContent('kick_login_title', STR_KICK_LOGIN_TITLE);
+        Main_textContent('kick_login_text', STR_KICK_LOGIN_TEXT);
+        Main_textContent('kick_login_status', STR_KICK_LOGIN_WAIT);
+        try {
+            PhoneChat_DrawQr(Main_getElementById('kick_login_qr'), KickLogin_QrUrl(ses));
+        } catch (e) {
+            Main_textContent('kick_login_status', STR_KICK_LOGIN_FAIL);
+        }
+        Main_ShowElement('dialog_kick_login');
+
+        KickLogin_Connect(ses);
+        KickLogin_Schedule(ses);
+    }
+
+    function KickLogin_Hide() {
+        KickLogin_Stop();
+        Main_HideElement('dialog_kick_login');
+        KickLogin_ClearQr();
+    }
+
+    function KickLogin_ClearQr() {
+        var canvas = Main_getElementById('kick_login_qr');
+        if (canvas && canvas.getContext) canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Back closes, OK makes a new code once the old one expired or failed (OK while waiting does nothing: the phone may be confirming)
+    function KickLogin_HandleKeyDown(e) {
+        switch (e.keyCode) {
+            case KEY_KEYBOARD_BACKSPACE:
+            case KEY_RETURN:
+                KickLogin_Hide();
+                break;
+            case KEY_PLAY:
+            case KEY_PLAYPAUSE:
+            case KEY_KEYBOARD_SPACE:
+            case KEY_ENTER:
+                if (!e.repeat && KickLogin_Session && KickLogin_Session.expired) KickLogin_Show(KickLogin_Session.mode);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Same Pusher app as the chat, the phone confirmation arrives as SetupTvEvent on tv-setup-<UUID>; polling covers a lost socket
+    function KickLogin_Connect(ses) {
+        var ws;
+
+        try {
+            ws = new WebSocket(
+                'wss://ws-' +
+                    ChatKick_PusherFallback.cluster +
+                    '.pusher.com/app/' +
+                    ChatKick_PusherFallback.key +
+                    '?protocol=7&client=js&version=8.3.0&flash=false'
+            );
+        } catch (e) {
+            return;
+        }
+        ses.ws = ws;
+
+        ws.onmessage = function (e) {
+            if (KickLogin_Session === ses && ses.ws === ws) KickLogin_OnFrame(ses, ws, e.data);
+        };
+        ws.onclose = function () {
+            if (ses.ws === ws) ses.ws = null;
+        };
+        ws.onerror = noop_fun;
+    }
+
+    function KickLogin_OnFrame(ses, ws, raw) {
+        var frame = ChatKick_ParseJson(raw),
+            channel = 'tv-setup-' + ses.uuid;
+
+        if (!frame || typeof frame.event !== 'string') return;
+
+        if (frame.event === 'pusher:connection_established') ChatKick_Send(ws, 'pusher:subscribe', {auth: '', channel: channel});
+        else if (frame.event === 'pusher:ping') ChatKick_Send(ws, 'pusher:pong', {});
+        else if (frame.channel === channel && ChatKick_EventName(frame) === 'SetupTvEvent' && !ses.token && !ses.expired) KickLogin_Post(ses);
+    }
+
+    function KickLogin_Schedule(ses) {
+        ses.timer = Main_setTimeout(
+            function () {
+                if (KickLogin_Session !== ses || ses.token || ses.expired) return;
+
+                if (new Date().getTime() - ses.started >= KickLogin_TimeoutMs) KickLogin_End(ses, STR_KICK_LOGIN_EXPIRED);
+                else KickLogin_Post(ses);
+            },
+            KickLogin_PollMs,
+            ses.timer
+        );
+    }
+
+    function KickLogin_Post(ses) {
+        FullxmlHttpGet(
+            KickLogin_AuthUrl + ses.uuid,
+            KickApi_Headers('').concat([['Content-Type', 'application/json']]),
+            KickLogin_AuthResult,
+            noop_fun,
+            0,
+            ses.seq,
+            'POST',
+            JSON.stringify({key: ses.key})
+        );
+    }
+
+    // The code is over (expired or failed): socket and polling stop, OK makes a new one
+    function KickLogin_End(ses, text) {
+        ses.expired = true;
+        Main_clearTimeout(ses.timer);
+        ChatKick_CloseSocket(ses);
+        KickLogin_ClearQr();
+        Main_textContent('kick_login_status', text);
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name. 403 = not confirmed yet, anything else: wait until expiry
+    function KickLogin_AuthResult(obj, key, seq) {
+        var ses = KickLogin_Session;
+        if (!ses || ses.seq !== seq || ses.token || ses.expired) return;
+
+        var json = obj.status === 200 ? ChatKick_ParseJson(obj.responseText) : null;
+
+        if (json && typeof json.token === 'string' && KickLogin_TokenRegex.test(json.token)) KickLogin_FetchUser(ses, json.token);
+        else KickLogin_Schedule(ses);
+    }
+
+    function KickLogin_FetchUser(ses, token) {
+        ses.token = token;
+        Main_clearTimeout(ses.timer);
+        FullxmlHttpGet(KickApi_Base + 'v1/user', KickApi_Headers(token), KickLogin_UserResult, noop_fun, 0, ses.seq, null, null);
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function KickLogin_UserResult(obj, key, seq) {
+        var ses = KickLogin_Session;
+        if (!ses || ses.seq !== seq || !ses.token || ses.expired) return;
+
+        var json = obj.status === 200 ? ChatKick_ParseJson(obj.responseText) : null;
+
+        if (!json || !KickUser_Store(json, ses.token, ses.mode)) {
+            KickLogin_End(ses, STR_KICK_LOGIN_FAIL);
+            return;
+        }
+
+        var fromAddUser = AddUser_IsInUserScreen(),
+            fromUsers = Main_values.Main_Go === Main_Users;
+
+        KickLogin_Hide();
+
+        if (fromAddUser) {
+            AddUser_exit();
+            Main_values.Main_Go = Main_Users;
+            Main_SwitchScreen();
+        } else if (fromUsers) {
+            Users_init();
+        }
+    }
+
+    // Entry without the QR (CDP, tests): signs in with a token the caller already has
+    function KickLogin_Accept(token, mode) {
+        var ses = KickLogin_Begin(mode);
+
+        if (typeof token === 'string' && KickLogin_TokenRegex.test(token)) KickLogin_FetchUser(ses, token);
+
+        return ses.seq;
+    }
+
+    /* Followed Kick live streams in Following Live, the player feed and the side panel: only with a Kick token (Twitch only users
+     * send nothing to kick.com) and only for the first page. Any Kick failure leaves the Twitch part as it is. */
+    var KickFollow_Url = 'https://kick.com/api/v1/user/livestreams';
+    // Kick requests that gate a Twitch list give up early, a hanging kick.com must not hold the Twitch list on the spinner
+    var KickFollow_Timeout = 8000;
+
+    // Kick items (viewer_count set) inserted by viewers into the Twitch list, the Twitch order stays as Twitch sent it
+    function KickFollow_MergeHelix(twitchData, kickItems) {
+        var kick = kickItems.slice().sort(function (a, b) {
+                return b.viewer_count - a.viewer_count;
+            }),
+            merged = [],
+            i = 0,
+            j = 0;
+
+        for (i; i < twitchData.length; i++) {
+            while (j < kick.length && kick[j].viewer_count > twitchData[i].viewer_count) merged.push(kick[j++]);
+            merged.push(twitchData[i]);
+        }
+
+        return merged.concat(kick.slice(j));
+    }
+
+    // Livestreams of a v1/user/livestreams answer, [] on any failure. 401: Kick refused the token
+    function KickFollow_List(obj) {
+        var json = null;
+
+        if (obj.status === 401) KickUser_Expired();
+
+        try {
+            if (obj.status === 200) json = JSON.parse(obj.responseText);
+        } catch (e) {}
+
+        return Array.isArray(json) ? json : [];
+    }
+
+    // Screen items (KickApi_Item with viewer_count), rows with an unsafe id or slug are skipped
+    function KickFollow_Items(list) {
+        var items = [],
+            i = 0,
+            cell;
+
+        for (i; i < list.length; i++) {
+            cell = list[i] && typeof list[i] === 'object' ? KickApi_LiveCell(list[i]) : null;
+            if (!cell || !cell[6]) continue;
+
+            items.push(KickApi_Item(cell, cell[7], cell[14], list[i].is_mature));
+            items[items.length - 1].viewer_count = cell[13];
+        }
+
+        return items;
+    }
+
+    // Nodes shaped like the GQL feed nodes, so the existing live_feed_sort orders Twitch and Kick together
+    function KickFollow_FeedNodes(list) {
+        return KickFollow_Items(list).map(function (item) {
+            var cell = item.kickCell;
+
+            return {
+                kickCell: cell,
+                stream: {
+                    viewersCount: cell[13],
+                    createdAt: cell[12],
+                    broadcaster: {login: cell[6].toLowerCase(), id: cell[14]},
+                    game: {displayName: cell[3]},
+                    is_mature: item.is_mature
+                }
+            };
+        });
+    }
+
+    // Following Live: the first Twitch page waits in kickPending for the Kick part, false without a token or on a next page
+    function KickFollow_Start(key, responseObj) {
+        var token = KickUser_Token(),
+            obj = token ? ScreenObj[key] : null;
+
+        if (!obj || obj.data) return false;
+
+        obj.kickPending = responseObj;
+        FullxmlHttpGet(
+            KickFollow_Url,
+            KickApi_Headers(token),
+            KickFollow_LiveResult,
+            noop_fun,
+            key,
+            obj.navigationRequest.id,
+            null,
+            null,
+            KickFollow_Timeout
+        );
+
+        return true;
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name. A refresh or another user drops the answer (Screens_HttpResultStatus)
+    function KickFollow_LiveResult(obj, key, requestId) {
+        var screen = ScreenObj[key],
+            request = screen && screen.navigationRequest,
+            pending = screen && screen.kickPending;
+
+        if (!request || request.id !== Number(requestId) || request.account !== Navigation_Account() || !pending) return;
+
+        screen.kickPending = null;
+        screen.concatenateAfter({
+            data: KickFollow_MergeHelix(pending.data || [], KickFollow_Items(KickFollow_List(obj))),
+            pagination: pending.pagination || {}
+        });
+    }
+
+    // Player feed and side panel: the GQL nodes wait in the feed ticket for the Kick part, false without a token
+    function KickFollow_FeedStart(response) {
+        var token = KickUser_Token();
+        if (!token) return false;
+
+        Navigation_FeedFull(
+            KickFollow_Url,
+            KickApi_Headers(token),
+            KickFollow_FeedResult,
+            noop_fun,
+            UserLiveFeedobj_UserLivePos,
+            response,
+            null,
+            null,
+            KickFollow_Timeout
+        );
+
+        return true;
+    }
+
+    // Called by the feed ticket only while the feed load and the user are still current
+    function KickFollow_FeedResult(obj, pos, twitch) {
+        UserLiveFeed_loadDataSuccessEnd(twitch.concat(KickFollow_FeedNodes(KickFollow_List(obj))));
+    }
+
+    /* Followed Kick channels in Following Channels: once after the last Twitch page, all pages of v2/channels/followed (cursor), the screen
+     * then sorts them with the Twitch channels. Any Kick failure leaves the Twitch channels as they are. */
+    var KickFollow_ChannelsUrl = 'https://kick.com/api/v2/channels/followed';
+    var KickFollow_ChannelsMaxPages = 20;
+
+    // Channel nodes shaped like the GQL follow nodes (login for the sort), rows with an unsafe slug are skipped
+    function KickFollow_ChannelNodes(channels) {
+        var nodes = [],
+            i = 0,
+            cell;
+
+        for (i; i < channels.length; i++) {
+            cell = channels[i] && typeof channels[i] === 'object' ? KickApi_ChannelCell(channels[i]) : null;
+            if (!cell || !cell[0]) continue;
+
+            nodes.push({node: {login: cell[0], id: cell[1], kickCell: cell}});
+        }
+
+        return nodes;
+    }
+
+    // The Kick part is asked after the last Twitch page, false without a token (nothing is sent)
+    function KickFollow_ChannelsStart(key) {
+        var token = KickUser_Token(),
+            obj = token ? ScreenObj[key] : null;
+
+        if (!obj) return false;
+
+        obj.kickChannels = {nodes: [], pages: 0};
+        FullxmlHttpGet(
+            KickFollow_ChannelsUrl,
+            KickApi_Headers(token),
+            KickFollow_ChannelsResult,
+            noop_fun,
+            key,
+            obj.navigationRequest.id,
+            null,
+            null,
+            KickFollow_Timeout
+        );
+
+        return true;
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name. A refresh or another user drops the answer
+    function KickFollow_ChannelsResult(obj, key, requestId) {
+        var screen = ScreenObj[key],
+            request = screen && screen.navigationRequest,
+            pending = screen && screen.kickChannels,
+            json = null,
+            next = null,
+            token = KickUser_Token();
+
+        if (!request || request.id !== Number(requestId) || request.account !== Navigation_Account() || !pending) return;
+
+        if (obj.status === 401) KickUser_Expired();
+
+        try {
+            if (obj.status === 200) json = JSON.parse(obj.responseText);
+        } catch (e) {}
+
+        // Any failure keeps the Twitch channels, what arrived before is dropped too (no half lists)
+        if (!json || !Array.isArray(json.channels)) {
+            screen.kickChannels = null;
+            screen.finishChannels();
+            return;
+        }
+
+        pending.nodes = pending.nodes.concat(KickFollow_ChannelNodes(json.channels));
+        pending.pages++;
+        next =
+            typeof json.nextCursor === 'number' || (typeof json.nextCursor === 'string' && /^\d{1,10}$/.test(json.nextCursor))
+                ? json.nextCursor
+                : null;
+
+        if (next !== null && token && pending.pages < KickFollow_ChannelsMaxPages) {
+            FullxmlHttpGet(
+                KickFollow_ChannelsUrl + '?cursor=' + next,
+                KickApi_Headers(token),
+                KickFollow_ChannelsResult,
+                noop_fun,
+                key,
+                requestId,
+                null,
+                null,
+                KickFollow_Timeout
+            );
+            return;
+        }
+
+        screen.kickChannels = null;
+        screen.data.push.apply(screen.data, pending.nodes);
+        screen.finishChannels();
+    }
+
+    // Follow state and follow/unfollow of one Kick channel. Both are plain kick.com requests with the Kick token.
+    // State: GET v2/channels/<slug>/me answers is_following, follow: POST v2/channels/<slug>/follow, unfollow: DELETE (same url).
+    // One request is pending at a time, a newer one drops the answer of an older one. done(state, slug): state is true or false,
+    // null when a change failed (the old state stays).
+    var KickFollow_BaseUrl = 'https://kick.com/api/v2/channels/';
+    var KickFollow_Seq = 0;
+    var KickFollow_Pending = null;
+
+    // false when nothing was sent (no Kick token or an unsafe slug)
+    function KickFollow_Check(slug, done) {
+        var token = KickUser_Token();
+
+        if (!token || !KickApi_SafeSlug(slug)) return false;
+
+        KickFollow_Pending = {done: done, slug: slug, token: token};
+        FullxmlHttpGet(
+            KickFollow_BaseUrl + slug + '/me',
+            KickApi_Headers(token),
+            KickFollow_CheckResult,
+            noop_fun,
+            0,
+            ++KickFollow_Seq,
+            null,
+            null,
+            KickFollow_Timeout
+        );
+
+        return true;
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function KickFollow_CheckResult(obj, key, seq) {
+        var pending = KickFollow_Pending,
+            json = null;
+
+        if (!pending || Number(seq) !== KickFollow_Seq) return;
+
+        KickFollow_Pending = null;
+
+        //The main user changed while the check was in flight: the answer belongs to the old token, a 401 must not expire the new user
+        if (pending.token !== KickUser_Token()) return;
+
+        if (obj.status === 401) KickUser_Expired();
+
+        try {
+            if (obj.status === 200) json = JSON.parse(obj.responseText);
+        } catch (e) {}
+
+        pending.done(!!json && json.is_following === true, pending.slug);
+    }
+
+    // false when nothing was sent. The body of the follow is an empty json object, HttpURLConnection sends no length for a POST without a body.
+    function KickFollow_Set(slug, follow, done) {
+        var token = KickUser_Token(),
+            headers;
+
+        if (!token || !KickApi_SafeSlug(slug)) return false;
+
+        headers = KickApi_Headers(token);
+        if (follow) headers.push(['Content-Type', 'application/json']);
+
+        KickFollow_Pending = {done: done, slug: slug};
+        FullxmlHttpGet(
+            KickFollow_BaseUrl + slug + '/follow',
+            headers,
+            KickFollow_SetResult,
+            noop_fun,
+            follow ? 1 : 0,
+            ++KickFollow_Seq,
+            follow ? 'POST' : 'DELETE',
+            follow ? '{}' : null,
+            KickFollow_Timeout
+        );
+
+        return true;
+    }
+
+    function KickFollow_SetResult(obj, key, seq) {
+        var pending = KickFollow_Pending;
+
+        if (!pending || Number(seq) !== KickFollow_Seq) return;
+
+        KickFollow_Pending = null;
+
+        // A 401 here does not expire the token: the wire format of this mutating route is unconfirmed (a cookie or XSRF could be
+        // needed instead of the Bearer) and expiring would disable every Kick feature until a relink. Read routes still expire.
+        if (obj.status >= 200 && obj.status < 300) {
+            pending.done(Number(key) === 1, pending.slug);
+        } else {
+            KickUser_Warn(STR_KICK_FOLLOW_FAIL, 2000);
+            pending.done(null, pending.slug);
+        }
+    }
+
+    // Short warning on the player or on the screens
+    function KickUser_Warn(text, time) {
+        if (Play_isOn) Play_showWarningMiddleDialog(text, time);
+        else Main_showWarningDialog(text, time);
+    }
+
+    var KickChat_SendUrl = 'https://kick.com/api/v2/messages/send/';
+    var KickChat_SendTimeout = 8000;
+
+    // false when nothing was sent (no Kick token, no chatroom of this Kick chat). The message is not added locally, it comes back through Pusher.
+    // Wire format of the official app: POST /api/v2/messages/send/<chatroom id>, json {"content": text, "type": "message"} (KickApiDataSourceImpl.sendMessage).
+    function KickChat_Send(chat_number, text) {
+        var token = KickUser_Token(),
+            st = ChatKick_State[chat_number],
+            chatroom = st && ChatKick_PositiveInt(st.chatroom),
+            headers;
+
+        if (!token || !chatroom || typeof text !== 'string' || !text) return false;
+
+        headers = KickApi_Headers(token);
+        headers.push(['Content-Type', 'application/json']);
+
+        FullxmlHttpGet(
+            KickChat_SendUrl + chatroom,
+            headers,
+            KickChat_SendResult,
+            noop_fun,
+            chat_number,
+            st.seq,
+            'POST',
+            JSON.stringify({content: text, type: 'message'}),
+            KickChat_SendTimeout
+        );
+
+        return true;
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name. A 401 does not expire the token, see KickFollow_SetResult.
+    function KickChat_SendResult(obj, key, seq) {
+        var st = ChatKick_State[key];
+
+        // The chat was closed or restarted since the message was sent
+        if (!st || st.seq !== Number(seq) || (obj.status >= 200 && obj.status < 300)) return;
+
+        ChatLiveControls_showWarningDialog(STR_KICK_CHAT_SEND_FAIL, 2000);
+    }
     /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
      *
@@ -19573,6 +21210,7 @@
                         Main_CheckFullxmlHttpGet: Main_CheckFullxmlHttpGet,
                         PlayHLS_GetTokenResult: PlayHLS_GetTokenResult,
                         PlayHLS_PlayListUrlResult: PlayHLS_PlayListUrlResult,
+                        PlayHLS_KickResult: PlayHLS_KickResult,
                         PlayHLS_AdProbeResult: PlayHLS_AdProbeResult,
                         Play_AdBlockReload: Play_AdBlockReload,
                         AddCode_AppTokenResult: AddCode_AppTokenResult,
@@ -20341,6 +21979,18 @@
 
         if (Main_values.Main_Go !== Main_aGame) {
             Main_values.Main_BeforeAgameisSet = false;
+        }
+
+        // Settings and the search form have no grid. Returning to them (side panel Back, exit dialog cancel) reopens them:
+        // initing the grid of Main_Go (or Live for the search form) drew it over them and gave it their keys.
+        if (Settings_isVisible()) {
+            Settings_init();
+            return;
+        }
+        // On view, not Main_Go: Main_Search can be a stale return target (Account entered from the form) with the form hidden
+        if (Main_isElementShowing('search_scroll')) {
+            Search_init();
+            return;
         }
 
         if (ScreenObj[Main_values.Main_Go]) {
@@ -21460,7 +23110,18 @@
         }
     }
 
+    //Kick ids ('kick:<slug>') must never reach Twitch Helix: one guard here, in FullxmlHttpGet and in BaseXmlHttpGetFull instead of one per caller,
+    //the error/empty paths of the callers are what a Kick row needs (keep history, hide logo or live button)
+    function Main_KickHelixBlocked(url) {
+        return /^https:\/\/api\.twitch\.tv\/helix\/[^?]*\?(.*&)?(user_id|id|broadcaster_id)=kick(:|%3A)/i.test(url);
+    }
+
     function BaseXmlHttpGet(theUrl, callbackSuccess, calbackError, key, checkResult, UseHeaders) {
+        if (Main_KickHelixBlocked(theUrl)) {
+            calbackError(key, checkResult, {status: 0, responseText: ''});
+            return;
+        }
+
         var headers;
 
         if (UseHeaders) {
@@ -21562,11 +23223,17 @@
         Play_Headers = JSON.stringify(header);
     }
 
-    function FullxmlHttpGet(theUrl, Headers, callbackSuccess, calbackError, key, checkResult, Method, postMessage) {
+    // timeout is optional (ms), the default is DefaultHttpGetTimeout
+    function FullxmlHttpGet(theUrl, Headers, callbackSuccess, calbackError, key, checkResult, Method, postMessage, timeout) {
+        if (Main_KickHelixBlocked(theUrl)) {
+            callbackSuccess({status: 0, responseText: ''}, key, checkResult);
+            return;
+        }
+
         if (Main_IsOn_OSInterface) {
             OSInterface_BaseXmlHttpGet(
                 theUrl,
-                DefaultHttpGetTimeout,
+                timeout || DefaultHttpGetTimeout,
                 postMessage ? postMessage : null,
                 Method ? Method : null,
                 Headers ? JSON.stringify(Headers) : null,
@@ -21580,7 +23247,7 @@
             var xmlHttp = new XMLHttpRequest();
 
             xmlHttp.open(Method ? Method : 'GET', theUrl, true);
-            xmlHttp.timeout = DefaultHttpGetTimeout;
+            xmlHttp.timeout = timeout || DefaultHttpGetTimeout;
 
             if (Headers) {
                 var i = 0,
@@ -21627,7 +23294,7 @@
         if (
             !AddUser_IsUserSet() ||
             !Data ||
-            !Data[0] || //Check is user is set, and data is valid
+            !(Data[0] || (Data[19] === 'kick' && Data[7])) || //Check is user is set, and data is valid (Kick often has no live thumbnail)
             (type === 'live' && ScreenObj[Main_HistoryLive].histPosX[1]) || //Check if the history for this type is enable
             (type === 'vod' && ScreenObj[Main_HistoryVod].histPosX[1]) ||
             (type === 'clip' && ScreenObj[Main_HistoryClip].histPosX[1])
@@ -21639,7 +23306,9 @@
         Main_history_Clean_deleted(type, Data[7]);
 
         if (ArrayPos) {
+            var savedThumb = ArrayPos.data[0];
             ArrayPos.data = Main_Slice(Data);
+            if (!Data[0]) ArrayPos.data[0] = savedThumb; //Kick row without a thumbnail keeps the saved one
             ArrayPos.date = !skipUpdateDate ? new Date().getTime() : ArrayPos.date;
             ArrayPos.game = Data[3];
             ArrayPos.views = Data[13];
@@ -22237,6 +23906,9 @@
         }
 
         while (i--) {
+            //Kick live entries are neither checked nor converted to a VOD, opening an ended one shows offline
+            if (array[i] && KickApi_IsKickId(array[i].data[14])) continue;
+
             if (array[i] && !array[i].forceVod) {
                 if (array[i].data[14] && array[i].data[14] !== '') {
                     Main_StartHistoryworkerBradcast(array[i], 1, header);
@@ -22271,6 +23943,8 @@
         }
 
         for (i; i >= 0; i--) {
+            if (KickApi_IsKickId(array[i].data[14])) continue;
+
             //TODO remove this workaround after some updates
             if (array[i].data[2] && typeof array[i].data[2] === 'string') {
                 array[i].data[2] = array[i].data[2].replace('Streamed', '');
@@ -22307,6 +23981,8 @@
         }
 
         for (i; i >= 0; i--) {
+            if (KickApi_IsKickId(array[i].data[14])) continue;
+
             //TODO remove this workaround after some updates
             array[i].data[11] = array[i].data[11].replace('Since', '');
             array[i].data[4] = array[i].data[4].replace('Viewers', '');
@@ -22344,6 +24020,8 @@
         }
 
         for (i; i >= 0; i--) {
+            if (KickApi_IsKickId(array[i].data[2])) continue;
+
             //TODO remove this workaround after some updates
             array[i].data[16] = array[i].data[16].replace('Created', '');
             array[i].data[14] = array[i].data[14].replace('Views', '');
@@ -23404,11 +25082,9 @@
                 }
             } else if (code === KEY_LEFT || code === KEY_3) {
                 Navigation_Close(false);
-                if (AddUser_UserHasToken()) Sidepannel_StartFeed();
-                else {
-                    Sidepannel_ShowNoUserWarning();
-                    Navigation_Open(Navigation_Callback);
-                }
+                // Through the shared side panel entry: it records whose keys come back when the panel and the rail close,
+                // a stale record handed the remote to a screen that was no longer on view
+                Sidepannel_Start(Navigation_Callback, true);
                 return true;
             }
         } else if (Navigation_Region === 'tabs') {
@@ -23799,8 +25475,18 @@
         if (ticket) ticket.error(key, ticket.check, response);
     }
 
-    function Navigation_FeedFull(url, headers, callback, error, key, check, method, post) {
-        FullxmlHttpGet(url, headers, Navigation_FeedFullResult, noop_fun, key, Navigation_FeedTicket(callback, error, key, check), method, post);
+    function Navigation_FeedFull(url, headers, callback, error, key, check, method, post, timeout) {
+        FullxmlHttpGet(
+            url,
+            headers,
+            Navigation_FeedFullResult,
+            noop_fun,
+            key,
+            Navigation_FeedTicket(callback, error, key, check),
+            method,
+            post,
+            timeout
+        );
     }
 
     function Navigation_FeedFullResult(response, key, id) {
@@ -24262,7 +25948,8 @@
     //Sets the user id used by the notification services
     function OSInterface_UpdateUserId(user) {
         if (Main_IsOn_OSInterface)
-            if (user) {
+            //A Kick only user has no Twitch account: no Twitch notifications or channels, as without a user
+            if (user && !KickUser_IsKickOnly(user)) {
                 Android.UpdateUserId(user.id, user.name ? encodeURIComponent(user.name) : user.name, Bearer + AddUser_UsernameArray[0].access_token);
             } else {
                 Android.UpdateUserId(null, null, null);
@@ -24441,6 +26128,18 @@
     //Returns the codecCapabilities for that codec type
     function OSInterface_setBlackListMediaCodec(CodecList) {
         Android.setBlackListMediaCodec(CodecList);
+    }
+
+    //public boolean SetHybridDecoders(int hwMax, int capHeight)
+    //hwMax = hardware decoder instances, 0 turns the hybrid 4-way multistream off
+    //capHeight = max video height of the software decoded multistream players
+    //Android specific: true, APKs before it throw here and get false
+    function OSInterface_SetHybridDecoders(hwMax, capHeight) {
+        try {
+            return Main_IsOn_OSInterface && Android.SetHybridDecoders(hwMax, capHeight) === true;
+        } catch (e) {
+            return false;
+        }
     }
 
     //public void setBlackListMediaCodec(String qualitiesList)
@@ -25340,6 +27039,8 @@
     //The primary channel login lives in Play_data.data[6] (data[1] is the display name)
     function PhoneChat_GetChannel() {
         if (!Play_isOn || !Play_data || !Play_data.data || Play_data.data.length < 7) return null;
+        //The phone chat page is Twitch only
+        if (Play_data.data[19] === 'kick') return null;
 
         return PhoneChat_NormalizeLogin(Play_data.data[6]);
     }
@@ -25698,6 +27399,9 @@
     var Play_MultiDialogElem;
     var Play_SkipStartAuto = false;
     var Play_MaxInstances = 0;
+    //4-way multistream with fewer hardware decoder instances: the extra players decode in software (APK SetHybridDecoders)
+    var Play_MultiHybrid = false;
+    var Play_MultiHybridSupported = false;
     var Play_HasLive;
     var Play_HasVod;
     var Play_VodObj;
@@ -26003,7 +27707,7 @@
                 //live
 
                 isLive = true;
-                id = obj[6];
+                id = PlayHLS_Id(obj);
             }
 
             Play_PreviewCheckId = new Date().getTime();
@@ -26147,8 +27851,8 @@
         Play_ResumeAfterOnlineCounter++;
     }
 
-    function Play_getStreamData(channel_name) {
-        return PlayHLS_GetPlayListSync(true, channel_name);
+    function Play_getStreamData(data) {
+        return PlayHLS_GetPlayListSync(true, PlayHLS_Id(data));
     }
 
     var streamTitle;
@@ -26207,6 +27911,22 @@
     function Play_updateStreamInfoStart() {
         if (!Play_data.data[14]) return;
 
+        //Kick: the playlist info step has just fetched the channel, use its row synchronously so the history saved
+        //by Play_loadDataSuccessEnd carries the livestream id
+        if (KickApi_IsKickRow(Play_data.data)) {
+            //The partner flag only comes from Twitch GQL, a Kick row never is one
+            Main_values.Main_selectedChannelPartner = false;
+
+            var fresh = KickApi_LiveCache[Play_data.data[6]];
+
+            if (fresh) {
+                Play_data.data = Play_KickKeepThumb(Main_Slice(fresh), Play_data.data);
+                Play_UpdateMainStreamDiv();
+            }
+
+            return;
+        }
+
         var theUrl = Main_helix_api + 'streams?user_id=' + Play_data.data[14];
 
         Play_updateStreamInfoStartId = new Date().getTime();
@@ -26250,7 +27970,8 @@
     }
 
     function Play_CheckFollow(id) {
-        if (AddUser_UserIsSet() && id) {
+        // A Kick id needs the Kick account, the control stays hidden without it
+        if (AddUser_UserIsSet() && id && (!KickApi_IsKickId(id) || KickUser_Token())) {
             AddCode_PlayRequest = true;
             AddCode_Channel_id = id;
             AddCode_CheckFollow();
@@ -26297,10 +28018,106 @@
             for (i; i < Play_MultiArray_length; i++) {
                 Play_updateStreamInfoMulti(i);
             }
+        } else if (KickApi_IsKickRow(Play_data.data)) {
+            Play_updateStreamInfoGetId = new Date().getTime();
+
+            Play_KickInfoGet(Play_data.data[6], -1, Play_updateStreamInfoGetId);
         } else {
             //When update this also update PlayExtra_updateStreamInfo
             Play_updateStreamInfoGet(Main_helix_api + 'streams?user_id=' + Play_data.data[14], 1);
         }
+    }
+
+    function Play_KickInfoGet(slug, key, ID) {
+        FullxmlHttpGet(KickApi_Base + 'v2/channels/' + slug, KickApi_Headers(''), Play_KickInfoResult, noop_fun, key, ID, null, null);
+    }
+
+    //Replace the row of a player slot ({data}) with the fresh live row of its Kick channel (json of v2/channels/<slug>)
+    //false when the slot holds another channel or the stream ended
+    function Play_KickInfoApply(target, json) {
+        var cell = KickApi_ChannelLiveCell(json);
+
+        if (!cell || !target || !target.data || cell[14] !== target.data[14]) return false;
+
+        target.data = Play_KickKeepThumb(cell, target.data);
+
+        return true;
+    }
+
+    //v2/channels only gives a stream.kick.com thumbnail that answers 403: keep the working images.kick.com one of a list row
+    //(the history saves this row), but only of the same livestream (a restream must not inherit it). A row opened from the channel page only ever has the channel one
+    function Play_KickKeepThumb(cell, old) {
+        if (old && old[0] && old[7] === cell[7]) cell[0] = old[0];
+
+        return cell;
+    }
+
+    //key (the Java bridge only carries numbers): -1 main (Play_data), -2 picture in picture (PlayExtra_data), 0-3 multistream position
+    function Play_KickInfoResult(obj, key, ID) {
+        if (!Play_isOn) return;
+
+        var slot, current, error;
+
+        key = parseInt(key, 10);
+
+        if (key === -1) {
+            slot = Play_data;
+            current = Play_updateStreamInfoGetId;
+            error = 1;
+        } else if (key === -2) {
+            slot = PlayExtra_data;
+            current = PlayExtra_updateStreamInfoKickId;
+            error = 0;
+        } else {
+            slot = Play_MultiArray[key];
+            current = Play_updateStreamInfoMultiId[key];
+        }
+
+        if (current !== ID || !slot || !slot.data || !slot.data.length) return;
+
+        var json = null;
+
+        try {
+            if (obj.status === 200) json = JSON.parse(obj.responseText);
+        } catch (e) {}
+
+        if (!KickApi_ChannelLiveCell(json)) {
+            //we fail or the stream just ended but we still watching so update the time
+            if (error === undefined) Play_updateStreamInfoMultiError(key);
+            else Play_updateStreamInfoGetError(error);
+            return;
+        }
+
+        if (!Play_KickInfoApply(slot, json)) return;
+
+        //The partner flag only comes from Twitch GQL, a Kick row never is one. It belongs to the main stream panel only
+        if (key === -1) Main_values.Main_selectedChannelPartner = false;
+        KickApi_LiveCache[slot.data[6]] = slot.data.slice();
+
+        if (key === -1) {
+            Play_UpdateMainStreamDiv();
+            Main_Set_history('live', Play_data.data, !Play_isPlaying());
+
+            if (PlayExtra_PicturePicture) PlayExtra_updateStreamInfo();
+        } else if (key === -2) {
+            Main_Set_history('live', PlayExtra_data.data, !Play_isPlaying());
+            PlayExtra_UpdatePanel();
+        } else {
+            Play_KickInfoMultiShow(key);
+            Main_Set_history('live', slot.data);
+        }
+    }
+
+    function Play_KickInfoMultiShow(pos) {
+        var data = Play_MultiArray[pos].data;
+
+        if (!pos) {
+            Play_controls[Play_controlsChanelCont].setLabel(data[1]);
+            Play_controls[Play_controlsGameCont].setLabel(data[3]);
+        }
+
+        Play_MultiUpdateInfo(pos, data[3], data[13], twemoji.parse(data[2], false, true), Play_Multi_MainBig ? '_big' : '');
+        Play_MultiUpdateStreamLogoEnd(pos, Play_Multi_MainBig ? '_big' : '');
     }
 
     var Play_updateStreamLogoValuesId;
@@ -26448,12 +28265,12 @@
 
             //On resume to avoid out of sync resumes we run PP synchronous
             if (synchronous) {
-                var StreamData = Play_getStreamData(Play_data.data[6]);
+                var StreamData = Play_getStreamData(Play_data.data);
 
                 if (StreamData) Play_loadDataResultEnd(JSON.parse(StreamData));
                 else Play_loadDataErrorFinish();
             } else {
-                PlayHLS_GetPlayListAsync(true, Play_data.data[6], Play_loadDataId, null, Play_loadDataResult);
+                PlayHLS_GetPlayListAsync(true, PlayHLS_Id(Play_data.data), Play_loadDataId, null, Play_loadDataResult);
             }
         } else Play_loadDataSuccessFake();
     }
@@ -27765,7 +29582,6 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         Play_showWarningMiddleDialog(error_410 ? STR_410_ERROR : Play_data.data[1] + ' ' + STR_LIVE + STR_IS_OFFLINE, 2500);
 
         if (PlayExtra_data.data.length > 0) {
-            if (Main_IsOn_OSInterface) OSInterface_mSwitchPlayer();
             PlayExtra_SwitchPlayer();
             Play_CloseSmall();
         } else {
@@ -28006,6 +29822,10 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     var PlayClip_ExtraClipInfo =
         '{"query":"{clip(slug:\\"%x\\"){game{displayName},videoOffsetSeconds,broadcaster{roles{isPartner},displayName,profileImageURL(width: 300)}}}"}';
 
+    function PlayClip_IsKick() {
+        return !!Main_values_Play_data && Main_values_Play_data[19] === 'kick';
+    }
+
     function PlayClip_Start() {
         //Main_Log('PlayClip_Start');
 
@@ -28027,7 +29847,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         Play_LoadLogo(Main_getElementById('stream_info_icon'), IMG_404_BANNER);
         Main_innerHTML('stream_info_name', Play_partnerIcon(Main_values.Main_selectedChannelDisplayname, false, 2, ChannelClip_language));
 
-        PlayClip_loadVodOffsett();
+        if (!PlayClip_IsKick()) PlayClip_loadVodOffsett();
 
         Main_innerHTML('stream_info_title', ChannelClip_title);
 
@@ -28236,6 +30056,12 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     function PlayClip_loadDataRequest() {
         PlayClip_loadDataRequestId = new Date().getTime();
 
+        if (PlayClip_IsKick()) {
+            //A Kick clip is an HLS media playlist (relative segments), fetch the text and let the player resolve them against the url
+            FullxmlHttpGet(ChannelClip_playUrl, null, PlayClip_KickResult, noop_fun, 0, PlayClip_loadDataRequestId, null, null);
+            return;
+        }
+
         FullxmlHttpGet(
             PlayClip_BaseUrl,
             Play_base_backup_headers_Array,
@@ -28257,6 +30083,19 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                     PlayClip_QualityStart(tempArray);
                     return;
                 }
+            }
+
+            PlayClip_loadDataError();
+        }
+    }
+
+    var PlayClip_KickPlaylist = '';
+    function PlayClip_KickResult(responseObj, key, id) {
+        if (PlayClip_isOn && PlayClip_loadDataRequestId === id) {
+            if (responseObj.status === 200 && responseObj.responseText && responseObj.responseText.indexOf('#EXTM3U') === 0) {
+                PlayClip_KickPlaylist = responseObj.responseText;
+                PlayClip_QualityStart([{id: 'Auto | hls', url: ChannelClip_playUrl}]);
+                return;
             }
 
             PlayClip_loadDataError();
@@ -28379,7 +30218,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         //Main_Log('PlayClip_onPlayer ' + PlayClip_playingUrl);
 
         if (Main_IsOn_OSInterface && PlayClip_isOn) {
-            OSInterface_StartAuto(PlayClip_playingUrl, '', 3, PlayClip_replayOrNext ? -1 : OSInterface_gettime(), 0);
+            if (PlayClip_IsKick()) {
+                OSInterface_StartAuto(PlayClip_playingUrl, PlayClip_KickPlaylist, 2, PlayClip_replayOrNext ? -1 : OSInterface_gettime(), 0);
+            } else OSInterface_StartAuto(PlayClip_playingUrl, '', 3, PlayClip_replayOrNext ? -1 : OSInterface_gettime(), 0);
         } else {
             BrowserTestStartClip(PlayClip_playingUrl);
         }
@@ -30684,7 +32525,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     function Play_StayCheckLive() {
         Play_loadDataId = new Date().getTime();
 
-        PlayHLS_GetPlayListAsync(true, Play_data.data[6], Play_loadDataId, null, Play_StayCheckLiveResult);
+        PlayHLS_GetPlayListAsync(true, PlayHLS_Id(Play_data.data), Play_loadDataId, null, Play_StayCheckLiveResult);
     }
 
     function Play_StayCheckLiveResult(response) {
@@ -30908,7 +32749,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     }
 
     function Play_FollowUnfollow() {
-        if (AddUser_UserHasToken()) {
+        if (KickApi_IsKickId(AddCode_Channel_id) ? KickUser_Token() : AddUser_UserHasToken()) {
             if (AddCode_IsFollowing) AddCode_UnFollow();
             else AddCode_Follow();
         } else {
@@ -31370,12 +33211,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             Play_handleKeyUpEndClear();
             if (!Play_EndUpclear) {
                 if (Play_MultiEnable) Play_MultiKeyDown();
-                else {
-                    if (Main_IsOn_OSInterface) {
-                        OSInterface_mSwitchPlayer();
-                    }
-                    PlayExtra_SwitchPlayer();
-                }
+                else PlayExtra_SwitchPlayer();
             }
         }
     }
@@ -32463,7 +34299,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             enterKey: function (shutdown) {
                 if (!Main_IsOn_OSInterface || Play_StayDialogVisible()) return;
 
-                if (Play_MaxInstances < 4) {
+                if (Play_MaxInstances < 4 && !Play_MultiHybrid) {
                     Play_showWarningMiddleDialog(STR_4_WAY_MULTI_INSTANCES.replace('%x', Play_MaxInstances) + STR_4_WAY_MULTI, 3000);
                     return;
                 }
@@ -32678,6 +34514,12 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 if (Main_values.Play_ChatForceDisable) {
                     Play_showWarningMiddleDialog(STR_CHAT_DISABLE, 1500);
                     return;
+                } else if (KickApi_IsKickRow(Play_data.data)) {
+                    //A Kick chat is written with the Kick token, the Twitch authorization is not needed
+                    if (!KickUser_Token()) {
+                        Play_showWarningMiddleDialog(STR_KICK_CHAT_NEEDS_USER, 1500);
+                        return;
+                    }
                 } else if (!AddUser_UserIsSet() || !AddUser_UsernameArray[0].access_token) {
                     Play_showWarningMiddleDialog(STR_NOKEY_CHAT_WARN, 1500);
                     return;
@@ -32708,7 +34550,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             values: null,
             defaultValue: null,
             enterKey: function () {
-                PhoneChat_Show();
+                if (KickApi_IsKickRow(Play_data.data)) Play_showWarningMiddleDialog(STR_KICK_NOT_SUPPORTED, 2000);
+                else PhoneChat_Show();
             }
         };
 
@@ -34534,14 +36377,14 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
             //On resume to avoid out of sync resumes we run PP synchronous
             if (synchronous) {
-                var StreamData = Play_getStreamData(PlayExtra_data.data[6]);
+                var StreamData = Play_getStreamData(PlayExtra_data.data);
 
                 //Do not check host on async, as both player may have endede with will cause a out of sync error
                 //causing the player to stop in a black state
                 if (StreamData) PlayExtra_ResumeResultEnd(JSON.parse(StreamData), false);
                 else PlayExtra_End(false, 0);
             } else {
-                PlayHLS_GetPlayListAsync(true, PlayExtra_data.data[6], PlayExtra_ResumeId, null, PlayExtra_ResumeResult);
+                PlayHLS_GetPlayListAsync(true, PlayHLS_Id(PlayExtra_data.data), PlayExtra_ResumeId, null, PlayExtra_ResumeResult);
             }
         }
     }
@@ -34629,7 +36472,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         PlayExtra_data = JSON.parse(JSON.stringify(PlayExtra_data_old));
     }
 
+    //Swaps main and PiP: the Java players and the JS data/chats are always swapped together here,
+    //a JS only swap leaves the video of one stream behind the title and chat of the other
     function PlayExtra_SwitchPlayer() {
+        if (Main_IsOn_OSInterface) OSInterface_mSwitchPlayer();
+
         PlayExtra_SwitchPlayerStoreOld();
         Play_data = JSON.parse(JSON.stringify(PlayExtra_data));
 
@@ -34688,7 +36535,6 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         //Some player ended switch and warn
         if (doSwitch) {
             //Main player has end switch and close
-            OSInterface_mSwitchPlayer();
             PlayExtra_SwitchPlayer();
         }
 
@@ -34893,7 +36739,15 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         }
     }
 
+    var PlayExtra_updateStreamInfoKickId;
     function PlayExtra_updateStreamInfo() {
+        if (KickApi_IsKickRow(PlayExtra_data.data)) {
+            PlayExtra_updateStreamInfoKickId = new Date().getTime();
+
+            Play_KickInfoGet(PlayExtra_data.data[6], -2, PlayExtra_updateStreamInfoKickId);
+            return;
+        }
+
         Play_updateStreamInfoGet(Main_helix_api + 'streams?user_id=' + PlayExtra_data.data[14], 0);
     }
     /*
@@ -34973,6 +36827,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         // console.log('CheckId_y', CheckId_y);
         // console.log('CheckId_x', CheckId_x);
         // console.log('callBackSuccess', callBackSuccess.name);
+
+        if (KickApi_IsKickId(Channel_or_VOD_Id)) {
+            PlayHLS_KickStep(isLive, KickApi_Slug(Channel_or_VOD_Id), CheckId_y, CheckId_x, callBackSuccess.name);
+            return;
+        }
 
         //if at te end of a request the values are different we have a issues
         proxy_fail_counter_checker = proxy_fail_counter;
@@ -35423,6 +37282,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         proxy_fail_counter_checker = proxy_fail_counter;
 
         try {
+            if (KickApi_IsKickId(Channel_or_VOD_Id)) return PlayHLS_KickSync(isLive, KickApi_Slug(Channel_or_VOD_Id));
+
             return PlayHLS_GetPlayListSyncToken(isLive, Channel_or_VOD_Id, use_proxy);
         } catch (error) {
             console.log(error);
@@ -35500,6 +37361,120 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
         return null;
     }
+
+    //Kick: the master playlist url comes from the channel (live, a fresh token on every load, reconnect included)
+    //or from the video detail (VOD). The result keeps the Twitch shape plus the master url, Java never fills it
+    //and the player needs it to resolve relative variants
+    function PlayHLS_Id(data) {
+        return data[19] === 'kick' ? 'kick:' + data[6] : data[6];
+    }
+
+    var PlayHLS_KickUrlRegex = /^https:\/\/[a-z0-9.-]+\.(kick\.com|live-video\.net)\//;
+
+    function PlayHLS_KickPlaylistUrl(isLive, json) {
+        var url = isLive ? (json.livestream ? json.playback_url : null) : json.source;
+
+        if (typeof url !== 'string') return null;
+        if (!isLive && !/\.m3u8$/.test(url)) url += 'media/hls/master.m3u8';
+
+        return PlayHLS_KickUrlRegex.test(url) ? url : null;
+    }
+
+    function PlayHLS_KickInfoUrl(isLive, ref) {
+        return KickApi_Base + (isLive ? 'v2/channels/' : 'v1/video/') + ref;
+    }
+
+    //Channel or video detail response -> {url} of the master, or the error result
+    function PlayHLS_KickInfo(isLive, ref, response) {
+        if (response.status !== 200) return {status: response.status === 404 ? 404 : 0, responseText: ''};
+
+        var json = null;
+
+        try {
+            json = JSON.parse(response.responseText);
+        } catch (e) {}
+
+        var url = json ? PlayHLS_KickPlaylistUrl(isLive, json) : null;
+
+        if (!url) return {status: isLive ? 404 : 410, responseText: ''};
+
+        //Fresh row for the player info (Play_updateStreamInfoStart) and the history
+        var cell = isLive ? KickApi_ChannelLiveCell(json) : null;
+        if (cell) KickApi_LiveCache[ref] = cell;
+
+        return {url: url};
+    }
+
+    function PlayHLS_KickMaster(response, url) {
+        return {status: response.status === 200 ? 200 : response.status === 404 ? 404 : 0, responseText: response.responseText, url: url};
+    }
+
+    //Info request, or the master request when masterUrl is set
+    function PlayHLS_KickStep(isLive, ref, CheckId_y, CheckId_x, callBackSuccess, masterUrl) {
+        if (!KickApi_SafeSlug(ref)) {
+            PlayHLS_KickFinish({status: isLive ? 404 : 410, responseText: ''}, CheckId_y, CheckId_x, callBackSuccess);
+            return;
+        }
+
+        OSInterface_XmlHttpGetFull(
+            masterUrl || PlayHLS_KickInfoUrl(isLive, ref), //String urlString
+            DefaultHttpGetTimeout, //int timeout
+            null, //String postMessage
+            null, //String Method
+            masterUrl ? null : JSON.stringify(KickApi_Headers('')), //String JsonHeadersArray, public data without a token
+            'PlayHLS_KickResult', //String callback
+            CheckId_y, //long checkResult
+            isLive ? '1' : '0', //String check_1
+            masterUrl ? 'master' : 'info', //String check_2
+            ref, //String check_3 slug or video uuid
+            masterUrl || null, //String check_4 master url
+            CheckId_x, //String check_5
+            callBackSuccess, //String callBackSuccess
+            null //String callBackError
+        );
+    }
+
+    function PlayHLS_KickResult(result, checkResult, check_1, check_2, check_3, check_4, check_5, callBackSuccess) {
+        var isLive = check_1 === '1',
+            response = JSON.parse(result);
+
+        if (check_2 === 'master') {
+            PlayHLS_KickFinish(PlayHLS_KickMaster(response, check_4), checkResult, check_5, callBackSuccess);
+            return;
+        }
+
+        var info = PlayHLS_KickInfo(isLive, check_3, response);
+
+        if (info.url) PlayHLS_KickStep(isLive, check_3, checkResult, check_5, callBackSuccess, info.url);
+        else PlayHLS_KickFinish(info, checkResult, check_5, callBackSuccess);
+    }
+
+    function PlayHLS_KickFinish(res, checkResult, CheckId_x, callBackSuccess) {
+        res.checkResult = checkResult;
+
+        // prettier-ignore
+        eval(callBackSuccess)(// jshint ignore:line
+        JSON.stringify(res),
+        parseInt(CheckId_x),
+        checkResult
+    );
+    }
+
+    function PlayHLS_KickSync(isLive, ref) {
+        var timeout = DefaultHttpGetTimeout / 2,
+            res = {status: isLive ? 404 : 410, responseText: ''};
+
+        if (KickApi_SafeSlug(ref)) {
+            var info = OSInterface_mMethodUrlHeaders(PlayHLS_KickInfoUrl(isLive, ref), timeout, null, null, 0, JSON.stringify(KickApi_Headers('')));
+
+            res = PlayHLS_KickInfo(isLive, ref, JSON.parse(info));
+            if (res.url) res = PlayHLS_KickMaster(JSON.parse(OSInterface_mMethodUrlHeaders(res.url, timeout, null, null, 0, null)), res.url);
+        }
+
+        res.checkResult = 0;
+
+        return JSON.stringify(res);
+    }
     /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
      *
@@ -35526,6 +37501,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     var Play_updateStreamInfoMultiId = [];
     function Play_updateStreamInfoMulti(pos) {
         Play_updateStreamInfoMultiId[pos] = new Date().getTime();
+
+        if (KickApi_IsKickRow(Play_MultiArray[pos].data)) {
+            Play_KickInfoGet(Play_MultiArray[pos].data[6], pos, Play_updateStreamInfoMultiId[pos]);
+            return;
+        }
 
         BaseXmlHttpGet(
             Main_helix_api + 'streams?user_id=' + Play_MultiArray[pos].data[14],
@@ -35803,7 +37783,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
         Play_MultiArray[pos].resultId = new Date().getTime();
 
-        PlayHLS_GetPlayListAsync(true, Play_MultiArray[pos].data[6], Play_MultiArray[pos].resultId, pos, Play_MultiResult);
+        PlayHLS_GetPlayListAsync(true, PlayHLS_Id(Play_MultiArray[pos].data), Play_MultiArray[pos].resultId, pos, Play_MultiResult);
     }
 
     function Play_MultiResult(response, pos) {
@@ -36452,6 +38432,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
         if (
             !channelId ||
+            KickApi_IsKickId(channelId) ||
             !PlayRaid_Enabled() ||
             !AddUser_UserHasToken() ||
             Play_MultiEnable ||
@@ -36809,6 +38790,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         PlayClip_HideShowNext(1, 0);
 
         Play_SetAudioIcon();
+
+        //The partner flag only comes from Twitch GQL, a Kick vod never is one
+        if (PlayClip_IsKick()) Main_values.Main_selectedChannelPartner = false;
 
         if (!Main_vodOffset) {
             //we have some vod info
@@ -38171,6 +40155,13 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         '{"query":"{video(id:\\"%x\\"){seekPreviewsURL,creator{roles{isPartner},id,login,displayName,language,profileImageURL(width:300)},muteInfo{mutedSegmentConnection{nodes{duration,offset}}},game{displayName,id},duration,viewCount,language,title,animatedPreviewURL,createdAt,id,thumbnailURLs(width:640,height:360),creator{id,displayName,login},moments(momentRequestType:VIDEO_CHAPTER_MARKERS types:[GAME_CHANGE]) {edges{...VideoPlayerVideoMomentEdge}}}}fragment VideoPlayerVideoMomentEdge on VideoMomentEdge{node {...VideoPlayerVideoMoment}}fragment VideoPlayerVideoMoment on VideoMoment{durationMilliseconds positionMilliseconds type description details{...VideoPlayerGameChangeDetails}}fragment VideoPlayerGameChangeDetails on GameChangeMomentDetails{game{id displayName}}"}';
 
     function PlayVod_get_vod_info() {
+        if (KickApi_IsKickId(Main_values.ChannelVod_vodId)) {
+            //Kick: no GQL, previews or chapters, only the history entry and the progress bar
+            Main_Set_history('vod', Main_values_Play_data);
+            PlayVod_ProgressBarrUpdate(Main_vodOffset, Play_DurationSeconds, true);
+            return;
+        }
+
         FullxmlHttpGet(
             PlayClip_BaseUrl,
             Play_base_backup_headers_Array,
@@ -39150,6 +41141,14 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             ScreenObj[key].blocked_concatenate();
         } else if (ScreenObj[key].isHistory) {
             ScreenObj[key].history_concatenate();
+        } else if (ScreenObj[key].isKick && !ScreenObj[key].url) {
+            // No safe Kick url (invalid category slug): nothing is sent, the failure is silent
+            Screens_loadDataFail(key);
+        } else if (ScreenObj[key].isKick) {
+            // Public Kick screen: kick.com headers only, never a Twitch token
+            var kickTicket = {account: Navigation_Account(), id: ++Navigation_RequestSerial, kick: true};
+            ScreenObj[key].navigationRequest = kickTicket;
+            FullxmlHttpGet(ScreenObj[key].url, KickApi_Headers(''), Screens_HttpResultStatus, noop_fun, key, kickTicket.id, null, null);
         } else {
             var HeadersArray = AddUser_UserHasToken() ? Main_Bearer_User_Headers : Main_Bearer_Headers;
             var Method = null;
@@ -39165,6 +41164,19 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
             var ticket = {account: Navigation_Account(), id: ++Navigation_RequestSerial};
             ScreenObj[key].navigationRequest = ticket;
+
+            //A Kick only main user has no Twitch token: no Twitch request, the screen continues with its empty Twitch page
+            if (ScreenObj[key].kickOnlyResponse && KickUser_IsKickOnly()) {
+                Screens_HttpResultStatus({status: 200, responseText: ScreenObj[key].kickOnlyResponse}, key, ticket.id);
+                return;
+            }
+
+            //Kick has nothing for this screen (video search): with the platform switch on Kick no Twitch request is sent
+            if (ScreenObj[key].kickBrowseResponse && KickBrowse_On()) {
+                Screens_HttpResultStatus({status: 200, responseText: ScreenObj[key].kickBrowseResponse}, key, ticket.id);
+                return;
+            }
+
             FullxmlHttpGet(
                 ScreenObj[key].url + (ScreenObj[key].useHelix || ScreenObj[key].isQuery ? '' : Main_TwitchV5Flag),
                 HeadersArray,
@@ -39182,6 +41194,12 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         // Native dispatch round-trips a named callback and checkResult, not a JavaScript closure.
         var request = ScreenObj[key].navigationRequest;
         if (!request || request.id !== Number(requestId) || request.account !== Navigation_Account()) return;
+        // Kick failure (WAF block, 401/403, 5xx) is silent and never touches the Twitch tokens
+        if (request.kick && resultObj.status !== 200) {
+            ScreenObj[key].navigationLoadState = 'error';
+            Screens_loadDataFail(key);
+            return;
+        }
         // A 401/403 on an account-scoped screen means the login needs reconnecting; on a public
         // screen it is a denial (rate limit or otherwise), not evidence of an expired token.
         if ((resultObj.status === 401 || resultObj.status === 403) && (ScreenObj[key].IsUser || ScreenObj[key].isHistory))
@@ -39499,6 +41517,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             id +
             '" class="stream_info_channel_name">' +
             (valuesArray[5] ? '<i class="icon-circle channel_live_icon strokedeline" style="color: red;"></i>' : '') +
+            KickApi_CardIcon(valuesArray) +
             valuesArray[3] +
             (valuesArray[4]
                 ? STR_SPACE_HTML +
@@ -39578,6 +41597,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             idArray[2] +
             id +
             '" class="stream_info_live_name" style="width: 61%; display: inline-block;">' +
+            KickApi_CardIcon(valuesArray) +
             valuesArray[4] +
             '</div><div class="stream_info_live" style="width:38%; float: right; text-align: right; display: inline-block;">' +
             '<span id="' +
@@ -39657,6 +41677,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             idArray[2] +
             id +
             '" class="stream_info_live_name" style="width: 46%; display: inline-block;">' +
+            KickApi_CardIcon(valuesArray) +
             valuesArray[1] +
             '</div><div class="stream_info_live" style="width:53%; float: right; text-align: right; display: inline-block;">' +
             '<span id="' +
@@ -39747,6 +41768,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                   (force_VOD ? '' : 'hideimp') +
                   '" style="background: #00a94b;">&nbsp;&nbsp;VOD&nbsp;&nbsp;</div>&nbsp;'
                 : '<div style="display: none;"></div>') + //empty div to prevent error when childNodes[2].classList.remove
+            KickApi_CardIcon(valuesArray) +
             valuesArray[1] +
             '</div><div class="stream_info_live" style="width:' +
             (ishosting ? 0 : 33) +
@@ -40221,13 +42243,13 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                         token = Play_vod_token;
                         link = Play_vod_links;
                     } else {
-                        id = obj[6];
+                        id = PlayHLS_Id(obj);
                     }
                 } else {
-                    id = obj[6];
+                    id = PlayHLS_Id(obj);
                 }
             } else {
-                id = obj[6];
+                id = PlayHLS_Id(obj);
             }
         }
 
@@ -41931,6 +43953,13 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     var Screens_ThumbOptionPosY = 0;
 
     function Screens_ThumbOptionStart(key, click) {
+        // The platform switch row of Live, Games and their search results has no card options
+        if (
+            ScreenObj[key].posY === -1 &&
+            (key === Main_Live || key === Main_games || key === Main_SearchLive || key === Main_SearchGames || key === Main_SearchChannels)
+        )
+            return;
+
         var obj_id = ScreenObj[key].posY + '_' + ScreenObj[key].posX;
 
         Screens_ThumbOptionSpecial = ScreenObj[key].histPosXName ? false : true;
@@ -42030,8 +44059,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         //Screens_ThumbOption_Follow_ID = 0;
 
         if (AddUser_UserIsSet() && Screens_values_Play_data && Screens_values_Play_data.length) {
-            Screens_ThumbOption_CheckFollow(Screens_values_Play_data, key);
+            //The label first: a Kick card without a usable Kick account sets its own label synchronously
             Main_textContent(Screens_ThumbFollowCheckName, STR_CHECK_FOLLOW);
+            Screens_ThumbOption_CheckFollow(Screens_values_Play_data, key);
         } else {
             Main_textContent(Screens_ThumbFollowCheckName, STR_NOKEY + STR_CANT_FOLLOW);
         }
@@ -42149,6 +44179,20 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     }
 
     function Screens_ThumbOption_RequestCheckFollow(channel_id, ID, key) {
+        if (KickApi_IsKickId(channel_id)) {
+            // The Kick follow state, a Kick channel is never asked from Twitch
+            if (
+                !KickFollow_Check(KickApi_Slug(channel_id), function (state) {
+                    if (Screens_ThumbOption_CheckFollow_ID === ID) Screens_ThumbOption_RequestCheckFollowEnd(key, state);
+                })
+            ) {
+                // No Kick token or an unsafe slug: the sign in label of the Twitch no user branch, not Not Following
+                Screens_canFollow = false;
+                Main_textContent(Screens_ThumbFollowCheckName, STR_NOKEY + STR_CANT_FOLLOW);
+            }
+            return;
+        }
+
         var theUrl = Main_helix_api + 'channels/followed?user_id=' + AddUser_UsernameArray[0].id + '&broadcaster_id=' + channel_id;
 
         BaseXmlHttpGet(theUrl, Screens_ThumbOption_RequestCheckFollowSuccess, Screens_ThumbOption_RequestCheckFollowFail, key, ID, true);
@@ -42481,7 +44525,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             return;
         }
 
-        var ids = Object.keys(Main_values_History_data[AddUser_UsernameArray[0].id].blocked[isChannel ? 'channel' : 'game']),
+        var ids = Object.keys(Main_values_History_data[AddUser_UsernameArray[0].id].blocked[isChannel ? 'channel' : 'game']).filter(function (id) {
+                return !KickApi_IsKickId(id);
+            }),
             i = 0,
             len = ids.length,
             chunkSize = 100,
@@ -42585,7 +44631,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 Main_values_History_data[AddUser_UsernameArray[0].id].blocked.game[gameId].data[1] = gameName;
             }
 
-            Screens_BlockGameUpdateInfo(gameId);
+            // A Kick category is not a Twitch game, Helix must never see its id
+            if (!KickApi_IsKickId(gameId)) Screens_BlockGameUpdateInfo(gameId);
 
             Screens_BlockCheckDeleteGame(key);
 
@@ -42755,20 +44802,30 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
     var Screens_ThumbOption_Follow_ID = 0;
 
+    function Screens_FollowChannelId(key) {
+        if (ScreenObj[key].screenType === 4) return Screens_values_Play_data[1];
+
+        return ScreenObj[key].screenType < 2 ? Screens_values_Play_data[14] : Screens_values_Play_data[2];
+    }
+
     function Screens_FollowUnfollow(key) {
-        if (Screens_canFollow && AddUser_UserHasToken()) {
+        // The data of the dialog exists only after the follow check
+        var channel_id = Screens_canFollow ? Screens_FollowChannelId(key) : '';
+
+        if (Screens_canFollow && KickApi_IsKickId(channel_id) && KickUser_Token()) {
+            var kickId = (Screens_ThumbOption_Follow_ID = new Date().getTime());
+
+            // A failed change (state null) leaves the dialog as it is
+            KickFollow_Set(KickApi_Slug(channel_id), !Screens_isFollowing, function (state) {
+                if (Screens_ThumbOption_Follow_ID === kickId && state !== null) Screens_FollowRequestEnd(key, state);
+            });
+        } else if (Screens_canFollow && !KickApi_IsKickId(channel_id) && AddUser_UserHasToken()) {
             var header = [
                 [clientIdHeader, AddCode_backup_client_id],
                 [Bearer_Header, Main_OAuth + AddUser_UsernameArray[0].access_token]
             ];
 
             Screens_ThumbOption_Follow_ID = new Date().getTime();
-
-            var channel_id = ScreenObj[key].screenType < 2 ? Screens_values_Play_data[14] : Screens_values_Play_data[2];
-
-            if (ScreenObj[key].screenType === 4) {
-                channel_id = Screens_values_Play_data[1];
-            }
 
             FullxmlHttpGet(
                 PlayClip_BaseUrl,
@@ -43141,7 +45198,10 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     var AGame_following = false;
 
     function AGame_follow(key) {
-        if (AddUser_UserIsSet()) {
+        // A Kick category has no Twitch follow
+        if (KickApi_IsKickId(Main_values.Main_gameSelected_id)) return;
+
+        if (AddUser_UserHasToken()) {
             Screens_FollowUnfollowGame();
         } else {
             Main_showWarningDialog(STR_NOKEY_WARN);
@@ -43153,7 +45213,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     }
 
     function AGame_CheckFollow() {
-        if (AddUser_UserIsSet()) {
+        if (KickApi_IsKickId(Main_values.Main_gameSelected_id)) return;
+
+        if (AddUser_UserHasToken()) {
             AGame_CheckFollowGame();
         } else {
             AGame_following = false;
@@ -43205,7 +45267,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 '<i class="icon-heart-o" style="color: #FFFFFF; font-size: 100%; "></i>' +
                     STR_SPACE_HTML +
                     STR_SPACE_HTML +
-                    (AddUser_UserIsSet() ? STR_FOLLOW : STR_NOKEY)
+                    (AddUser_UserHasToken() ? STR_FOLLOW : STR_NOKEY)
             );
         }
     }
@@ -43796,7 +45858,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                         Screens_createCellVod(
                             this.row_id + '_' + this.column_id,
                             this.ids,
-                            ScreensObj_VodCellArray(cell, this.isQuery, this.gameSelected_Id, this.gameSelected_name),
+                            cell.kickCell || ScreensObj_VodCellArray(cell, this.isQuery, this.gameSelected_Id, this.gameSelected_name),
                             this.screen
                         )
                     );
@@ -43854,7 +45916,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 }
             },
             addCellTemp: function (cell) {
-                var id_cell = this.useHelix ? cell.user_id : cell.channel._id;
+                var id_cell = cell.kickCell ? cell.user_id : this.useHelix ? cell.user_id : cell.channel._id;
 
                 //skip check if game is blocked as we are on the blocked game section
                 var skipBlockedCheck = this.screen === Main_aGame && AddUser_IsUserSet() && Screens_getGameIsBlocked(this.gameSelected_Id);
@@ -43870,7 +45932,12 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                     this.idObject[id_cell] = 1;
 
                     this.tempHtml.push(
-                        Screens_createCellLive(this.row_id + '_' + this.column_id, this.ids, ScreensObj_LiveCellArray(cell), this.screen)
+                        Screens_createCellLive(
+                            this.row_id + '_' + this.column_id,
+                            this.ids,
+                            cell.kickCell || ScreensObj_LiveCellArray(cell),
+                            this.screen
+                        )
                     );
 
                     this.column_id++;
@@ -44015,7 +46082,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                         Screens_createCellClip(
                             this.row_id + '_' + this.column_id,
                             this.ids,
-                            ScreensObj_ClipCellArray(cell, this.isQuery, this.gameSelected_name),
+                            cell.kickCell || ScreensObj_ClipCellArray(cell, this.isQuery, this.gameSelected_name),
                             this.screen
                         )
                     );
@@ -44070,6 +46137,19 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 }
             },
             addCell: function (cell) {
+                if (cell.kickCell) {
+                    // Kick category, the row is built and escaped by KickApi_GameCell
+                    if (!this.idObject[cell.id] && Screens_isNotBlocked(null, cell.id, this.IsUser)) {
+                        this.itemsCount++;
+                        this.idObject[cell.id] = 1;
+                        this.tempHtml.push(Screens_createCellGame(this.row_id + '_' + this.column_id, this.ids, cell.kickCell, this.screen));
+                        this.column_id++;
+                    } else {
+                        this.skippedCellLoadMore = true;
+                    }
+                    return;
+                }
+
                 var hasLive = this.isLive || this.screen === Main_games;
                 var game = this.hasGameProp && !this.isQuery ? cell.game : cell;
 
@@ -44179,7 +46259,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                         Screens_createCellChannel(
                             this.row_id + '_' + this.column_id,
                             this.ids,
-                            ScreensObj_ChannelCellArray(cell, this.isQuery),
+                            cell.kickCell || ScreensObj_ChannelCellArray(cell, this.isQuery),
                             this.screen
                         )
                     );
@@ -44392,8 +46472,10 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 HeadersArray: Main_base_array_header,
                 ids: Screens_ScreenIds('SearchVod', key),
                 ScreenName: 'SearchVod',
+                //Kick has no video search: with the platform switch on Kick the screen gets this empty answer and no request (Screens_loadDataRequest)
+                kickBrowseResponse: '{"data":{"searchFor":{"videos":{"items":[],"pageInfo":{"hasNextPage":false}}}}}',
                 emptyContent_STR: function () {
-                    return STR_SEARCH_RESULT_EMPTY;
+                    return KickBrowse_On() ? STR_KICK_NOT_SUPPORTED : STR_SEARCH_RESULT_EMPTY;
                 },
                 table: 'stream_table_search_vod',
                 screen: key,
@@ -44483,6 +46565,14 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 base_post: channelVodQuery,
                 isQuery: true,
                 set_url: function () {
+                    this.isKick = KickApi_IsKickId(this.lastselectedChannel);
+
+                    if (this.isKick) {
+                        // Kick lists one fixed page of videos, the highlight and period switches do not apply
+                        this.url = KickApi_Base + 'v2/channels/' + KickApi_SafeSlug(KickApi_Slug(this.lastselectedChannel)) + '/videos';
+                        return;
+                    }
+
                     this.post = this.base_post
                         .replace('%c', this.lastselectedChannel)
                         .replace('%x', this.highlight ? 'HIGHLIGHT' : 'ARCHIVE')
@@ -44552,6 +46642,18 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         ScreenObj[key].Set_Scroll();
 
         ScreenObj[key].concatenate = function (responseObj) {
+            if (this.isKick) {
+                this.dataEnded = true;
+                this.cursor = null;
+                this.concatenateAfter({
+                    edges: ScreensObj_KickVodItems(responseObj, {
+                        slug: KickApi_Slug(this.lastselectedChannel),
+                        name: Main_values.Main_selectedChannelDisplayname
+                    })
+                });
+                return;
+            }
+
             var hasData = responseObj.data && responseObj.data.user && responseObj.data.user.videos && responseObj.data.user.videos.edges;
 
             if (hasData) {
@@ -44690,6 +46792,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 object: 'edges',
                 isQuery: true,
                 useUserToken: true,
+                //Following Videos stays Twitch only: a Kick only main user gets the empty last page instead of a GQL request without a Twitch token
+                kickOnlyResponse: '{"data":{"currentUser":{"followedVideos":{"edges":[],"pageInfo":{"hasNextPage":false}}}}}',
                 base_post: userVodQuery,
                 set_url: function () {
                     this.post = this.base_post
@@ -44790,7 +46894,27 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 ContentLang: '',
                 base_post: liveQuery,
                 base_url: Main_helix_api + 'streams?first=' + Main_ItemsLimitMax,
+                //The platform switch is the only item of the top row
+                HasSwitches: true,
+                SwitchesIcons: ['play'],
+                addSwitches: function () {
+                    ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen);
+                },
                 set_url: function () {
+                    this.isKick = KickBrowse_On();
+
+                    if (this.isKick) {
+                        // Kick top live streams: public page, same helix style paging as the Twitch list
+                        this.useHelix = true;
+                        this.isQuery = false;
+                        this.object = 'data';
+                        this.skipSetMax = false;
+                        this.ItemsLimitMax = Main_ItemsLimitMax;
+                        this.ItemsLimit = Main_ItemsLimitVideo;
+                        this.url = KickBrowse_LiveUrl(Main_ItemsLimitMax, Main_ContentLang, this.cursor, 0);
+                        return;
+                    }
+
                     //Hybrid query helix
                     //If use Helix without a user it can fail as the app token has limited request
                     //too many user using it fail to show content
@@ -44803,6 +46927,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                     }
 
                     if (this.isQuery) {
+                        //A query is posted to the GQL url, the Kick mode may have left its own url here
+                        this.url = PlayClip_BaseUrl;
                         this.object = 'edges';
                         this.skipSetMax = true;
                         this.ItemsLimitMax = 30;
@@ -44837,7 +46963,21 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Live_obj);
         ScreenObj[key].Set_Scroll();
 
+        ScreenObj[key].key_play = function () {
+            if (this.posY === -1) {
+                KickBrowse_Toggle(this.screen);
+                return;
+            }
+
+            Base_Live_obj.key_play.call(this);
+        };
+
         ScreenObj[key].concatenate = function (responseObj) {
+            if (this.isKick) {
+                this.concatenateAfter(KickBrowse_Items(responseObj));
+                return;
+            }
+
             if (!this.isQuery) {
                 this.concatenateAfter(responseObj);
                 return;
@@ -44886,7 +47026,29 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 object: 'items',
                 isQuery: true,
                 base_post: searchLiveQuery,
+                //The platform switch is the only item of the top row
+                HasSwitches: true,
+                SwitchesIcons: ['play'],
+                addSwitches: function () {
+                    ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen);
+                },
                 set_url: function () {
+                    this.isKick = KickBrowse_On();
+
+                    if (this.isKick) {
+                        // Kick search: public page, one result page, the helix style paging ends at once
+                        this.useHelix = true;
+                        this.isQuery = false;
+                        this.object = 'data';
+                        this.url = KickSearch_Url('live', Main_values.Search_data);
+                        return;
+                    }
+
+                    //A query is posted to the GQL url, the Kick mode replaced it with its own
+                    this.url = PlayClip_BaseUrl;
+                    delete this.useHelix;
+                    this.isQuery = true;
+                    this.object = 'items';
                     this.post = this.base_post
                         .replace('%x', Main_values.Search_data)
                         .replace('%y', this.cursor ? 'cursor: \\"' + this.cursor + '\\"' : '');
@@ -44911,7 +47073,21 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Live_obj);
         ScreenObj[key].Set_Scroll();
 
+        ScreenObj[key].key_play = function () {
+            if (this.posY === -1) {
+                KickBrowse_Toggle(this.screen);
+                return;
+            }
+
+            Base_Live_obj.key_play.call(this);
+        };
+
         ScreenObj[key].concatenate = function (responseObj) {
+            if (this.isKick) {
+                this.concatenateAfter({data: KickSearch_Live(responseObj), pagination: {cursor: ''}});
+                return;
+            }
+
             var hasData =
                 responseObj.data &&
                 responseObj.data.searchFor &&
@@ -44953,6 +47129,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 loadChannelOffsset: 0,
                 followerChannels: [],
                 followerChannelsDone: false,
+                //A Kick only main user has no Twitch follows: this empty page replaces the Twitch request (Screens_loadDataRequest)
+                kickOnlyResponse: '{"data":[],"pagination":{}}',
                 set_url: function () {
                     this.url =
                         this.base_url +
@@ -44971,6 +47149,13 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         );
 
         ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Live_obj);
+
+        //First page: the followed Kick live streams are merged in when they arrive (KickFollow_LiveResult)
+        ScreenObj[key].concatenate = function (responseObj) {
+            if (!this.data && KickFollow_Start(this.screen, responseObj)) return;
+
+            this.concatenateAfter(responseObj);
+        };
 
         ScreenObj[key].Set_Scroll();
     }
@@ -44996,12 +47181,38 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 hasBackupData: true,
                 base_url: Main_helix_api + 'streams?game_id=',
                 set_url: function () {
+                    this.isKick = KickApi_IsKickId(this.gameSelected_Id);
+                    this.HasSwitches = !this.isKick;
+                    this.kickResolve = '';
+
+                    if (this.isKick) {
+                        // Streams of a Kick category: no videos, clips or follow, the switches stay off
+                        var catId = KickBrowse_CatId(KickApi_Slug(this.gameSelected_Id));
+
+                        if (!catId) {
+                            // Unknown numeric id: the category itself is asked first, concatenate then asks the streams
+                            this.kickResolve = KickApi_Slug(this.gameSelected_Id);
+                            this.url = KickBrowse_CatUrl(this.kickResolve);
+                            return;
+                        }
+
+                        this.url = KickBrowse_LiveUrl(
+                            Main_ItemsLimitMax,
+                            Main_ContentLang !== '' && !this.LoadAllLangForced ? Main_ContentLang : '',
+                            this.cursor,
+                            catId
+                        );
+                        return;
+                    }
+
                     var lang = Main_ContentLang !== '' && !this.LoadAllLangForced ? '&language=' + Main_ContentLang : '';
                     this.url =
                         this.base_url + this.gameSelected_Id + '&first=' + Main_ItemsLimitMax + (this.cursor ? '&after=' + this.cursor : '') + lang;
                 },
                 label_init: function () {
                     ScreensObj_TopLableAgameInit(this.screen);
+                    // The top row (videos, clips, follow) is for Twitch games only
+                    this.HasSwitches = !KickApi_IsKickId(this.gameSelected_Id);
 
                     if (Main_values.Search_isSearching) {
                         //Reset label as the app may be restoring from background
@@ -45040,6 +47251,16 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
         ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Live_obj);
         ScreenObj[key].Set_Scroll();
+        ScreenObj[key].concatenate = function (responseObj) {
+            if (this.isKick && this.kickResolve) {
+                // Answer of the category lookup: keep the id and ask the streams through the normal path (new ticket), failure is silent
+                if (KickBrowse_CatResolve(responseObj, this.kickResolve)) Screens_loadDataRequest(this.screen);
+                else Screens_loadDataFail(this.screen);
+                return;
+            }
+
+            this.concatenateAfter(this.isKick ? KickBrowse_Items(responseObj) : responseObj);
+        };
         ScreenObj[key].key_play = function () {
             if (!Settings_value.enable_mature.defaultValue) {
                 Main_showWarningDialog(STR_MATURE_DISABLED, 2000);
@@ -45193,6 +47414,14 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 base_post: channelClipQuery,
                 isQuery: true,
                 set_url: function () {
+                    this.isKick = KickApi_IsKickId(this.lastselectedChannel);
+
+                    if (this.isKick) {
+                        // The clip period switch does not apply, paging goes by the cursor string of the previous page
+                        this.url = ScreensObj_KickClipsUrl(KickApi_Slug(this.lastselectedChannel), this.cursor);
+                        return;
+                    }
+
                     this.post = this.base_post
                         .replace('%c', this.lastselectedChannel)
                         .replace('%t', this.period[this.periodPos - 1])
@@ -45226,6 +47455,15 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         ScreenObj[key].Set_Scroll();
 
         ScreenObj[key].concatenate = function (responseObj) {
+            if (this.isKick) {
+                var page = ScreensObj_KickClipPage(responseObj, this.cursor);
+
+                this.dataEnded = page.dataEnded;
+                this.cursor = page.cursor;
+                this.concatenateAfter({edges: page.items});
+                return;
+            }
+
             var hasData = responseObj.data && responseObj.data.user && responseObj.data.user.clips && responseObj.data.user.clips.edges;
 
             if (hasData) {
@@ -45325,7 +47563,29 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 object: 'edges',
                 isQuery: true,
                 base_post: gamesQuery,
+                //The platform switch is the only item of the top row, the padding keeps the taller category cards off it
+                HasSwitches: true,
+                SwitchesIcons: ['play'],
+                addSwitches: function () {
+                    ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen, '0.7em');
+                },
                 set_url: function () {
+                    this.isKick = KickBrowse_On();
+
+                    if (this.isKick) {
+                        // Kick categories: public page, numbered pages behind a helix style cursor
+                        this.useHelix = true;
+                        this.isQuery = false;
+                        this.object = 'data';
+                        this.url = KickBrowse_GamesUrl(this.cursor);
+                        return;
+                    }
+
+                    //A query is posted to the GQL url, the Kick mode replaced it with its own
+                    this.url = PlayClip_BaseUrl;
+                    delete this.useHelix;
+                    this.isQuery = true;
+                    this.object = 'edges';
                     this.post = this.base_post.replace('%y', this.cursor ? ', after: \\"' + this.cursor + '\\"' : '');
                 },
                 label_init: function () {
@@ -45346,7 +47606,21 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             ScreensObj_CheckIsOpen(this.screen, preventRefresh);
         };
 
+        ScreenObj[key].key_play = function () {
+            if (this.posY === -1) {
+                KickBrowse_Toggle(this.screen);
+                return;
+            }
+
+            Base_Game_obj.key_play.call(this);
+        };
+
         ScreenObj[key].concatenate = function (responseObj) {
+            if (this.isKick) {
+                this.concatenateAfter(KickBrowse_Games(responseObj));
+                return;
+            }
+
             var hasData = responseObj.data && responseObj.data.games && responseObj.data.games.edges;
 
             if (hasData) {
@@ -45391,6 +47665,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 IsUser: true,
                 object: 'data',
                 isQuery: true,
+                //A Kick only main user: an empty list, its kick:<id> never goes to Twitch GQL
+                kickOnlyResponse: '{"data":{"user":{"followedGames":{"nodes":[]}}}}',
                 base_post: userGameQuery,
                 set_url: function () {
                     this.dataEnded = true;
@@ -45458,7 +47734,29 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 object: 'items',
                 isQuery: true,
                 base_post: searchGamesQuery,
+                //The platform switch is the only item of the top row
+                HasSwitches: true,
+                SwitchesIcons: ['play'],
+                addSwitches: function () {
+                    ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen, '0.7em');
+                },
                 set_url: function () {
+                    this.isKick = KickBrowse_On();
+
+                    if (this.isKick) {
+                        // Kick search: public page, one result page, the helix style paging ends at once
+                        this.useHelix = true;
+                        this.isQuery = false;
+                        this.object = 'data';
+                        this.url = KickSearch_Url('categories', Main_values.Search_data);
+                        return;
+                    }
+
+                    //A query is posted to the GQL url, the Kick mode replaced it with its own
+                    this.url = PlayClip_BaseUrl;
+                    delete this.useHelix;
+                    this.isQuery = true;
+                    this.object = 'items';
                     this.post = this.base_post
                         .replace('%x', Main_values.Search_data)
                         .replace('%y', this.cursor ? 'cursor: \\"' + this.cursor + '\\"' : '');
@@ -45485,7 +47783,21 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Game_obj);
         ScreenObj[key].Set_Scroll();
 
+        ScreenObj[key].key_play = function () {
+            if (this.posY === -1) {
+                KickBrowse_Toggle(this.screen);
+                return;
+            }
+
+            Base_Game_obj.key_play.call(this);
+        };
+
         ScreenObj[key].concatenate = function (responseObj) {
+            if (this.isKick) {
+                this.concatenateAfter({data: KickSearch_Categories(responseObj), pagination: {cursor: ''}});
+                return;
+            }
+
             var hasData =
                 responseObj.data && responseObj.data.searchFor && responseObj.data.searchFor.games && responseObj.data.searchFor.games.items;
 
@@ -45521,6 +47833,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 object: 'edges',
                 isQuery: true,
                 useUserToken: true,
+                kickOnlyResponse: '{"data":{"currentUser":{"follows":{"edges":[],"pageInfo":{"hasNextPage":false}}}}}',
                 base_post: userChannelQuery,
                 set_url: function () {
                     this.post = this.base_post.replace('%y', this.cursor ? ', after: \\"' + this.cursor + '\\"' : '');
@@ -45547,6 +47860,27 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         ScreenObj[key].visiblerows = 5;
         ScreenObj[key].Set_Scroll();
 
+        ScreenObj[key].finishChannels = function () {
+            //sort
+            this.data.sort(function (a, b) {
+                if (!a || !b) {
+                    return 0;
+                }
+                return a.node.login < b.node.login ? -1 : a.node.login > b.node.login ? 1 : 0;
+            });
+
+            var i = 0,
+                len = this.data.length;
+
+            for (i; i < len; i++) {
+                this.data[i] = this.data[i].node;
+            }
+
+            this.loadingData = false;
+
+            this.loadDataSuccess();
+        };
+
         ScreenObj[key].concatenate = function (responseObj) {
             var hasData =
                 responseObj.data &&
@@ -45569,6 +47903,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 } else if (!this.data) {
                     this.dataEnded = true;
                     this.data = [];
+                    //The followed Kick channels still join an empty Twitch list (KickFollow_ChannelsResult finishes)
+                    if (KickFollow_ChannelsStart(this.screen)) return;
                     this.loadDataSuccess();
                     this.loadingData = false;
                     return;
@@ -45576,25 +47912,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
                 if (!this.dataEnded) {
                     Screens_loadDataRequest(this.screen);
-                } else {
-                    //sort
-                    this.data.sort(function (a, b) {
-                        if (!a || !b) {
-                            return 0;
-                        }
-                        return a.node.login < b.node.login ? -1 : a.node.login > b.node.login ? 1 : 0;
-                    });
-
-                    var i = 0,
-                        len = this.data.length;
-
-                    for (i; i < len; i++) {
-                        this.data[i] = this.data[i].node;
-                    }
-
-                    this.loadingData = false;
-
-                    this.loadDataSuccess();
+                } else if (!KickFollow_ChannelsStart(this.screen)) {
+                    //The followed Kick channels are merged once, after the last Twitch page
+                    this.finishChannels();
                 }
             } else {
                 this.dataEnded = true;
@@ -45619,7 +47939,29 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 object: 'items',
                 isQuery: true,
                 base_post: searchCannelQuery,
+                //The platform switch is the only item of the top row
+                HasSwitches: true,
+                SwitchesIcons: ['play'],
+                addSwitches: function () {
+                    ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen);
+                },
                 set_url: function () {
+                    this.isKick = KickBrowse_On();
+
+                    if (this.isKick) {
+                        // Kick search: public page, one result page, the helix style paging ends at once
+                        this.useHelix = true;
+                        this.isQuery = false;
+                        this.object = 'data';
+                        this.url = KickSearch_Url('channels', Main_values.Search_data);
+                        return;
+                    }
+
+                    //A query is posted to the GQL url, the Kick mode replaced it with its own
+                    this.url = PlayClip_BaseUrl;
+                    delete this.useHelix;
+                    this.isQuery = true;
+                    this.object = 'items';
                     this.post = this.base_post
                         .replace('%x', Main_values.Search_data)
                         .replace('%y', this.cursor ? 'cursor: \\"' + this.cursor + '\\"' : '');
@@ -45637,6 +47979,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                     if (!Main_values.Search_isSearching) Main_RestoreTopLabel();
                 },
                 key_play: function () {
+                    if (this.posY === -1) {
+                        KickBrowse_Toggle(this.screen);
+                        return;
+                    }
+
                     if (this.is_a_Banner()) return;
 
                     this.base_key_play(key, false);
@@ -45654,6 +48001,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         ScreenObj[key].Set_Scroll();
 
         ScreenObj[key].concatenate = function (responseObj) {
+            if (this.isKick) {
+                this.concatenateAfter({data: KickSearch_Channels(responseObj), pagination: {cursor: ''}});
+                return;
+            }
+
             var hasData =
                 responseObj.data && responseObj.data.searchFor && responseObj.data.searchFor.users && responseObj.data.searchFor.users.items;
 
@@ -46546,6 +48898,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     var ScreensObj_getVodAnimatedUrlPost = '{"query":"{video(id:\\"%x\\"){animatedPreviewURL}}"}';
 
     function ScreensObj_getVodAnimatedUrl(screen) {
+        //A Kick VOD has no Twitch animated preview, its id never goes to Twitch GQL
+        if (KickApi_IsKickId(screen.DataObj[screen.posY + '_' + screen.posX][7])) return;
+
         FullxmlHttpGet(
             PlayClip_BaseUrl,
             Play_base_backup_headers_Array,
@@ -46573,6 +48928,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     }
 
     function ScreensObj_UpdateGameInfo(PlayVodClip, key) {
+        // A Kick category is not a Twitch game
+        if (KickApi_IsKickId(Main_values.Main_gameSelected_id)) return;
+
         var theUrl = Main_helix_api + 'games?id=' + Main_values.Main_gameSelected_id;
 
         BaseXmlHttpGet(theUrl, ScreensObj_UpdateGameInfoSuccess, noop_fun, PlayVodClip, key, true);
@@ -46631,6 +48989,52 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         } else if (PlayVodClip === 3) {
             ScreensObj_SetTopLable(Main_values.Main_gameSelected, STR_CLIPS + STR_SPACE_HTML + Main_Periods[ScreenObj[key].periodPos - 1]);
         }
+    }
+
+    // Kick list rows: converted by the KickApi builders, rows with an unsafe id are skipped
+    // json: videos array of v2/channels/<slug>/videos, ch: {slug, name}. The running stream (is_live, duration 0) is not a video.
+    function ScreensObj_KickVodItems(json, ch) {
+        var items = [],
+            len = Array.isArray(json) ? json.length : 0,
+            i = 0,
+            cell;
+
+        for (i; i < len; i++) {
+            if (!json[i] || json[i].is_live) continue;
+
+            cell = KickApi_VodCell(json[i], ch);
+            if (cell) items.push(KickApi_Item(cell, cell[7], cell[14], json[i].is_mature));
+        }
+
+        return items;
+    }
+
+    // json: response of v2/channels/<slug>/clips
+    function ScreensObj_KickClipItems(json) {
+        var items = [],
+            clips = json && Array.isArray(json.clips) ? json.clips : [],
+            len = clips.length,
+            i = 0,
+            cell;
+
+        for (i; i < len; i++) {
+            cell = clips[i] ? KickApi_ClipCell(clips[i]) : null;
+            if (cell) items.push(KickApi_Item(cell, cell[7], cell[2], false));
+        }
+
+        return items;
+    }
+
+    function ScreensObj_KickClipsUrl(slug, cursor) {
+        return KickApi_Base + 'v2/channels/' + KickApi_SafeSlug(slug) + '/clips' + (cursor ? '?cursor=' + encodeURIComponent(cursor) : '');
+    }
+
+    // Next page state of a clips response. No cursor, an empty page or a cursor that did not move ends the list.
+    function ScreensObj_KickClipPage(json, prevCursor) {
+        var next = json && json.nextCursor && typeof json.nextCursor === 'object' ? JSON.stringify(json.nextCursor) : json && json.nextCursor,
+            items = ScreensObj_KickClipItems(json);
+
+        return {items: items, cursor: next || null, dataEnded: !next || !items.length || next === prevCursor};
     }
 
     function ScreensObj_CheckIsMature(cell) {
@@ -46701,7 +49105,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     var ScreensObj_getStreamInfoCache = {};
 
     function ScreensObj_getStreamInfo(userId, checkResult, check_1, check_2, check_3, check_4, check_5, callBackSuccess, callBackError) {
-        if (!userId) {
+        if (!userId || KickApi_IsKickId(userId)) {
             return;
         }
 
@@ -46737,6 +49141,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         postMessage,
         Method
     ) {
+        if (Main_KickHelixBlocked(theUrl)) {
+            callBackError(check_1, checkResult, {status: 0, responseText: ''});
+            return;
+        }
+
         var headers;
 
         if (UseHeaders) {
@@ -47293,6 +49702,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         PP_workaround: {
             values: ['no', 'yes'],
             defaultValue: 1
+        },
+        multi_hybrid: {
+            //Shown only when the device has 2 or 3 hardware decoder instances, 480p measured smooth, 720p not (Sony BRAVIA VH22)
+            values: ['off', '480p', '720p'],
+            defaultValue: 2
         },
         single_clickExit: {
             values: ['no', 'yes'],
@@ -48035,6 +50449,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         Main_ShowElement('settings_holder');
         Main_IconLoad('label_thumb', 'icon-return', STR_GOBACK);
         Main_HideElement('label_refresh');
+        // Re-init while Settings is on view (Main_SwitchScreen returning to it) must not leave the old row highlighted
+        if (Settings_value_keys[Settings_cursorY]) Settings_RemoveInputFocus();
         Settings_cursorY = 0;
         Settings_inputFocus(Settings_cursorY);
         Navigation_Render(Main_values.Main_Go);
@@ -48113,6 +50529,15 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         div += Settings_Content('single_clickExit', array_no_yes, STR_SINGLE_EXIT, STR_SINGLE_EXIT_SUMMARY);
 
         div += Settings_Content('PP_workaround', dis_ena, STR_PP_WORKAROUND, STR_PP_WORKAROUND_SUMMARY);
+
+        if (Play_MultiHybridSupported) {
+            div += Settings_Content(
+                'multi_hybrid',
+                [STR_DISABLED, '480p', '720p'],
+                STR_MULTI_HYBRID,
+                STR_MULTI_HYBRID_SUMMARY.replace('%x', Play_MaxInstances)
+            );
+        }
 
         div += Settings_Content(
             'vod_dialog',
@@ -48588,6 +51013,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         else if (position === 'dpad_opacity') Settings_DpadOpacity();
         else if (position === 'dpad_position') Settings_DpadPOsition();
         else if (position === 'PP_workaround') Settings_PP_Workaround();
+        else if (position === 'multi_hybrid') Settings_SetMultiHybrid();
         else if (position === 'proxy_timeout') Settings_set_proxy_timeout();
         else if (position === 'ttv_lolProxy') Settings_set_all_proxy('ttv_lolProxy');
         else if (position === 'k_twitch') Settings_set_all_proxy('k_twitch');
@@ -49107,57 +51533,55 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         else Main_RemoveClass(elem, 'opacity_zero');
     }
 
-    var Settings_CurY = 0;
+    var Settings_ScrollY = 0;
+    var Settings_ScrollAnim = 0;
 
-    function Settings_ScrollDown() {
-        Settings_Do_ScrollDown('settings_scroll');
-    }
+    // Smallest scroll (px from the first row) that shows the whole focused row of a list of len rows in a view of height viewH,
+    // measured from the rows themselves: a fixed row count breaks whenever the view or the rows change size.
+    // pad keeps the focus outline, drawn outside the row, in view too. A list that fits never scrolls.
+    function Settings_ScrollToShow(keys, len, pos, scroll, viewH) {
+        var first = Main_getElementById(keys[0] + '_div').offsetTop,
+            last = Main_getElementById(keys[len - 1] + '_div'),
+            row = Main_getElementById(keys[pos] + '_div'),
+            pad = BodyfontSize / 4,
+            top = row.offsetTop - first - pad,
+            bottom = top + row.offsetHeight + 2 * pad;
 
-    function Settings_ScrollUp() {
-        Settings_Do_ScrollUp('settings_scroll');
-    }
+        if (last.offsetTop - first + last.offsetHeight <= viewH) return 0;
 
-    function Settings_Do_ScrollDown(docId) {
-        var doc = Main_getElementById(docId);
-        doc.scrollTop = doc.scrollHeight;
-        if (Settings_Obj_default('app_animations')) {
-            var position = doc.scrollTop;
-            doc.scrollTop = 0;
-            scrollTo(doc, position, 200);
-        }
-    }
+        if (bottom > scroll + viewH) scroll = bottom - viewH;
+        if (top < scroll) scroll = top;
 
-    function Settings_Do_ScrollUp(docId) {
-        var doc = Main_getElementById(docId);
-        if (Settings_Obj_default('app_animations')) scrollTo(doc, 0, 200);
-        else doc.scrollTop = 0;
+        return Math.max(0, scroll);
     }
 
     function Settings_ScrollTable() {
-        var scrolPos = 14,
-            offset = 1; //!Main_isTV || !Main_IsOn_OSInterface ? 1 : 0;
+        var doc = Main_getElementById('settings_scroll'),
+            to = Settings_ScrollToShow(Settings_value_keys, Settings_positions_length, Settings_cursorY, Settings_ScrollY, doc.clientHeight);
 
-        if (Settings_CurY < Settings_cursorY && Settings_cursorY === scrolPos + offset) {
-            Settings_ScrollDown();
-        } else if (Settings_CurY > Settings_cursorY && Settings_cursorY === scrolPos - 1 + offset) {
-            Settings_ScrollUp();
-        }
+        if (to === Settings_ScrollY) return;
 
-        Settings_CurY = Settings_cursorY;
+        Settings_ScrollY = to;
+        if (Settings_Obj_default('app_animations')) scrollTo(doc, to, 200);
+        else doc.scrollTop = to;
     }
 
     function Settings_ScrollTableReset() {
+        Settings_ScrollAnim++;
         Main_getElementById('settings_scroll').scrollTop = 0;
-        Settings_CurY = 0;
+        Settings_ScrollY = 0;
     }
 
     function scrollTo(element, to, duration) {
         var start = element.scrollTop,
             change = to - start,
             currentTime = 0,
-            increment = 3;
+            increment = 3,
+            id = ++Settings_ScrollAnim;
 
         var animateScroll = function () {
+            //a newer scroll (held key) takes over instead of both animations fighting
+            if (id !== Settings_ScrollAnim) return;
             currentTime += increment;
             var val = Math.easeInOutQuad(currentTime, start, change, duration);
             element.scrollTop = val;
@@ -49332,6 +51756,8 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         }
 
         Main_ShowElement('dialog_codecs');
+        Settings_CodecsScrollY = 0;
+        if (Settings_CodecsValue.length) Settings_DialogFit('settings_codec_container', 'dialog_codecs_text');
         Main_addEventListener('keydown', Settings_handleKeyDownCodecs);
     }
 
@@ -49409,17 +51835,33 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         }
     }
 
+    var Settings_CodecsScrollY = 0;
+
     function Settings_ScrollCodecs(pos) {
-        var center = 3,
-            doc = Main_getElementById('settings_codec_container_scroll'),
-            value = 0,
-            offset = 0;
+        var keys = Settings_CodecsValue.map(function (codec) {
+            return codec.nameType;
+        });
 
-        if (pos > center) {
-            value = Main_getElementById(Settings_CodecsValue[pos - center - offset].nameType).offsetTop;
-        }
+        Settings_CodecsScrollY = Settings_ScrollToShow(
+            keys,
+            keys.length,
+            pos,
+            Settings_CodecsScrollY,
+            Main_getElementById('settings_codec_container').clientHeight
+        );
+        Main_getElementById('settings_codec_container_scroll').style.transform = 'translateY(-' + Settings_CodecsScrollY + 'px)';
+    }
 
-        doc.style.transform = 'translateY(-' + value / BodyfontSize + 'em)';
+    // A centred dialog taller than the screen lost its first and last rows: its list gets the height left and scrolls instead.
+    // A dialog that fits keeps its layout.
+    function Settings_DialogFit(containerId, textId) {
+        var container = Main_getElementById(containerId),
+            dialog = Main_getElementById(textId).parentNode,
+            over;
+
+        container.style.height = '';
+        over = dialog.offsetHeight - window.innerHeight * 0.98;
+        if (over > 0) container.style.height = Math.max(container.offsetHeight - over, BodyfontSize * 2) + 'px';
     }
 
     function Settings_Codecs_isVisible() {
@@ -49523,6 +51965,18 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         if (!Play_MaxInstances && len) {
             Play_MaxInstances = Settings_CodecsValue[0].instances > -1 ? Settings_CodecsValue[0].instances : 10;
         }
+
+        Settings_SetMultiHybrid();
+    }
+
+    //4-way multistream with 2 or 3 hardware decoder instances: the other players decode in software, capped at 480p or 720p.
+    //Devices with 4 or more instances never call the APK, older APKs without SetHybridDecoders keep 4-way blocked
+    function Settings_SetMultiHybrid() {
+        var value = Settings_Obj_default('multi_hybrid');
+
+        Play_MultiHybridSupported =
+            Play_MaxInstances > 1 && Play_MaxInstances < 4 && OSInterface_SetHybridDecoders(value ? Play_MaxInstances : 0, value === 2 ? 720 : 480);
+        Play_MultiHybrid = Play_MultiHybridSupported && value > 0;
     }
 
     function Settings_SetCodecsValue() {
@@ -50714,12 +53168,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             }
         };
 
-        //Use off set if there is too many options
-        //Ajust the value as per setting option by trying diff Global app font size offset
-        var fontOffset = Settings_Obj_default('global_font_offset') + 4,
-            offset = Object.keys(obj).length - fontOffset;
-
-        Settings_DialogShow(obj, STR_CHAT_OPTIONS, click, offset);
+        Settings_DialogShow(obj, STR_CHAT_OPTIONS, click);
     }
 
     function Settings_block_qualities(click) {
@@ -50800,9 +53249,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
     var Settings_DialogValue = [];
     var Settings_DialogPos = 0;
-    var Settings_DialogScrollCenter = 0;
+    var Settings_DialogScrollY = 0;
 
-    function Settings_DialogShow(obj, title, click, scroll) {
+    function Settings_DialogShow(obj, title, click) {
         Main_removeEventListener('keydown', Settings_handleKeyDown);
 
         //keyenter rows append to the main key list, drop any leftover from the previous
@@ -50813,9 +53262,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
         var dialogContent = title + STR_BR,
             dialogScroollHolder =
-                '<div id="settings_scroll_container" class="' +
-                (scroll ? 'settings_scroll_container' : '') +
-                '"><div id="settings_scroll_container_scroll" class="side_panel_holder_ani">';
+                '<div id="settings_scroll_container" style="overflow: hidden;"><div id="settings_scroll_container_scroll" class="side_panel_holder_ani">';
 
         Settings_DialogValue = [];
 
@@ -50841,13 +53288,14 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 '</div>'
         );
 
-        Settings_DialogScrollCenter = scroll ? scroll : 0;
+        Settings_DialogScrollY = 0;
         Settings_DialogPos = 0;
         Main_AddClass(Settings_DialogValue[0], 'settings_value_focus');
         Main_AddClass(Settings_DialogValue[0] + '_div', 'settings_div_focus');
         Settings_SetarrowsKey(Settings_DialogValue[0]);
 
         Main_ShowElement('dialog_settings');
+        Settings_DialogFit('settings_scroll_container', 'dialog_settings_text');
         Main_addEventListener('keydown', Settings_DialoghandleKeyDown);
     }
 
@@ -50942,20 +53390,16 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     }
 
     function Settings_ScrollConatiner(div, pos) {
-        if (!Settings_DialogScrollCenter) {
-            return;
-        }
+        Settings_DialogScrollY = Settings_ScrollToShow(
+            Settings_DialogValue,
+            Settings_DialogValue.length,
+            pos,
+            Settings_DialogScrollY,
+            Main_getElementById('settings_scroll_container').clientHeight
+        );
 
-        var center = Settings_DialogScrollCenter,
-            doc = Main_getElementById(div),
-            value = 0,
-            offset = 0;
-
-        if (pos > center) {
-            value = Main_getElementById(Settings_DialogValue[pos - center - offset] + '_div').offsetTop;
-        }
-
-        doc.style.transform = 'translateY(-' + value / BodyfontSize + 'em)';
+        //px, the list's own em is smaller than BodyfontSize (the dialog text is at 88%)
+        Main_getElementById(div).style.transform = 'translateY(-' + Settings_DialogScrollY + 'px)';
     }
 
     function Settings_DialogUpDown(offset) {
@@ -52157,7 +54601,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         }
 
         if (!Main_isStopped && Sidepannel_ObjNotNull() && Sidepannel_isShowingUserLive()) {
-            var channel = UserLiveFeed_DataObj[UserLiveFeedobj_UserLivePos][Sidepannel_PosFeed][6];
+            var channel = PlayHLS_Id(UserLiveFeed_DataObj[UserLiveFeedobj_UserLivePos][Sidepannel_PosFeed]);
 
             PlayHLS_GetPlayListAsync(true, channel, Sidepannel_PosFeed % 100, 0, Sidepannel_CheckIfIsLiveResult);
         }
@@ -52295,7 +54739,10 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         else if (Sidepannel_Sidepannel_Pos === 5) Sidepannel_Go(Main_UserVod);
         else if (Sidepannel_Sidepannel_Pos === 6) Sidepannel_Go(Main_UserChannels);
         else if (Sidepannel_Sidepannel_Pos === 7) {
-            Main_values.Main_selectedChannel_id = AddUser_UsernameArray[0].id;
+            //A Kick only user id is kick:<user id>, its channel is kick:<slug>
+            Main_values.Main_selectedChannel_id = KickUser_IsKickOnly()
+                ? KickApi_Id(AddUser_UsernameArray[0].kick.slug)
+                : AddUser_UsernameArray[0].id;
             Main_values.Main_selectedChannelDisplayname = AddUser_UsernameArray[0].display_name
                 ? AddUser_UsernameArray[0].display_name
                 : AddUser_UsernameArray[0].name;
@@ -52394,7 +54841,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         Sidepannel_Callback = callback;
         Main_removeEventListener('keydown', Sidepannel_Callback);
         if (!Sidepannel_IsMain || forceFeed) {
-            if (AddUser_UserHasToken()) {
+            if (AddUser_UserHasToken() || KickUser_IsKickOnly()) {
                 Sidepannel_StartFeed();
             } else {
                 Sidepannel_ShowNoUserWarning();
@@ -52776,7 +55223,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     }
 
     function Sidepannel_MainKeyLeft() {
-        if (AddUser_UserHasToken()) {
+        if (AddUser_UserHasToken() || KickUser_IsKickOnly()) {
             Main_removeEventListener('keydown', Sidepannel_handleKeyDownMain);
             Sidepannel_StartFeed();
         } else {
@@ -53287,7 +55734,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
     function UserLiveFeed_RefreshLive() {
         //Main_Log('UserLiveFeed_RefreshLive');
-        if (AddUser_UserHasToken()) {
+        if (AddUser_UserHasToken() || KickUser_IsKickOnly()) {
             UserLiveFeedobj_loadDataPrepare(UserLiveFeedobj_UserLivePos);
             UserLiveFeedobj_CheckToken();
         }
@@ -53794,7 +56241,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             //live
 
             isLive = true;
-            id = obj[6];
+            id = PlayHLS_Id(obj);
         }
 
         PlayHLS_GetPlayListAsync(
@@ -54564,7 +57011,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             Main_HideElementWithEle(Sidepannel_SidepannelLoadingDialog);
 
             if (UserLiveFeed_isPreviewShowing() && pos === UserLiveFeed_FeedPosX) {
-                if (pos === UserLiveFeedobj_UserLivePos && (!AddUser_UserIsSet() || !AddUser_UsernameArray[0].access_token)) {
+                if (
+                    pos === UserLiveFeedobj_UserLivePos &&
+                    (!AddUser_UserIsSet() || !AddUser_UsernameArray[0].access_token) &&
+                    !KickUser_IsKickOnly()
+                ) {
                     UserLiveFeedobj_HolderDiv(pos, STR_NOKUSER_WARNING);
                 } else {
                     UserLiveFeedobj_HolderDiv(pos, STR_REFRESH_PROBLEM);
@@ -55395,6 +57846,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             UserLiveFeed_side_ids[7] +
             id +
             '" class="side_panel_new_title">' +
+            KickApi_CardIcon(data) +
             Main_ReplaceLargeFont(data[1]) +
             '</div><div id="' +
             UserLiveFeed_side_ids[8] +
@@ -55465,6 +57917,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                   (force_VOD ? '' : 'hideimp') +
                   '" style="background: #00a94b;">&nbsp;&nbsp;VOD&nbsp;&nbsp;</div>&nbsp;'
                 : '<div style="display: none;"></div>') + //empty div to prevent error when childNodes[2].classList.remove
+            KickApi_CardIcon(data) +
             data[1] +
             '</div><div class="stream_info_live" style="width: 36%; float: right; text-align: right; display: inline-block; font-size: 70%;">' +
             data[5] +
@@ -55621,6 +58074,12 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     }
 
     function UserLiveFeedobj_loadChannelUserLive() {
+        //A Kick only main user has no Twitch token: no Twitch request, only the Kick part
+        if (KickUser_IsKickOnly()) {
+            UserLiveFeedobj_loadDataSuccess('{}');
+            return;
+        }
+
         Navigation_FeedFull(
             PlayClip_BaseUrl,
             Main_OAuth_User_Headers,
@@ -55680,6 +58139,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             UserLiveFeed_obj[pos].dataEnded = true;
             UserLiveFeed_obj[pos].cursor = null;
         }
+
+        //The followed Kick live streams join the first load, KickFollow_FeedResult draws all of them
+        if (!UserLiveFeed_itemsCount[pos] && KickFollow_FeedStart(response)) return;
 
         UserLiveFeed_loadDataSuccessEnd(response);
     }
@@ -55745,7 +58207,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                 if (id && !UserLiveFeed_idObject[UserLiveFeedobj_UserLivePos].hasOwnProperty(id) && ScreensObj_CheckIsMature(stream.stream)) {
                     UserLiveFeed_idObject[UserLiveFeedobj_UserLivePos][id] = itemsCount;
 
-                    mArray = ScreensObj_LiveQueryCellArray(stream);
+                    mArray = stream.kickCell || ScreensObj_LiveQueryCellArray(stream);
 
                     UserLiveFeed_PreloadImgs.push(mArray[0]);
 
@@ -55771,7 +58233,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             UserLiveFeedobj_AddBanner(UserLiveFeedobj_UserLivePos);
 
             if (!UserLiveFeed_itemsCount[UserLiveFeedobj_UserLivePos]) {
-                if (AddUser_UserHasToken()) {
+                if (AddUser_UserHasToken() || KickUser_IsKickOnly()) {
                     UserLiveFeedobj_Empty(UserLiveFeedobj_UserLivePos);
                 } else {
                     UserLiveFeedobj_HolderDiv(UserLiveFeedobj_UserLivePos, STR_NOKUSER_WARNING);
@@ -56469,6 +58931,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         //Main_Log('Users_exit');
 
         Main_IconLoad('label_thumb', 'icon-options', STR_THUMB_OPTIONS_TOP);
+        KickLogin_Hide();
         Main_removeEventListener('keydown', Users_handleKeyDown);
         Main_HideElement(Users_ids[5]);
         Main_IconLoad('label_refresh', 'icon-refresh', STR_REFRESH + ':' + STR_GUIDE);
@@ -56493,40 +58956,12 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     function Users_loadData() {
         var row = document.createElement('div'),
             doc = Main_getElementById('stream_table_user'),
-            x = 1, // 1 as first is used by add user
-            y = 0,
-            div = document.createElement('div');
+            x = 2, // 0 and 1 are the add user and add kick user cells
+            y = 0;
 
-        div.setAttribute('id', Users_ids[4] + '0_0');
-        div.classList.add('stream_thumbnail_user_icon_holder');
         row.setAttribute('id', Users_ids[6] + '0');
-
-        div.innerHTML =
-            '<div id="' +
-            Users_ids[0] +
-            '0_0' +
-            '" class="stream_thumbnail_user" ><div id="' +
-            Users_ids[1] +
-            '0_0' +
-            '" class="stream_thumbnail_channel_img"></div>' +
-            '<div id="' +
-            Users_ids[2] +
-            '0_0' +
-            '" class="stream_thumbnail_user_text_holder">' +
-            '<div id="' +
-            Users_ids[3] +
-            '0_0' +
-            '" class="stream_info_user_name">' +
-            STR_USER_ADD +
-            '</div><div id="' +
-            Users_ids[6] +
-            '0_0' +
-            '"style="color:#FFFFFF;font-size: 17vh; text-align: center; transform: translateY(-24.5vh);"><i id="' +
-            Users_ids[7] +
-            '0_0' +
-            '" class="icon-user-plus" ></i></div></div></div>';
-
-        row.appendChild(div);
+        row.appendChild(Users_createAddCell('0_0', STR_USER_ADD, '#FFFFFF'));
+        row.appendChild(Users_createAddCell('0_1', STR_KICK_ADD_USER, '#53FC18'));
 
         for (var user = 0; user < AddUser_UsernameArray.length; user++) {
             row.appendChild(Users_createCell(y + '_' + x, user));
@@ -56543,6 +58978,42 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         if (x <= 5) doc.appendChild(row);
 
         Users_loadDataSuccessFinish();
+    }
+
+    function Users_createAddCell(id, text, color) {
+        var div = document.createElement('div');
+
+        div.setAttribute('id', Users_ids[4] + id);
+        div.classList.add('stream_thumbnail_user_icon_holder');
+
+        div.innerHTML =
+            '<div id="' +
+            Users_ids[0] +
+            id +
+            '" class="stream_thumbnail_user" ><div id="' +
+            Users_ids[1] +
+            id +
+            '" class="stream_thumbnail_channel_img"></div>' +
+            '<div id="' +
+            Users_ids[2] +
+            id +
+            '" class="stream_thumbnail_user_text_holder">' +
+            '<div id="' +
+            Users_ids[3] +
+            id +
+            '" class="stream_info_user_name">' +
+            text +
+            '</div><div id="' +
+            Users_ids[6] +
+            id +
+            '"style="color:' +
+            color +
+            ';font-size: 17vh; text-align: center; transform: translateY(-24.5vh);"><i id="' +
+            Users_ids[7] +
+            id +
+            '" class="icon-user-plus" ></i></div></div></div>';
+
+        return div;
     }
 
     function Users_createCell(id, pos) {
@@ -56575,6 +59046,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             Users_ids[7] +
             id +
             '" class="stream_info_user_name">' +
+            KickApi_UserIcon(AddUser_UsernameArray[pos]) +
             AddUser_UsernameArray[pos].display_name +
             '</div></div></div>';
 
@@ -56607,7 +59079,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
     function Users_addFocus(forceScroll) {
         Main_AddClass(Users_ids[0] + Users_cursorY + '_' + Users_cursorX, Main_classThumb);
 
-        Main_CounterDialog(Users_cursorX, Users_cursorY, Main_ColumnsCountChannel, AddUser_UsernameArray.length + 1);
+        Main_CounterDialog(Users_cursorX, Users_cursorY, Main_ColumnsCountChannel, AddUser_UsernameArray.length + 2);
 
         if (Main_YchangeAddFocus(Users_cursorY) || forceScroll) {
             if (Users_cursorY > 1) {
@@ -56629,7 +59101,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
 
     //TODO add a temp user for when going back and for from user to games or etc
     function Users_keyEnter() {
-        if (!Users_cursorX && !Users_cursorY) {
+        if (Users_cursorX === 1 && !Users_cursorY) {
+            KickLogin_Show({link: -1});
+        } else if (!Users_cursorX && !Users_cursorY) {
             Main_values.Main_Before = Main_values.Main_Go;
             Main_HideElement(Users_ids[5]);
             Main_removeEventListener('keydown', Users_handleKeyDown);
@@ -56652,7 +59126,9 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         Users_setUserDialog();
         Users_showUserDialogPos = parseInt(Main_getElementById(Users_ids[4] + Users_cursorY + '_' + Users_cursorX).getAttribute(Main_DataAttribute));
 
-        Main_innerHTML('main_dialog_user_text', STR_USER_OPTION + ' ' + AddUser_UsernameArray[Users_showUserDialogPos].display_name);
+        var user = AddUser_UsernameArray[Users_showUserDialogPos];
+        Main_innerHTML('main_dialog_user_text', STR_USER_OPTION + ' ' + user.display_name);
+        Main_innerHTML('main_dialog_user_kick', KickUser_CanUnlink(user) ? STR_KICK_UNLINK : user.kick ? STR_KICK_RELOGIN : STR_KICK_LINK);
         // Main_innerHTML('main_dialog_user_key', AddUser_UsernameArray[Users_showUserDialogPos].access_token ? STR_USER_CODE_OK : STR_USER_CODE);
 
         Main_ShowElement('main_dialog_user');
@@ -56673,9 +59149,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         Main_RemoveClass('main_dialog_user_first', 'button_dialog_focused');
         // Main_RemoveClass('main_dialog_user_key', 'button_dialog_focused');
         Main_RemoveClass('main_dialog_user_remove', 'button_dialog_focused');
+        Main_RemoveClass('main_dialog_user_kick', 'button_dialog_focused');
 
         if (!Users_RemoveCursor) Main_AddClass('main_dialog_user_first', 'button_dialog_focused');
         else if (Users_RemoveCursor === 1) Main_AddClass('main_dialog_user_remove', 'button_dialog_focused');
+        else Main_AddClass('main_dialog_user_kick', 'button_dialog_focused');
     }
 
     function Users_clearRemoveDialog() {
@@ -56780,9 +59258,14 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
             Users_HideUserDialog();
             if (!temp_RemoveCursor) {
                 AddUser_UserMakeOne(Users_showUserDialogPos);
-            } else {
+            } else if (temp_RemoveCursor === 1) {
                 Users_Isautentication = false;
                 Users_showRemoveDialog();
+            } else if (KickUser_CanUnlink(AddUser_UsernameArray[Users_showUserDialogPos])) {
+                KickUser_Unlink(Users_showUserDialogPos);
+                Users_init();
+            } else {
+                KickLogin_Show({link: Users_showUserDialogPos});
             }
         } else Users_keyEnter();
     }
@@ -56793,6 +59276,11 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         if (Main_FirstLoad || Main_CantClick()) return;
 
         Main_keyClickDelayStart();
+
+        if (KickLogin_IsVisible()) {
+            KickLogin_HandleKeyDown(event);
+            return;
+        }
 
         var i;
 
@@ -56809,7 +59297,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                     Users_setRemoveDialog();
                 } else if (Users_isUserDialogShown()) {
                     Users_RemoveCursor--;
-                    if (Users_RemoveCursor < 0) Users_RemoveCursor = 1;
+                    if (Users_RemoveCursor < 0) Users_RemoveCursor = 2;
                     Users_UserCursorSet();
                     Users_setUserDialog();
                 } else if (!Users_cursorX) {
@@ -56843,7 +59331,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
                     Users_setRemoveDialog();
                 } else if (Users_isUserDialogShown()) {
                     Users_RemoveCursor++;
-                    if (Users_RemoveCursor > 1) Users_RemoveCursor = 0;
+                    if (Users_RemoveCursor > 2) Users_RemoveCursor = 0;
                     Users_UserCursorSet();
                     Users_setUserDialog();
                 } else if (Main_ThumbNull(Users_cursorY, Users_cursorX + 1, Users_ids[0])) {
@@ -60297,6 +62785,7 @@ https://video-weaver.sao03.hls.ttvnw.net/v1/playlist/C.m3u8 09:36:20.90
         Main_CheckFullxmlHttpGet: Main_CheckFullxmlHttpGet,
         PlayHLS_GetTokenResult: PlayHLS_GetTokenResult,
         PlayHLS_PlayListUrlResult: PlayHLS_PlayListUrlResult,
+        PlayHLS_KickResult: PlayHLS_KickResult,
         PlayHLS_AdProbeResult: PlayHLS_AdProbeResult,
         Play_AdBlockReload: Play_AdBlockReload,
         AddCode_AppTokenResult: AddCode_AppTokenResult,

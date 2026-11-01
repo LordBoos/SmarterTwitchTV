@@ -21,11 +21,25 @@
 //Spacing for release maker not trow errors from jshint
 var version = {
     VersionBase: '3.0',
-    publishVersionCode: 395, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
-    ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/395/SmarterPurpleTV_3_0_395.apk',
-    WebVersion: 'October 31 2026',
-    WebTag: 772, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+    publishVersionCode: 396, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
+    ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/396/SmarterPurpleTV_3_0_396.apk',
+    WebVersion: 'November 1 2026',
+    WebTag: 773, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
     changelog: [
+        {
+            title: 'November 1 2026 (Web 773)',
+            changes: [
+                'Kick as a second platform: watch Kick live streams, VODs and clips like Twitch ones, with channel pages, history, quality choice and low latency',
+                'Kick accounts: add a Kick account on its own or link it to a Twitch user by scanning a QR code with the Kick app (User screen, "Add Kick User")',
+                'Following shows live Twitch and Kick channels together with platform icons, also in the player panel and the side panel; followed Kick channels are listed too',
+                'Live, Games and Search get a Twitch / Kick switch; follow and unfollow Kick channels; the Kick chat with history is the main chat of a Kick stream and the streamer\'s Twitch and YouTube chats can be linked; writing in the Kick chat',
+                '50/50, picture-in-picture and 4-way multistream take any mix of Twitch and Kick',
+                '4-way multistream on TVs with only two hardware video decoders: two streams are decoded in software at 480p (Settings, "4-way multistream with software decoding", needs APK 3.0.396)',
+                'Fix: swapping players keeps video, chat and title together',
+                'Fix: on MTK TVs the small picture-in-picture window stays on top after a swap (needs APK 3.0.396)',
+                'Fix: the bottom rows of Settings and its dialogs can be reached again, and two screens are no longer shown and controlled at once'
+            ]
+        },
         {
             title: 'October 31 2026 (Web 772)',
             changes: [

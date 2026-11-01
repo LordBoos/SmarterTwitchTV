@@ -51,6 +51,19 @@ October 31 2026 (3.0.395)
 * Fix: closing the Linked chats or phone chat dialog with OK no longer reopens it.
 * Fix: the Twitch chat history shown when a stream opens loads again (the history service changed its message format).
 
+November 1 2026 (3.0.396)
+==============
+
+* Kick as a second platform: watch Kick live streams, VODs and clips like Twitch ones, with channel pages, history, quality choice and low latency.
+* Kick accounts: add a Kick account on its own or link it to a Twitch user by scanning a QR code with the Kick app (User screen, "Add Kick User").
+* Following shows live Twitch and Kick channels together with platform icons, also in the player panel and the side panel; followed Kick channels are listed too.
+* Live, Games and Search get a Twitch / Kick switch; follow and unfollow Kick channels; the Kick chat with history is the main chat of a Kick stream and the streamer's Twitch and YouTube chats can be linked; writing in the Kick chat.
+* 50/50, picture-in-picture and 4-way multistream take any mix of Twitch and Kick.
+* 4-way multistream on TVs with only two hardware video decoders: two streams are decoded in software at 480p (Settings, "4-way multistream with software decoding").
+* Fix: swapping players keeps video, chat and title together.
+* Fix: on MTK TVs the small picture-in-picture window stays on top after a swap.
+* Fix: the bottom rows of Settings and its dialogs can be reached again, and two screens are no longer shown and controlled at once.
+
 October 11 2026 (3.0.390)
 ==============
 
