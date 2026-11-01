@@ -230,6 +230,7 @@ function Main_StartApp() {
                     Main_CheckFullxmlHttpGet: Main_CheckFullxmlHttpGet,
                     PlayHLS_GetTokenResult: PlayHLS_GetTokenResult,
                     PlayHLS_PlayListUrlResult: PlayHLS_PlayListUrlResult,
+                    PlayHLS_KickResult: PlayHLS_KickResult,
                     PlayHLS_AdProbeResult: PlayHLS_AdProbeResult,
                     Play_AdBlockReload: Play_AdBlockReload,
                     AddCode_AppTokenResult: AddCode_AppTokenResult,
@@ -995,6 +996,18 @@ function Main_SwitchScreen(removekey, preventRefresh) {
 
     if (Main_values.Main_Go !== Main_aGame) {
         Main_values.Main_BeforeAgameisSet = false;
+    }
+
+    // Settings and the search form have no grid. Returning to them (side panel Back, exit dialog cancel) reopens them:
+    // initing the grid of Main_Go (or Live for the search form) drew it over them and gave it their keys.
+    if (Settings_isVisible()) {
+        Settings_init();
+        return;
+    }
+    // On view, not Main_Go: Main_Search can be a stale return target (Account entered from the form) with the form hidden
+    if (Main_isElementShowing('search_scroll')) {
+        Search_init();
+        return;
     }
 
     if (ScreenObj[Main_values.Main_Go]) {
@@ -2119,7 +2132,18 @@ function CheckPage(pageUrlCode) {
     }
 }
 
+//Kick ids ('kick:<slug>') must never reach Twitch Helix: one guard here, in FullxmlHttpGet and in BaseXmlHttpGetFull instead of one per caller,
+//the error/empty paths of the callers are what a Kick row needs (keep history, hide logo or live button)
+function Main_KickHelixBlocked(url) {
+    return /^https:\/\/api\.twitch\.tv\/helix\/[^?]*\?(.*&)?(user_id|id|broadcaster_id)=kick(:|%3A)/i.test(url);
+}
+
 function BaseXmlHttpGet(theUrl, callbackSuccess, calbackError, key, checkResult, UseHeaders) {
+    if (Main_KickHelixBlocked(theUrl)) {
+        calbackError(key, checkResult, {status: 0, responseText: ''});
+        return;
+    }
+
     var headers;
 
     if (UseHeaders) {
@@ -2221,11 +2245,17 @@ function HttpGetSetUserHeader() {
     Play_Headers = JSON.stringify(header);
 }
 
-function FullxmlHttpGet(theUrl, Headers, callbackSuccess, calbackError, key, checkResult, Method, postMessage) {
+// timeout is optional (ms), the default is DefaultHttpGetTimeout
+function FullxmlHttpGet(theUrl, Headers, callbackSuccess, calbackError, key, checkResult, Method, postMessage, timeout) {
+    if (Main_KickHelixBlocked(theUrl)) {
+        callbackSuccess({status: 0, responseText: ''}, key, checkResult);
+        return;
+    }
+
     if (Main_IsOn_OSInterface) {
         OSInterface_BaseXmlHttpGet(
             theUrl,
-            DefaultHttpGetTimeout,
+            timeout || DefaultHttpGetTimeout,
             postMessage ? postMessage : null,
             Method ? Method : null,
             Headers ? JSON.stringify(Headers) : null,
@@ -2239,7 +2269,7 @@ function FullxmlHttpGet(theUrl, Headers, callbackSuccess, calbackError, key, che
         var xmlHttp = new XMLHttpRequest();
 
         xmlHttp.open(Method ? Method : 'GET', theUrl, true);
-        xmlHttp.timeout = DefaultHttpGetTimeout;
+        xmlHttp.timeout = timeout || DefaultHttpGetTimeout;
 
         if (Headers) {
             var i = 0,
@@ -2286,7 +2316,7 @@ function Main_Set_history(type, Data, skipUpdateDate) {
     if (
         !AddUser_IsUserSet() ||
         !Data ||
-        !Data[0] || //Check is user is set, and data is valid
+        !(Data[0] || (Data[19] === 'kick' && Data[7])) || //Check is user is set, and data is valid (Kick often has no live thumbnail)
         (type === 'live' && ScreenObj[Main_HistoryLive].histPosX[1]) || //Check if the history for this type is enable
         (type === 'vod' && ScreenObj[Main_HistoryVod].histPosX[1]) ||
         (type === 'clip' && ScreenObj[Main_HistoryClip].histPosX[1])
@@ -2298,7 +2328,9 @@ function Main_Set_history(type, Data, skipUpdateDate) {
     Main_history_Clean_deleted(type, Data[7]);
 
     if (ArrayPos) {
+        var savedThumb = ArrayPos.data[0];
         ArrayPos.data = Main_Slice(Data);
+        if (!Data[0]) ArrayPos.data[0] = savedThumb; //Kick row without a thumbnail keeps the saved one
         ArrayPos.date = !skipUpdateDate ? new Date().getTime() : ArrayPos.date;
         ArrayPos.game = Data[3];
         ArrayPos.views = Data[13];
@@ -2887,6 +2919,9 @@ function Main_StartHistoryworker() {
     }
 
     while (i--) {
+        //Kick live entries are neither checked nor converted to a VOD, opening an ended one shows offline
+        if (array[i] && KickApi_IsKickId(array[i].data[14])) continue;
+
         if (array[i] && !array[i].forceVod) {
             if (array[i].data[14] && array[i].data[14] !== '') {
                 Main_StartHistoryworkerBradcast(array[i], 1, header);
@@ -2921,6 +2956,8 @@ function Main_RunVODWorker() {
     }
 
     for (i; i >= 0; i--) {
+        if (KickApi_IsKickId(array[i].data[14])) continue;
+
         //TODO remove this workaround after some updates
         if (array[i].data[2] && typeof array[i].data[2] === 'string') {
             array[i].data[2] = array[i].data[2].replace('Streamed', '');
@@ -2957,6 +2994,8 @@ function Main_RunLiveVODWorker() {
     }
 
     for (i; i >= 0; i--) {
+        if (KickApi_IsKickId(array[i].data[14])) continue;
+
         //TODO remove this workaround after some updates
         array[i].data[11] = array[i].data[11].replace('Since', '');
         array[i].data[4] = array[i].data[4].replace('Viewers', '');
@@ -2994,6 +3033,8 @@ function Main_RunClipWorker() {
     }
 
     for (i; i >= 0; i--) {
+        if (KickApi_IsKickId(array[i].data[2])) continue;
+
         //TODO remove this workaround after some updates
         array[i].data[16] = array[i].data[16].replace('Created', '');
         array[i].data[14] = array[i].data[14].replace('Views', '');

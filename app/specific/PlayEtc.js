@@ -991,7 +991,7 @@ function Play_StartStayStartCheck() {
 function Play_StayCheckLive() {
     Play_loadDataId = new Date().getTime();
 
-    PlayHLS_GetPlayListAsync(true, Play_data.data[6], Play_loadDataId, null, Play_StayCheckLiveResult);
+    PlayHLS_GetPlayListAsync(true, PlayHLS_Id(Play_data.data), Play_loadDataId, null, Play_StayCheckLiveResult);
 }
 
 function Play_StayCheckLiveResult(response) {
@@ -1215,7 +1215,7 @@ function Play_ClearPP() {
 }
 
 function Play_FollowUnfollow() {
-    if (AddUser_UserHasToken()) {
+    if (KickApi_IsKickId(AddCode_Channel_id) ? KickUser_Token() : AddUser_UserHasToken()) {
         if (AddCode_IsFollowing) AddCode_UnFollow();
         else AddCode_Follow();
     } else {
@@ -1677,12 +1677,7 @@ function Play_handleKeyUp(e) {
         Play_handleKeyUpEndClear();
         if (!Play_EndUpclear) {
             if (Play_MultiEnable) Play_MultiKeyDown();
-            else {
-                if (Main_IsOn_OSInterface) {
-                    OSInterface_mSwitchPlayer();
-                }
-                PlayExtra_SwitchPlayer();
-            }
+            else PlayExtra_SwitchPlayer();
         }
     }
 }
@@ -2770,7 +2765,7 @@ function Play_MakeControls() {
         enterKey: function (shutdown) {
             if (!Main_IsOn_OSInterface || Play_StayDialogVisible()) return;
 
-            if (Play_MaxInstances < 4) {
+            if (Play_MaxInstances < 4 && !Play_MultiHybrid) {
                 Play_showWarningMiddleDialog(STR_4_WAY_MULTI_INSTANCES.replace('%x', Play_MaxInstances) + STR_4_WAY_MULTI, 3000);
                 return;
             }
@@ -2986,6 +2981,12 @@ function Play_MakeControls() {
             if (Main_values.Play_ChatForceDisable) {
                 Play_showWarningMiddleDialog(STR_CHAT_DISABLE, 1500);
                 return;
+            } else if (KickApi_IsKickRow(Play_data.data)) {
+                //A Kick chat is written with the Kick token, the Twitch authorization is not needed
+                if (!KickUser_Token()) {
+                    Play_showWarningMiddleDialog(STR_KICK_CHAT_NEEDS_USER, 1500);
+                    return;
+                }
             } else if (!AddUser_UserIsSet() || !AddUser_UsernameArray[0].access_token) {
                 Play_showWarningMiddleDialog(STR_NOKEY_CHAT_WARN, 1500);
                 return;
@@ -3016,7 +3017,8 @@ function Play_MakeControls() {
         values: null,
         defaultValue: null,
         enterKey: function () {
-            PhoneChat_Show();
+            if (KickApi_IsKickRow(Play_data.data)) Play_showWarningMiddleDialog(STR_KICK_NOT_SUPPORTED, 2000);
+            else PhoneChat_Show();
         }
     };
 

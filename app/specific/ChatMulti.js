@@ -1,6 +1,7 @@
 /*
  * Merged chat core: starts and stops the YouTube / Kick sources of a chat and renders their lines
  * through the Twitch line pipeline (delay, pause, spam merge, cleanup, moderation).
+ * On a Kick stream the Kick chat is the main source and Twitch (read-only IRC) / YouTube are the linked ones.
  * Everything that comes from YouTube / Kick is untrusted: names are escaped, text goes through
  * ChatLive_extraMessageTokenize, colors, ids and image urls are whitelisted.
  */
@@ -19,10 +20,18 @@ var ChatMulti_UrlRegex = /^https:\/\/([a-z0-9.-]+)\/[\w.~\/%=+,:-]*$/i;
 
 function ChatMulti_Start(chat_number, id, withHistory) {
     ChatMulti_Stop(chat_number);
-    if (!id || !Settings_value.chat_multi.defaultValue) return;
+    if (!id) return;
+
+    //The Kick main chat runs with merged chat off too, only its links need the setting.
+    //chat_kick_main: its Kick icons show only while linked, as the Twitch icons of a Twitch chat (css)
+    var kick = KickApi_IsKickId(ChatLink_Key(chat_number));
+    if (kick) Main_AddClassWithEle(Chat_div[chat_number], 'chat_kick_main');
+    else if (!Settings_value.chat_multi.defaultValue) return;
 
     ChatMulti_State[chat_number] = {id: id, seq: ++ChatMulti_Seq, withHistory: withHistory, started: false};
-    ChatLink_Lookup(chat_number, id);
+
+    if (Settings_value.chat_multi.defaultValue) ChatLink_Lookup(chat_number, id);
+    else ChatMulti_OnLinks(chat_number, id);
 }
 
 // Contract for ChatKick.js / ChatYouTube.js: their Start gets the session seq as its id, passes it as the
@@ -39,9 +48,11 @@ function ChatMulti_Stop(chat_number) {
     ChatMulti_State[chat_number] = null;
     ChatMulti_Seen[chat_number] = null;
     ChatMulti_SetLinked(chat_number, false);
+    Main_RemoveClassWithEle(Chat_div[chat_number], 'chat_kick_main');
 
     if (typeof ChatKick_Stop === 'function') ChatKick_Stop(chat_number);
     if (typeof ChatYouTube_Stop === 'function') ChatYouTube_Stop(chat_number);
+    ChatLive_StopLinkedTwitch(chat_number);
 }
 
 // After the links of the current streamer changed, history is not loaded again
@@ -54,9 +65,16 @@ function ChatMulti_OnLinks(chat_number, id) {
     if (!state || state.id !== id || id !== Chat_Id[chat_number] || state.started) return;
     state.started = true;
 
-    var links = ChatLink_Current(chat_number);
-    ChatMulti_SetLinked(chat_number, !!(links.yt || links.kick));
+    var key = ChatLink_Key(chat_number),
+        links = {tw: null, yt: null, kick: null};
 
+    //Kick channel: its own chat always, the linked ones only with merged chat on
+    if (KickApi_IsKickId(key) && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, KickApi_Slug(key), state.withHistory);
+    if (Settings_value.chat_multi.defaultValue) links = ChatLink_Current(chat_number);
+
+    ChatMulti_SetLinked(chat_number, !!(links.tw || links.yt || links.kick));
+
+    if (links.tw) ChatLive_StartLinkedTwitch(chat_number, state.id, links.tw.value, state.withHistory);
     if (links.kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, links.kick.value, state.withHistory);
     if (links.yt && typeof ChatYouTube_Start === 'function') ChatYouTube_Start(chat_number, state.seq, links.yt.value, state.withHistory);
 }

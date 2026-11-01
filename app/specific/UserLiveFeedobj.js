@@ -171,7 +171,7 @@ function UserLiveFeedobj_loadDataError(pos) {
         Main_HideElementWithEle(Sidepannel_SidepannelLoadingDialog);
 
         if (UserLiveFeed_isPreviewShowing() && pos === UserLiveFeed_FeedPosX) {
-            if (pos === UserLiveFeedobj_UserLivePos && (!AddUser_UserIsSet() || !AddUser_UsernameArray[0].access_token)) {
+            if (pos === UserLiveFeedobj_UserLivePos && (!AddUser_UserIsSet() || !AddUser_UsernameArray[0].access_token) && !KickUser_IsKickOnly()) {
                 UserLiveFeedobj_HolderDiv(pos, STR_NOKUSER_WARNING);
             } else {
                 UserLiveFeedobj_HolderDiv(pos, STR_REFRESH_PROBLEM);
@@ -1001,6 +1001,7 @@ function UserLiveFeedobj_CreateSideFeed(id, data) {
         UserLiveFeed_side_ids[7] +
         id +
         '" class="side_panel_new_title">' +
+        KickApi_CardIcon(data) +
         Main_ReplaceLargeFont(data[1]) +
         '</div><div id="' +
         UserLiveFeed_side_ids[8] +
@@ -1069,6 +1070,7 @@ function UserLiveFeedobj_CreatFeed(pos, y, id, data, Extra_when, Extra_vodimg, f
         (Extra_vodimg || force_VOD
             ? '<div class="vodicon_text ' + (force_VOD ? '' : 'hideimp') + '" style="background: #00a94b;">&nbsp;&nbsp;VOD&nbsp;&nbsp;</div>&nbsp;'
             : '<div style="display: none;"></div>') + //empty div to prevent error when childNodes[2].classList.remove
+        KickApi_CardIcon(data) +
         data[1] +
         '</div><div class="stream_info_live" style="width: 36%; float: right; text-align: right; display: inline-block; font-size: 70%;">' +
         data[5] +
@@ -1225,6 +1227,12 @@ function UserLiveFeedobj_CreatGameFeed(pos, x, id, data) {
 }
 
 function UserLiveFeedobj_loadChannelUserLive() {
+    //A Kick only main user has no Twitch token: no Twitch request, only the Kick part
+    if (KickUser_IsKickOnly()) {
+        UserLiveFeedobj_loadDataSuccess('{}');
+        return;
+    }
+
     Navigation_FeedFull(
         PlayClip_BaseUrl,
         Main_OAuth_User_Headers,
@@ -1282,6 +1290,9 @@ function UserLiveFeedobj_loadDataSuccess(responseText) {
         UserLiveFeed_obj[pos].dataEnded = true;
         UserLiveFeed_obj[pos].cursor = null;
     }
+
+    //The followed Kick live streams join the first load, KickFollow_FeedResult draws all of them
+    if (!UserLiveFeed_itemsCount[pos] && KickFollow_FeedStart(response)) return;
 
     UserLiveFeed_loadDataSuccessEnd(response);
 }
@@ -1347,7 +1358,7 @@ function UserLiveFeed_loadDataSuccessEnd(response) {
             if (id && !UserLiveFeed_idObject[UserLiveFeedobj_UserLivePos].hasOwnProperty(id) && ScreensObj_CheckIsMature(stream.stream)) {
                 UserLiveFeed_idObject[UserLiveFeedobj_UserLivePos][id] = itemsCount;
 
-                mArray = ScreensObj_LiveQueryCellArray(stream);
+                mArray = stream.kickCell || ScreensObj_LiveQueryCellArray(stream);
 
                 UserLiveFeed_PreloadImgs.push(mArray[0]);
 
@@ -1373,7 +1384,7 @@ function UserLiveFeed_loadDataSuccessEnd(response) {
         UserLiveFeedobj_AddBanner(UserLiveFeedobj_UserLivePos);
 
         if (!UserLiveFeed_itemsCount[UserLiveFeedobj_UserLivePos]) {
-            if (AddUser_UserHasToken()) {
+            if (AddUser_UserHasToken() || KickUser_IsKickOnly()) {
                 UserLiveFeedobj_Empty(UserLiveFeedobj_UserLivePos);
             } else {
                 UserLiveFeedobj_HolderDiv(UserLiveFeedobj_UserLivePos, STR_NOKUSER_WARNING);

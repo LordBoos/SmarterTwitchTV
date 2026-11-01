@@ -431,11 +431,9 @@ function Navigation_Handle(event, up) {
             }
         } else if (code === KEY_LEFT || code === KEY_3) {
             Navigation_Close(false);
-            if (AddUser_UserHasToken()) Sidepannel_StartFeed();
-            else {
-                Sidepannel_ShowNoUserWarning();
-                Navigation_Open(Navigation_Callback);
-            }
+            // Through the shared side panel entry: it records whose keys come back when the panel and the rail close,
+            // a stale record handed the remote to a screen that was no longer on view
+            Sidepannel_Start(Navigation_Callback, true);
             return true;
         }
     } else if (Navigation_Region === 'tabs') {
@@ -825,8 +823,8 @@ function Navigation_FeedBaseError(key, id, response) {
     if (ticket) ticket.error(key, ticket.check, response);
 }
 
-function Navigation_FeedFull(url, headers, callback, error, key, check, method, post) {
-    FullxmlHttpGet(url, headers, Navigation_FeedFullResult, noop_fun, key, Navigation_FeedTicket(callback, error, key, check), method, post);
+function Navigation_FeedFull(url, headers, callback, error, key, check, method, post, timeout) {
+    FullxmlHttpGet(url, headers, Navigation_FeedFullResult, noop_fun, key, Navigation_FeedTicket(callback, error, key, check), method, post, timeout);
 }
 
 function Navigation_FeedFullResult(response, key, id) {

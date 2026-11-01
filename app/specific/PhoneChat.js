@@ -56,6 +56,8 @@ function PhoneChat_NormalizeLogin(login) {
 //The primary channel login lives in Play_data.data[6] (data[1] is the display name)
 function PhoneChat_GetChannel() {
     if (!Play_isOn || !Play_data || !Play_data.data || Play_data.data.length < 7) return null;
+    //The phone chat page is Twitch only
+    if (Play_data.data[19] === 'kick') return null;
 
     return PhoneChat_NormalizeLogin(Play_data.data[6]);
 }

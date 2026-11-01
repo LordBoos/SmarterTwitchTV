@@ -243,6 +243,12 @@ function AddCode_validateTokenSuccess(resultObj, position) {
 
 function AddCode_CheckFollow() {
     AddCode_IsFollowing = false;
+    // A Kick id is never sent to Twitch
+    if (KickApi_IsKickId(AddCode_Channel_id)) {
+        KickFollow_Check(KickApi_Slug(AddCode_Channel_id), AddCode_KickFollowDone);
+        return;
+    }
+
     var theUrl = Main_helix_api + 'channels/followed?user_id=' + AddUser_UsernameArray[0].id + '&broadcaster_id=' + AddCode_Channel_id,
         header;
 
@@ -253,6 +259,14 @@ function AddCode_CheckFollow() {
     }
 
     FullxmlHttpGet(theUrl, header, AddCode_RequestCheckFollowSucess, noop_fun, 0, 0, 'GET', null);
+}
+
+// Result of a Kick check, follow or unfollow (state null: the change failed), an answer for another channel is dropped
+function AddCode_KickFollowDone(state, slug) {
+    if (AddCode_Channel_id !== KickApi_Id(slug)) return;
+
+    if (state !== null) AddCode_IsFollowing = state;
+    AddCode_RequestCheckFollowEnd();
 }
 
 function AddCode_RequestCheckFollowSucess(obj) {
@@ -291,6 +305,11 @@ var AddCode_FollowQuery =
     '{"operationName":"FollowButton_FollowUser","variables":{"input":{"disableNotifications":true,"targetID":"%x"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"}}}';
 
 function AddCode_Follow() {
+    if (KickApi_IsKickId(AddCode_Channel_id)) {
+        KickFollow_Set(KickApi_Slug(AddCode_Channel_id), true, AddCode_KickFollowDone);
+        return;
+    }
+
     var header = [
         [clientIdHeader, AddCode_backup_client_id],
         [Bearer_Header, Main_OAuth + AddUser_UsernameArray[0].access_token]
@@ -329,6 +348,11 @@ var AddCode_UnFollowQuery =
     '{"operationName":"FollowButton_UnfollowUser","variables":{"input":{"targetID":"%x"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880"}}} ';
 
 function AddCode_UnFollow() {
+    if (KickApi_IsKickId(AddCode_Channel_id)) {
+        KickFollow_Set(KickApi_Slug(AddCode_Channel_id), false, AddCode_KickFollowDone);
+        return;
+    }
+
     var header = [
         [clientIdHeader, AddCode_backup_client_id],
         [Bearer_Header, Main_OAuth + AddUser_UsernameArray[0].access_token]

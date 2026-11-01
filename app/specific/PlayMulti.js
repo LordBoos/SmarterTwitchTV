@@ -25,6 +25,11 @@ var Play_updateStreamInfoMultiId = [];
 function Play_updateStreamInfoMulti(pos) {
     Play_updateStreamInfoMultiId[pos] = new Date().getTime();
 
+    if (KickApi_IsKickRow(Play_MultiArray[pos].data)) {
+        Play_KickInfoGet(Play_MultiArray[pos].data[6], pos, Play_updateStreamInfoMultiId[pos]);
+        return;
+    }
+
     BaseXmlHttpGet(
         Main_helix_api + 'streams?user_id=' + Play_MultiArray[pos].data[14],
         Play_updateStreamInfoMultiValues,
@@ -302,7 +307,7 @@ function Play_MultiStart(pos) {
 
     Play_MultiArray[pos].resultId = new Date().getTime();
 
-    PlayHLS_GetPlayListAsync(true, Play_MultiArray[pos].data[6], Play_MultiArray[pos].resultId, pos, Play_MultiResult);
+    PlayHLS_GetPlayListAsync(true, PlayHLS_Id(Play_MultiArray[pos].data), Play_MultiArray[pos].resultId, pos, Play_MultiResult);
 }
 
 function Play_MultiResult(response, pos) {

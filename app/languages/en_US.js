@@ -559,6 +559,9 @@ function en_USLang() {
     STR_PP_WORKAROUND = 'Multiplayer, PP and preview mode workaround';
     STR_PP_WORKAROUND_SUMMARY =
         "For some devices, it is necessary to enable this to have multiplayer mode working properly. The issue is usually that one of the two players becomes a black screen. Don't enable it if you don't have issues, as it will cause lower image quality and poor performance.";
+    STR_MULTI_HYBRID = '4-way multistream with software decoding';
+    STR_MULTI_HYBRID_SUMMARY =
+        'This device decodes only %x videos in hardware at once. 4-way multistream then decodes the other streams in software, limited to the chosen quality. 720p can stutter on slower devices.';
     STR_HISTORY = 'History';
     STR_WATCHED = 'Watched on';
     STR_UNTIL = 'until';
@@ -774,10 +777,30 @@ function en_USLang() {
     STR_CHAT_LINK_EDIT = 'Edit';
     STR_CHAT_LINK_ENABLED = 'Link this streamer';
     STR_CHAT_LINK_RESET = 'Back to UnityChat';
-    STR_CHAT_LINK_INVALID = 'Invalid channel, use a YouTube or Kick link, handle or name';
+    STR_CHAT_LINK_INVALID = 'Invalid channel, use a channel link, handle or name';
     STR_CHAT_LINK_NO_CHANNEL = 'No Twitch channel to link';
     STR_CHAT_LINK_UNLINKED = 'not linked';
     STR_CHAT_LINK_ENTER = 'Enter';
+    STR_CHAT_LINK_TWITCH = 'Twitch';
+    STR_KICK_NOT_SUPPORTED = 'Not available for Kick streams';
+    STR_KICK_NO_VOD_CHAT = 'Chat replay is not available for Kick videos';
+    STR_KICK_ADD_USER = 'Add Kick User';
+    STR_KICK_ADD_USER_HINT = 'Press OK to sign in with Kick instead';
+    STR_KICK_LINK = 'Link Kick account';
+    STR_KICK_UNLINK = 'Unlink Kick account';
+    STR_KICK_RELOGIN = 'Sign in to Kick again';
+    STR_KICK_LOGIN_TITLE = 'Sign in with Kick';
+    STR_KICK_LOGIN_TEXT = 'Scan the code with your phone and confirm in the Kick app';
+    STR_KICK_LOGIN_WAIT = 'Waiting for confirmation';
+    STR_KICK_LOGIN_EXPIRED = 'The code expired, press OK for a new one';
+    STR_KICK_LOGIN_FAIL = 'Kick sign in failed';
+    STR_KICK_SESSION_EXPIRED = 'Kick sign in expired, sign in again in Users';
+    STR_KICK_FOLLOW_FAIL = 'Kick follow failed';
+    STR_KICK_CHAT_SEND_FAIL = 'Message not sent to Kick chat';
+    STR_KICK_CHAT_NEEDS_USER = 'Sign in to Kick in Users to write to Kick chat';
+    STR_PLATFORM = 'Platform';
+    STR_TWITCH = 'Twitch';
+    STR_KICK = 'Kick';
     STR_CHAT_CLEAR_MSG = 'Clear chat, delete user messages';
     STR_CHAT_SHOW_BADGES = 'Show user badges (excluding the ones below)';
     STR_CHAT_SHOW_BADGES_MOD = 'Show Moderator badges';

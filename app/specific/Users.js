@@ -85,6 +85,7 @@ function Users_exit() {
     //Main_Log('Users_exit');
 
     Main_IconLoad('label_thumb', 'icon-options', STR_THUMB_OPTIONS_TOP);
+    KickLogin_Hide();
     Main_removeEventListener('keydown', Users_handleKeyDown);
     Main_HideElement(Users_ids[5]);
     Main_IconLoad('label_refresh', 'icon-refresh', STR_REFRESH + ':' + STR_GUIDE);
@@ -109,40 +110,12 @@ function Users_StartLoad() {
 function Users_loadData() {
     var row = document.createElement('div'),
         doc = Main_getElementById('stream_table_user'),
-        x = 1, // 1 as first is used by add user
-        y = 0,
-        div = document.createElement('div');
+        x = 2, // 0 and 1 are the add user and add kick user cells
+        y = 0;
 
-    div.setAttribute('id', Users_ids[4] + '0_0');
-    div.classList.add('stream_thumbnail_user_icon_holder');
     row.setAttribute('id', Users_ids[6] + '0');
-
-    div.innerHTML =
-        '<div id="' +
-        Users_ids[0] +
-        '0_0' +
-        '" class="stream_thumbnail_user" ><div id="' +
-        Users_ids[1] +
-        '0_0' +
-        '" class="stream_thumbnail_channel_img"></div>' +
-        '<div id="' +
-        Users_ids[2] +
-        '0_0' +
-        '" class="stream_thumbnail_user_text_holder">' +
-        '<div id="' +
-        Users_ids[3] +
-        '0_0' +
-        '" class="stream_info_user_name">' +
-        STR_USER_ADD +
-        '</div><div id="' +
-        Users_ids[6] +
-        '0_0' +
-        '"style="color:#FFFFFF;font-size: 17vh; text-align: center; transform: translateY(-24.5vh);"><i id="' +
-        Users_ids[7] +
-        '0_0' +
-        '" class="icon-user-plus" ></i></div></div></div>';
-
-    row.appendChild(div);
+    row.appendChild(Users_createAddCell('0_0', STR_USER_ADD, '#FFFFFF'));
+    row.appendChild(Users_createAddCell('0_1', STR_KICK_ADD_USER, '#53FC18'));
 
     for (var user = 0; user < AddUser_UsernameArray.length; user++) {
         row.appendChild(Users_createCell(y + '_' + x, user));
@@ -159,6 +132,42 @@ function Users_loadData() {
     if (x <= 5) doc.appendChild(row);
 
     Users_loadDataSuccessFinish();
+}
+
+function Users_createAddCell(id, text, color) {
+    var div = document.createElement('div');
+
+    div.setAttribute('id', Users_ids[4] + id);
+    div.classList.add('stream_thumbnail_user_icon_holder');
+
+    div.innerHTML =
+        '<div id="' +
+        Users_ids[0] +
+        id +
+        '" class="stream_thumbnail_user" ><div id="' +
+        Users_ids[1] +
+        id +
+        '" class="stream_thumbnail_channel_img"></div>' +
+        '<div id="' +
+        Users_ids[2] +
+        id +
+        '" class="stream_thumbnail_user_text_holder">' +
+        '<div id="' +
+        Users_ids[3] +
+        id +
+        '" class="stream_info_user_name">' +
+        text +
+        '</div><div id="' +
+        Users_ids[6] +
+        id +
+        '"style="color:' +
+        color +
+        ';font-size: 17vh; text-align: center; transform: translateY(-24.5vh);"><i id="' +
+        Users_ids[7] +
+        id +
+        '" class="icon-user-plus" ></i></div></div></div>';
+
+    return div;
 }
 
 function Users_createCell(id, pos) {
@@ -191,6 +200,7 @@ function Users_createCell(id, pos) {
         Users_ids[7] +
         id +
         '" class="stream_info_user_name">' +
+        KickApi_UserIcon(AddUser_UsernameArray[pos]) +
         AddUser_UsernameArray[pos].display_name +
         '</div></div></div>';
 
@@ -223,7 +233,7 @@ function Users_loadDataSuccessFinish() {
 function Users_addFocus(forceScroll) {
     Main_AddClass(Users_ids[0] + Users_cursorY + '_' + Users_cursorX, Main_classThumb);
 
-    Main_CounterDialog(Users_cursorX, Users_cursorY, Main_ColumnsCountChannel, AddUser_UsernameArray.length + 1);
+    Main_CounterDialog(Users_cursorX, Users_cursorY, Main_ColumnsCountChannel, AddUser_UsernameArray.length + 2);
 
     if (Main_YchangeAddFocus(Users_cursorY) || forceScroll) {
         if (Users_cursorY > 1) {
@@ -245,7 +255,9 @@ function Users_removeFocus() {
 
 //TODO add a temp user for when going back and for from user to games or etc
 function Users_keyEnter() {
-    if (!Users_cursorX && !Users_cursorY) {
+    if (Users_cursorX === 1 && !Users_cursorY) {
+        KickLogin_Show({link: -1});
+    } else if (!Users_cursorX && !Users_cursorY) {
         Main_values.Main_Before = Main_values.Main_Go;
         Main_HideElement(Users_ids[5]);
         Main_removeEventListener('keydown', Users_handleKeyDown);
@@ -268,7 +280,9 @@ function Users_showUserDialog() {
     Users_setUserDialog();
     Users_showUserDialogPos = parseInt(Main_getElementById(Users_ids[4] + Users_cursorY + '_' + Users_cursorX).getAttribute(Main_DataAttribute));
 
-    Main_innerHTML('main_dialog_user_text', STR_USER_OPTION + ' ' + AddUser_UsernameArray[Users_showUserDialogPos].display_name);
+    var user = AddUser_UsernameArray[Users_showUserDialogPos];
+    Main_innerHTML('main_dialog_user_text', STR_USER_OPTION + ' ' + user.display_name);
+    Main_innerHTML('main_dialog_user_kick', KickUser_CanUnlink(user) ? STR_KICK_UNLINK : user.kick ? STR_KICK_RELOGIN : STR_KICK_LINK);
     // Main_innerHTML('main_dialog_user_key', AddUser_UsernameArray[Users_showUserDialogPos].access_token ? STR_USER_CODE_OK : STR_USER_CODE);
 
     Main_ShowElement('main_dialog_user');
@@ -289,9 +303,11 @@ function Users_UserCursorSet() {
     Main_RemoveClass('main_dialog_user_first', 'button_dialog_focused');
     // Main_RemoveClass('main_dialog_user_key', 'button_dialog_focused');
     Main_RemoveClass('main_dialog_user_remove', 'button_dialog_focused');
+    Main_RemoveClass('main_dialog_user_kick', 'button_dialog_focused');
 
     if (!Users_RemoveCursor) Main_AddClass('main_dialog_user_first', 'button_dialog_focused');
     else if (Users_RemoveCursor === 1) Main_AddClass('main_dialog_user_remove', 'button_dialog_focused');
+    else Main_AddClass('main_dialog_user_kick', 'button_dialog_focused');
 }
 
 function Users_clearRemoveDialog() {
@@ -396,9 +412,14 @@ function Users_handleKeyEnter() {
         Users_HideUserDialog();
         if (!temp_RemoveCursor) {
             AddUser_UserMakeOne(Users_showUserDialogPos);
-        } else {
+        } else if (temp_RemoveCursor === 1) {
             Users_Isautentication = false;
             Users_showRemoveDialog();
+        } else if (KickUser_CanUnlink(AddUser_UsernameArray[Users_showUserDialogPos])) {
+            KickUser_Unlink(Users_showUserDialogPos);
+            Users_init();
+        } else {
+            KickLogin_Show({link: Users_showUserDialogPos});
         }
     } else Users_keyEnter();
 }
@@ -409,6 +430,11 @@ function Users_handleKeyDown(event) {
     if (Main_FirstLoad || Main_CantClick()) return;
 
     Main_keyClickDelayStart();
+
+    if (KickLogin_IsVisible()) {
+        KickLogin_HandleKeyDown(event);
+        return;
+    }
 
     var i;
 
@@ -425,7 +451,7 @@ function Users_handleKeyDown(event) {
                 Users_setRemoveDialog();
             } else if (Users_isUserDialogShown()) {
                 Users_RemoveCursor--;
-                if (Users_RemoveCursor < 0) Users_RemoveCursor = 1;
+                if (Users_RemoveCursor < 0) Users_RemoveCursor = 2;
                 Users_UserCursorSet();
                 Users_setUserDialog();
             } else if (!Users_cursorX) {
@@ -459,7 +485,7 @@ function Users_handleKeyDown(event) {
                 Users_setRemoveDialog();
             } else if (Users_isUserDialogShown()) {
                 Users_RemoveCursor++;
-                if (Users_RemoveCursor > 1) Users_RemoveCursor = 0;
+                if (Users_RemoveCursor > 2) Users_RemoveCursor = 0;
                 Users_UserCursorSet();
                 Users_setUserDialog();
             } else if (Main_ThumbNull(Users_cursorY, Users_cursorX + 1, Users_ids[0])) {

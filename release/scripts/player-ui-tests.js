@@ -118,6 +118,9 @@ const s = {
     Play_ResetSpeed: () => effects.push('speed:reset'),
     Play_ChatPosition: () => effects.push('chatpos'),
     PhoneChat_Show: () => effects.push('phone:show'),
+    KickApi_IsKickRow: data => !!data && data[19] === 'kick',
+    Play_showWarningMiddleDialog: (text, ms) => effects.push(['warn', text, ms]),
+    STR_KICK_NOT_SUPPORTED: 'Not available for Kick streams',
     Play_ResetLowlatency() {},
     PlayVod_ChaptersArray: [],
     Play_HasLive: false,
@@ -138,6 +141,7 @@ const s = {
     Main_IsOn_OSInterface: true,
     Main_A_includes_B: (a, b) => String(a).includes(b),
     Play_data: {
+        data: [],
         quality: 'Auto',
         qualityPlaying: 'Auto',
         qualityIndex: 1,
@@ -258,6 +262,11 @@ check(
 );
 s.PlayerUI_Action(s.Play_controlsPhoneChat, 0);
 check(effects.includes('phone:show'), 'existing pairing lifecycle invoked');
+s.Play_data.data[19] = 'kick';
+effects.length = 0;
+s.PlayerUI_Action(s.Play_controlsPhoneChat, 0);
+check(!effects.includes('phone:show') && effects.some(x => Array.isArray(x) && x[0] === 'warn' && x[1] === 'Not available for Kick streams'), 'kick stream: phone chat not available');
+s.Play_data.data[19] = undefined;
 s.PlayerUI_State.mode = 2;
 check(!s.PlayerUI_Action(s.Play_controlsPhoneChat, 0), 'phone action rechecks VOD availability at execution');
 s.PlayerUI_State.mode = 1;
@@ -373,4 +382,151 @@ check(
     effects.some(x => Array.isArray(x) && x[0] === 'hidePanel' && x[1] === 1),
     'bar timeout delegates existing hide policy'
 );
+/* 4-way multistream gate: a device with fewer than 4 hardware decoder instances needs the hybrid HW/SW mode */
+const multi = s.Play_controls[s.Play_MultiStream];
+Object.assign(s, {
+    Play_hidePanel: () => effects.push('hidePanel'),
+    OSInterface_EnableMultiStream: (big, offset) => effects.push(['multiOn', big, offset]),
+    OSInterface_DisableMultiStream: () => effects.push('multiOff'),
+    Play_MultiArray: [{data: []}, {data: []}, {data: []}, {data: []}],
+    Play_data_base: {data: []},
+    Play_MultiSetInfo() {},
+    twemoji: {parse: text => text},
+    Play_Multi_SetPanel() {},
+    Play_MultiInfoReset() {},
+    Play_SetAudioIcon() {},
+    Play_Multi_UnSetPanel() {},
+    Play_CleanHideExit() {},
+    Play_getQualities() {},
+    Play_qualityDisplay() {},
+    Play_ChatEnable: false,
+    Play_MultiEnable: false,
+    Play_MaxInstances: 2,
+    Play_MultiHybrid: false,
+    STR_4_WAY_MULTI_INSTANCES: 'Only %x decoders at once, '
+});
+// the warning names the real instance count: %x is substituted
+const multiWarned = () => effects.some(x => Array.isArray(x) && x[0] === 'warn' && x[1] === 'Only 2 decoders at once, STR_4_WAY_MULTI');
+const multiStarted = () => effects.some(x => Array.isArray(x) && x[0] === 'multiOn');
+effects.length = 0;
+multi.enterKey();
+check(!s.Play_MultiEnable && multiWarned() && !multiStarted(), '2 decoder instances without hybrid mode: 4-way blocked with the instances warning');
+s.Play_MultiHybrid = true;
+effects.length = 0;
+multi.enterKey();
+check(s.Play_MultiEnable && !multiWarned() && multiStarted(), '2 decoder instances with hybrid mode: 4-way starts');
+multi.enterKey();
+check(!s.Play_MultiEnable && effects.includes('multiOff'), 'hybrid 4-way can be closed again');
+s.Play_MaxInstances = 4;
+s.Play_MultiHybrid = false;
+effects.length = 0;
+multi.enterKey();
+check(s.Play_MultiEnable && !multiWarned() && multiStarted(), '4 decoder instances: 4-way starts without hybrid mode (unchanged)');
+multi.enterKey();
+
+/* Hybrid setting: values, default, bridge guard and when the row exists */
+const settingsAst = UglifyJS.parse(fs.readFileSync('app/specific/Settings.js', 'utf8'));
+const osAst = UglifyJS.parse(fs.readFileSync('app/specific/OSInterface.js', 'utf8'));
+const defun = (tree, name) => {
+    const node = tree.body.find(n => n instanceof UglifyJS.AST_Defun && n.name.name === name);
+    assert.ok(node, name + ' exists');
+    return node.print_to_string();
+};
+let hybridProp;
+settingsAst.walk(
+    new UglifyJS.TreeWalker(node => {
+        if (node instanceof UglifyJS.AST_ObjectKeyVal && node.key === 'multi_hybrid') hybridProp = node.value.print_to_string();
+    })
+);
+check(hybridProp, 'multi_hybrid setting declared');
+const hybridDefaults = vm.runInNewContext('(' + hybridProp + ')');
+check(JSON.stringify(hybridDefaults.values) === '["off","480p","720p"]', 'hybrid setting values: off, 480p, 720p');
+check(hybridDefaults.values[hybridDefaults.defaultValue - 1] === '480p', 'hybrid setting default is the measured 480p cap');
+const bridge = [];
+const st = {
+    Main_IsOn_OSInterface: true,
+    Android: {},
+    Main_A_includes_B: (a, b) => String(a).includes(b),
+    Settings_DisableCodecs: ['c2.android.avc.decodervideo/avc'],
+    Settings_CodecsValue: [],
+    Settings_SetCodecsValue() {},
+    Settings_value: {multi_hybrid: {values: hybridDefaults.values, defaultValue: 1}},
+    Settings_Obj_default: key => st.Settings_value[key].defaultValue,
+    Play_MaxInstances: 0,
+    Play_MultiHybrid: false,
+    Play_MultiHybridSupported: false
+};
+const supportBridge = () => (st.Android.SetHybridDecoders = (hw, cap) => (bridge.push([hw, cap]), true));
+supportBridge();
+vm.createContext(st);
+vm.runInContext(
+    ['Settings_SetMaxInstances', 'Settings_SetMultiHybrid'].map(n => defun(settingsAst, n)).join('\n') +
+        defun(osAst, 'OSInterface_SetHybridDecoders'),
+    st
+);
+const codec = (name, instances) => ({nameType: name + 'video/avc', instances: instances});
+const hybridCase = (instances, value) => {
+    bridge.length = 0;
+    st.Settings_CodecsValue = [codec('OMX.MTK.VIDEO.DECODER.AVC', instances), codec('c2.android.avc.decoder', 32)];
+    st.Settings_value.multi_hybrid.defaultValue = value;
+    st.Settings_SetMaxInstances();
+    return JSON.stringify([st.Play_MaxInstances, st.Play_MultiHybridSupported, st.Play_MultiHybrid, bridge]);
+};
+check(hybridCase(2, 1) === '[2,true,true,[[2,480]]]', '2 instances, 480p: hybrid on, APK told 2 hardware players and a 480p cap');
+check(hybridCase(2, 2) === '[2,true,true,[[2,720]]]', '2 instances, 720p: APK told a 720p cap');
+check(hybridCase(2, 0) === '[2,true,false,[[0,480]]]', '2 instances, off: hybrid off in the APK, row still offered');
+check(hybridCase(3, 1) === '[3,true,true,[[3,480]]]', '3 instances: hybrid keeps 3 hardware players');
+check(hybridCase(4, 1) === '[4,false,false,[]]', '4 instances: no hybrid, the APK is never called (unchanged)');
+check(hybridCase(-1, 1) === '[10,false,false,[]]', 'unknown instance limit: no hybrid, the APK is never called');
+check(hybridCase(1, 1) === '[1,false,false,[]]', '1 instance: no hybrid (3 software players not measured)');
+delete st.Android.SetHybridDecoders;
+check(hybridCase(2, 1) === '[2,false,false,[]]', 'released APK without the bridge method: no hybrid, no row, no exception');
+supportBridge();
+st.Main_IsOn_OSInterface = false;
+check(hybridCase(2, 1) === '[2,false,false,[]]', 'browser: no hybrid, Android never called');
+st.Main_IsOn_OSInterface = true;
+
+/* A runtime change of the setting reaches the APK and the 4-way gate through the Settings_SetDefault dispatch */
+vm.runInContext(defun(settingsAst, 'Settings_SetDefault'), st);
+hybridCase(2, 1);
+bridge.length = 0;
+st.Settings_value.multi_hybrid.defaultValue = 0;
+st.Settings_SetDefault('multi_hybrid');
+check(JSON.stringify([st.Play_MultiHybrid, bridge]) === '[false,[[0,480]]]', 'setting changed to off at runtime: APK told no hybrid, 4-way gate closed');
+st.Settings_value.multi_hybrid.defaultValue = 2;
+st.Settings_SetDefault('multi_hybrid');
+check(JSON.stringify([st.Play_MultiHybrid, bridge]) === '[true,[[0,480],[2,720]]]', 'setting changed to 720p at runtime: APK told the 720p cap, 4-way gate open');
+
+/* The settings row exists only when the device and the APK support hybrid mode */
+const rows = [];
+const sv = new Proxy({}, {get: (t, k) => t[k] || (t[k] = {values: ['a', 'b'], defaultValue: 0})});
+const ssTarget = {
+    Settings_value: sv,
+    Settings_Content: key => (rows.push(key), ''),
+    Settings_DivTitle: () => '',
+    Settings_Seek_Time: [],
+    Settings_jumpTimers: [],
+    Main_innerHTML() {},
+    Settings_GetPreviewDelay: () => [],
+    Settings_GetnotificationTime: () => [],
+    Main_isTV: true,
+    Main_IsOn_OSInterface: true,
+    Play_MaxInstances: 2,
+    Play_MultiHybridSupported: true
+};
+const ss = new Proxy(ssTarget, {
+    has: (t, k) => k !== Symbol.unscopables,
+    get: (t, k) => (k in t ? t[k] : typeof k === 'string' && /^STR_/.test(k) ? k : globalThis[k]),
+    set: (t, k, v) => ((t[k] = v), true)
+});
+const setSettings = new Function('sandbox', 'with (sandbox) { ' + defun(settingsAst, 'Settings_SetSettings') + ' Settings_SetSettings(); }');
+setSettings(ss);
+check(
+    rows.indexOf('multi_hybrid') > 0 && rows.indexOf('multi_hybrid') === rows.indexOf('PP_workaround') + 1,
+    'hybrid row shown in the player section after the PP workaround'
+);
+rows.length = 0;
+ssTarget.Play_MultiHybridSupported = false;
+setSettings(ss);
+check(rows.length > 10 && rows.indexOf('multi_hybrid') === -1, 'hybrid row hidden when the device or the APK does not support it');
 console.log(checks + ' production player action checks passed');

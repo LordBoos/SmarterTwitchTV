@@ -75,6 +75,11 @@ function PlayHLS_GetPlayListAsync(isLive, Channel_or_VOD_Id, CheckId_y, CheckId_
     // console.log('CheckId_x', CheckId_x);
     // console.log('callBackSuccess', callBackSuccess.name);
 
+    if (KickApi_IsKickId(Channel_or_VOD_Id)) {
+        PlayHLS_KickStep(isLive, KickApi_Slug(Channel_or_VOD_Id), CheckId_y, CheckId_x, callBackSuccess.name);
+        return;
+    }
+
     //if at te end of a request the values are different we have a issues
     proxy_fail_counter_checker = proxy_fail_counter;
 
@@ -521,6 +526,8 @@ function PlayHLS_GetPlayListSync(isLive, Channel_or_VOD_Id) {
     proxy_fail_counter_checker = proxy_fail_counter;
 
     try {
+        if (KickApi_IsKickId(Channel_or_VOD_Id)) return PlayHLS_KickSync(isLive, KickApi_Slug(Channel_or_VOD_Id));
+
         return PlayHLS_GetPlayListSyncToken(isLive, Channel_or_VOD_Id, use_proxy);
     } catch (error) {
         console.log(error);
@@ -597,4 +604,118 @@ function PlayHLS_GetPlayListSyncUrl(isLive, Channel_or_VOD_Id, useProxy, Token, 
     }
 
     return null;
+}
+
+//Kick: the master playlist url comes from the channel (live, a fresh token on every load, reconnect included)
+//or from the video detail (VOD). The result keeps the Twitch shape plus the master url, Java never fills it
+//and the player needs it to resolve relative variants
+function PlayHLS_Id(data) {
+    return data[19] === 'kick' ? 'kick:' + data[6] : data[6];
+}
+
+var PlayHLS_KickUrlRegex = /^https:\/\/[a-z0-9.-]+\.(kick\.com|live-video\.net)\//;
+
+function PlayHLS_KickPlaylistUrl(isLive, json) {
+    var url = isLive ? (json.livestream ? json.playback_url : null) : json.source;
+
+    if (typeof url !== 'string') return null;
+    if (!isLive && !/\.m3u8$/.test(url)) url += 'media/hls/master.m3u8';
+
+    return PlayHLS_KickUrlRegex.test(url) ? url : null;
+}
+
+function PlayHLS_KickInfoUrl(isLive, ref) {
+    return KickApi_Base + (isLive ? 'v2/channels/' : 'v1/video/') + ref;
+}
+
+//Channel or video detail response -> {url} of the master, or the error result
+function PlayHLS_KickInfo(isLive, ref, response) {
+    if (response.status !== 200) return {status: response.status === 404 ? 404 : 0, responseText: ''};
+
+    var json = null;
+
+    try {
+        json = JSON.parse(response.responseText);
+    } catch (e) {}
+
+    var url = json ? PlayHLS_KickPlaylistUrl(isLive, json) : null;
+
+    if (!url) return {status: isLive ? 404 : 410, responseText: ''};
+
+    //Fresh row for the player info (Play_updateStreamInfoStart) and the history
+    var cell = isLive ? KickApi_ChannelLiveCell(json) : null;
+    if (cell) KickApi_LiveCache[ref] = cell;
+
+    return {url: url};
+}
+
+function PlayHLS_KickMaster(response, url) {
+    return {status: response.status === 200 ? 200 : response.status === 404 ? 404 : 0, responseText: response.responseText, url: url};
+}
+
+//Info request, or the master request when masterUrl is set
+function PlayHLS_KickStep(isLive, ref, CheckId_y, CheckId_x, callBackSuccess, masterUrl) {
+    if (!KickApi_SafeSlug(ref)) {
+        PlayHLS_KickFinish({status: isLive ? 404 : 410, responseText: ''}, CheckId_y, CheckId_x, callBackSuccess);
+        return;
+    }
+
+    OSInterface_XmlHttpGetFull(
+        masterUrl || PlayHLS_KickInfoUrl(isLive, ref), //String urlString
+        DefaultHttpGetTimeout, //int timeout
+        null, //String postMessage
+        null, //String Method
+        masterUrl ? null : JSON.stringify(KickApi_Headers('')), //String JsonHeadersArray, public data without a token
+        'PlayHLS_KickResult', //String callback
+        CheckId_y, //long checkResult
+        isLive ? '1' : '0', //String check_1
+        masterUrl ? 'master' : 'info', //String check_2
+        ref, //String check_3 slug or video uuid
+        masterUrl || null, //String check_4 master url
+        CheckId_x, //String check_5
+        callBackSuccess, //String callBackSuccess
+        null //String callBackError
+    );
+}
+
+function PlayHLS_KickResult(result, checkResult, check_1, check_2, check_3, check_4, check_5, callBackSuccess) {
+    var isLive = check_1 === '1',
+        response = JSON.parse(result);
+
+    if (check_2 === 'master') {
+        PlayHLS_KickFinish(PlayHLS_KickMaster(response, check_4), checkResult, check_5, callBackSuccess);
+        return;
+    }
+
+    var info = PlayHLS_KickInfo(isLive, check_3, response);
+
+    if (info.url) PlayHLS_KickStep(isLive, check_3, checkResult, check_5, callBackSuccess, info.url);
+    else PlayHLS_KickFinish(info, checkResult, check_5, callBackSuccess);
+}
+
+function PlayHLS_KickFinish(res, checkResult, CheckId_x, callBackSuccess) {
+    res.checkResult = checkResult;
+
+    // prettier-ignore
+    eval(callBackSuccess)(// jshint ignore:line
+        JSON.stringify(res),
+        parseInt(CheckId_x),
+        checkResult
+    );
+}
+
+function PlayHLS_KickSync(isLive, ref) {
+    var timeout = DefaultHttpGetTimeout / 2,
+        res = {status: isLive ? 404 : 410, responseText: ''};
+
+    if (KickApi_SafeSlug(ref)) {
+        var info = OSInterface_mMethodUrlHeaders(PlayHLS_KickInfoUrl(isLive, ref), timeout, null, null, 0, JSON.stringify(KickApi_Headers('')));
+
+        res = PlayHLS_KickInfo(isLive, ref, JSON.parse(info));
+        if (res.url) res = PlayHLS_KickMaster(JSON.parse(OSInterface_mMethodUrlHeaders(res.url, timeout, null, null, 0, null)), res.url);
+    }
+
+    res.checkResult = 0;
+
+    return JSON.stringify(res);
 }

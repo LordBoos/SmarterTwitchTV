@@ -97,6 +97,11 @@ function Chat_Init() {
         return;
     }
 
+    if (KickApi_IsKickId(Main_values.ChannelVod_vodId)) {
+        Chat_SingleLine(STR_KICK_NO_VOD_CHAT);
+        return;
+    }
+
     if (!Main_IsOn_OSInterface) {
         Chat_StartFakeClock();
     }
@@ -228,7 +233,7 @@ function Chat_loadBadgesGlobalRequestWithChannel(chat_number, id, channelId) {
         BaseXmlHttpGetFull(theUrl, true, id, chat_number + '', channelId + '', null, null, null, Chat_loadBadgesGlobalSuccess, noop_fun);
     } else {
         if (!Chat_GlobalBadges[channelId]) {
-            Chat_GlobalBadges[channelId] = Chat_GlobalBadges[0].replace(/\%x/g, channelId);
+            Chat_GlobalBadges[channelId] = Chat_GlobalBadges[0].replace(/\%x/g, Chat_CssId(channelId));
         }
 
         Chat_tagCSS(Chat_GlobalBadges[channelId], Chat_div[chat_number]);
@@ -246,7 +251,7 @@ function Chat_loadBadgesGlobalSuccess(obj, id, chat_number, channelId) {
     Chat_GlobalBadges_Bits_Subs = {};
     Chat_GlobalBadges[0] = Chat_loadBadgesTransform(obj, '%x', false, chat_number);
 
-    Chat_GlobalBadges[channelId] = Chat_GlobalBadges[0].replace(/\%x/g, channelId);
+    Chat_GlobalBadges[channelId] = Chat_GlobalBadges[0].replace(/\%x/g, Chat_CssId(channelId));
 
     Chat_tagCSS(Chat_GlobalBadges[channelId], Chat_div[chat_number]);
 
@@ -338,6 +343,11 @@ function Chat_GetVersionsIdsObj(versions) {
 function Chat_BaseTagCSS(type, version, url) {
     //a prevent class starting with numbers
     return Chat_BaseTagId(type, version) + url;
+}
+
+//Channel id inside a css class selector: the ':' of a Kick chat id (kick:<slug>, linked Twitch lines) must be escaped
+function Chat_CssId(channelId) {
+    return String(channelId).replace(/:/g, '\\:');
 }
 
 function Chat_BaseTagId(type, version) {

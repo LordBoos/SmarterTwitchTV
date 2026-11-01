@@ -453,7 +453,8 @@ function OSInterface_setAppToken() {
 //Sets the user id used by the notification services
 function OSInterface_UpdateUserId(user) {
     if (Main_IsOn_OSInterface)
-        if (user) {
+        //A Kick only user has no Twitch account: no Twitch notifications or channels, as without a user
+        if (user && !KickUser_IsKickOnly(user)) {
             Android.UpdateUserId(user.id, user.name ? encodeURIComponent(user.name) : user.name, Bearer + AddUser_UsernameArray[0].access_token);
         } else {
             Android.UpdateUserId(null, null, null);
@@ -632,6 +633,18 @@ function OSInterface_getcodecCapabilities(CodecType) {
 //Returns the codecCapabilities for that codec type
 function OSInterface_setBlackListMediaCodec(CodecList) {
     Android.setBlackListMediaCodec(CodecList);
+}
+
+//public boolean SetHybridDecoders(int hwMax, int capHeight)
+//hwMax = hardware decoder instances, 0 turns the hybrid 4-way multistream off
+//capHeight = max video height of the software decoded multistream players
+//Android specific: true, APKs before it throw here and get false
+function OSInterface_SetHybridDecoders(hwMax, capHeight) {
+    try {
+        return Main_IsOn_OSInterface && Android.SetHybridDecoders(hwMax, capHeight) === true;
+    } catch (e) {
+        return false;
+    }
 }
 
 //public void setBlackListMediaCodec(String qualitiesList)

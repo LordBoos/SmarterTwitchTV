@@ -92,6 +92,7 @@ function makeSandbox() {
         Play_StopStay: () => {},
         Play_HideEndDialog: () => {},
         Main_openStream: () => openStreamCount++,
+        KickApi_IsKickId: id => /^kick:/.test(String(id)),
         ScreensObj_LiveCellArray: cell => ['thumb', cell.user_name, cell.title, cell.game_name, '', '', cell.user_login, 'bcid-new', false, null, null, '', '', 0, cell.user_id, 'en', null, null, null],
         BaseXmlHttpGet: (url, success, error, key, checkResult) => http.push({url, success, error, checkResult, kind: 'get'}),
         FullxmlHttpGet: (url, headers, success, error, key, checkResult, method, body) =>
@@ -147,6 +148,14 @@ function raidEvent(from, toLogin, toName) {
     checkEqual(body.condition.from_broadcaster_user_id, '111', 'subscribes to raids from the watched channel');
     checkEqual(body.transport.session_id, 'sess-1', 'subscribe carries the welcome session id');
     check(sub.headers.some(h => h[0] === 'Authorization' && h[1] === 'Bearer user-token'), 'subscribe uses the user token');
+}
+
+//1b. A Kick channel never subscribes to Twitch EventSub
+{
+    const s = makeSandbox();
+    loadModule(s);
+    s.PlayRaid_SetChannel('kick:xqc');
+    checkEqual(s._sockets.length, 0, 'kick channel never subscribes');
 }
 
 //2. Subscribe success stores the subscription id scoped to the current channel

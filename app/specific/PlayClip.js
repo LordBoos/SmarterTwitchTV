@@ -44,6 +44,10 @@ var PlayClip_postMessage =
 var PlayClip_ExtraClipInfo =
     '{"query":"{clip(slug:\\"%x\\"){game{displayName},videoOffsetSeconds,broadcaster{roles{isPartner},displayName,profileImageURL(width: 300)}}}"}';
 
+function PlayClip_IsKick() {
+    return !!Main_values_Play_data && Main_values_Play_data[19] === 'kick';
+}
+
 function PlayClip_Start() {
     //Main_Log('PlayClip_Start');
 
@@ -65,7 +69,7 @@ function PlayClip_Start() {
     Play_LoadLogo(Main_getElementById('stream_info_icon'), IMG_404_BANNER);
     Main_innerHTML('stream_info_name', Play_partnerIcon(Main_values.Main_selectedChannelDisplayname, false, 2, ChannelClip_language));
 
-    PlayClip_loadVodOffsett();
+    if (!PlayClip_IsKick()) PlayClip_loadVodOffsett();
 
     Main_innerHTML('stream_info_title', ChannelClip_title);
 
@@ -274,6 +278,12 @@ var PlayClip_loadDataRequestId;
 function PlayClip_loadDataRequest() {
     PlayClip_loadDataRequestId = new Date().getTime();
 
+    if (PlayClip_IsKick()) {
+        //A Kick clip is an HLS media playlist (relative segments), fetch the text and let the player resolve them against the url
+        FullxmlHttpGet(ChannelClip_playUrl, null, PlayClip_KickResult, noop_fun, 0, PlayClip_loadDataRequestId, null, null);
+        return;
+    }
+
     FullxmlHttpGet(
         PlayClip_BaseUrl,
         Play_base_backup_headers_Array,
@@ -295,6 +305,19 @@ function PlayClip_loadDataResult(responseObj, key, id) {
                 PlayClip_QualityStart(tempArray);
                 return;
             }
+        }
+
+        PlayClip_loadDataError();
+    }
+}
+
+var PlayClip_KickPlaylist = '';
+function PlayClip_KickResult(responseObj, key, id) {
+    if (PlayClip_isOn && PlayClip_loadDataRequestId === id) {
+        if (responseObj.status === 200 && responseObj.responseText && responseObj.responseText.indexOf('#EXTM3U') === 0) {
+            PlayClip_KickPlaylist = responseObj.responseText;
+            PlayClip_QualityStart([{id: 'Auto | hls', url: ChannelClip_playUrl}]);
+            return;
         }
 
         PlayClip_loadDataError();
@@ -417,7 +440,9 @@ function PlayClip_onPlayer() {
     //Main_Log('PlayClip_onPlayer ' + PlayClip_playingUrl);
 
     if (Main_IsOn_OSInterface && PlayClip_isOn) {
-        OSInterface_StartAuto(PlayClip_playingUrl, '', 3, PlayClip_replayOrNext ? -1 : OSInterface_gettime(), 0);
+        if (PlayClip_IsKick()) {
+            OSInterface_StartAuto(PlayClip_playingUrl, PlayClip_KickPlaylist, 2, PlayClip_replayOrNext ? -1 : OSInterface_gettime(), 0);
+        } else OSInterface_StartAuto(PlayClip_playingUrl, '', 3, PlayClip_replayOrNext ? -1 : OSInterface_gettime(), 0);
     } else {
         BrowserTestStartClip(PlayClip_playingUrl);
     }

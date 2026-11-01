@@ -55,7 +55,7 @@ function ChannelContent_init() {
         ChannelContent_RestoreChannelValue();
     }
 
-    if (ChannelContent_lastselectedChannel !== Main_values.Main_selectedChannel) {
+    if (ChannelContent_lastselectedChannel !== Main_values.Main_selectedChannel_id) {
         ChannelContent_status = false;
     }
 
@@ -105,7 +105,7 @@ function ChannelContent_StartLoad() {
     ChannelContent_offline_image = null;
     Main_showLoadDialog();
     Main_HideWarningDialog();
-    ChannelContent_lastselectedChannel = Main_values.Main_selectedChannel;
+    ChannelContent_lastselectedChannel = Main_values.Main_selectedChannel_id;
     ChannelContent_status = false;
     ChannelContent_isoffline = false;
     ChannelContent_itemsCountOffset = 0;
@@ -125,7 +125,67 @@ function ChannelContent_StartLoad() {
     ChannelContent_loadDataRequest();
 }
 
+var ChannelContent_KickSeq = 0;
+
+// Kick channel: one public request gives the live card, the logo, banner, followers and bio
+function ChannelContent_KickRequest() {
+    var slug = KickApi_SafeSlug(KickApi_Slug(Main_values.Main_selectedChannel_id));
+
+    if (!slug) {
+        ChannelContent_responseText = null;
+        ChannelContent_GetStreamerInfoError();
+        return;
+    }
+
+    FullxmlHttpGet(
+        KickApi_Base + 'v2/channels/' + slug,
+        KickApi_Headers(''),
+        ChannelContent_KickResult,
+        noop_fun,
+        0,
+        ++ChannelContent_KickSeq,
+        null, //Method, null for get
+        null
+    );
+}
+
+function ChannelContent_KickResult(obj, key, seq) {
+    if (Number(seq) !== ChannelContent_KickSeq) return;
+
+    var json = null;
+
+    try {
+        if (obj.status === 200) json = JSON.parse(obj.responseText);
+    } catch (e) {}
+
+    if (!json || !json.user) {
+        // Silent failure: the page shows as an offline channel without details
+        ChannelContent_responseText = null;
+        ChannelContent_GetStreamerInfoError();
+        return;
+    }
+
+    var cell = KickApi_ChannelLiveCell(json);
+
+    ChannelContent_profile_banner = KickApi_Img(json.banner_image && json.banner_image.url) || IMG_404_BANNER;
+    ChannelContent_offline_image = KickApi_Img(json.offline_banner_image && json.offline_banner_image.src) || null;
+    ChannelContent_selectedChannelViews = '';
+    // Number: the count reaches innerHTML, a string payload must not
+    ChannelContent_selectedChannelFollower = Number(json.followers_count) || '';
+    ChannelContent_description = Screens_AriaEscape((json.user && json.user.bio) || '');
+    Main_values.Main_selectedChannelLogo = KickApi_Img(json.user.profile_pic) || IMG_404_LOGO;
+    Main_values.Main_selectedChannelPartner = false;
+    ChannelContent_responseText = cell ? [{kickCell: cell, is_mature: !!json.livestream.is_mature}] : null;
+
+    ChannelContent_loadDataSuccess();
+}
+
 function ChannelContent_loadDataRequest() {
+    if (KickApi_IsKickId(Main_values.Main_selectedChannel_id)) {
+        ChannelContent_KickRequest();
+        return;
+    }
+
     var theUrl =
         Main_helix_api + 'streams?user_id=' + (ChannelContent_TargetId !== undefined ? ChannelContent_TargetId : Main_values.Main_selectedChannel_id);
 
@@ -209,6 +269,11 @@ function ChannelContent_GetStreamerInfoError() {
     ChannelContent_loadDataSuccess();
 }
 
+// A Kick channel is followed with the Kick account, a Twitch channel with the Twitch user
+function ChannelContent_canFollow(id) {
+    return KickApi_IsKickId(id) ? !!KickUser_Token() : AddUser_UserIsSet();
+}
+
 function ChannelContent_setFollow() {
     if (AddCode_IsFollowing) {
         Main_innerHTML(
@@ -221,7 +286,7 @@ function ChannelContent_setFollow() {
             '<i class="icon-heart-o" style="color: #FFFFFF; font-size: 100%; "></i>' +
                 STR_SPACE_HTML +
                 STR_SPACE_HTML +
-                (AddUser_UserIsSet() ? STR_FOLLOW : STR_NOKEY)
+                (ChannelContent_canFollow(Main_values.Main_selectedChannel_id) ? STR_FOLLOW : STR_NOKEY)
         );
     }
 }
@@ -280,7 +345,7 @@ function ChannelContent_loadDataSuccess() {
             stream.user_name = stream.user_name + STR_USER_HOSTED_BY + Main_values.Main_selectedChannelDisplayname;
         }
 
-        ChannelContent_createCell(ScreensObj_LiveCellArray(stream));
+        ChannelContent_createCell(stream.kickCell || ScreensObj_LiveCellArray(stream));
 
         ChannelContent_cursorX = 1;
     } else ChannelContent_createCellOffline(allowMature);
@@ -340,8 +405,12 @@ function ChannelContent_createCell(valuesArray) {
 function ChannelContent_createCellOffline(allowMature) {
     ChannelContent_isoffline = true;
     ChannelContent_allowMature = allowMature;
+    // A Kick channel has no offline player or chat to open yet
     var offlineString =
-        '<div class="stream_info_live">' + STR_CH_IS_OFFLINE + '</div><div class="stream_info_live_title">' + STR_OPEN_CHAT + '</div>';
+        '<div class="stream_info_live">' +
+        STR_CH_IS_OFFLINE +
+        '</div>' +
+        (KickApi_IsKickId(Main_values.Main_selectedChannel_id) ? '' : '<div class="stream_info_live_title">' + STR_OPEN_CHAT + '</div>');
 
     Main_innerHTML(
         'channel_content_thumbdiv0_0',
@@ -375,7 +444,8 @@ function ChannelContent_loadDataSuccessFinish() {
 }
 
 function ChannelContent_checkUser() {
-    if (AddUser_UserIsSet()) {
+    // A Kick channel asks Kick (AddCode_CheckFollow), never Twitch
+    if (AddUser_UserIsSet() && ChannelContent_canFollow(Main_values.Main_selectedChannel_id)) {
         AddCode_Channel_id = Main_values.Main_selectedChannel_id;
         AddCode_PlayRequest = false;
         AddCode_CheckFollow();
@@ -432,7 +502,7 @@ function ChannelContent_keyEnter() {
                 Screens_init(Main_ChannelClip);
             });
         } else if (ChannelContent_cursorX === 2) {
-            if (AddUser_UserHasToken()) {
+            if (KickApi_IsKickId(Main_values.Main_selectedChannel_id) ? KickUser_Token() : AddUser_UserHasToken()) {
                 AddCode_PlayRequest = false;
                 AddCode_Channel_id = Main_values.Main_selectedChannel_id;
                 if (AddCode_IsFollowing) AddCode_UnFollow();
@@ -441,6 +511,9 @@ function ChannelContent_keyEnter() {
                 Main_showWarningDialog(STR_NOKEY_WARN, 2000);
             }
         }
+    } else if (ChannelContent_isoffline && KickApi_IsKickId(Main_values.Main_selectedChannel_id)) {
+        // Offline Kick channel: nothing to play, and the Twitch chat of the same login is not this channel
+        Main_showWarningDialog(STR_CH_IS_OFFLINE, 2000);
     } else {
         Main_removeEventListener('keydown', ChannelContent_handleKeyDown);
         Main_HideElement('channel_content_scroll');
@@ -705,7 +778,7 @@ function ChannelContent_LoadPreviewRun(obj) {
         return;
     }
 
-    PlayHLS_GetPlayListAsync(true, obj[6], null, Main_ChannelContent, ChannelContent_LoadPreviewResult);
+    PlayHLS_GetPlayListAsync(true, PlayHLS_Id(obj), null, Main_ChannelContent, ChannelContent_LoadPreviewResult);
 }
 
 function ChannelContent_LoadPreviewResult(StreamData, x) {

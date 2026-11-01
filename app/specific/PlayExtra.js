@@ -90,14 +90,14 @@ function PlayExtra_Resume(synchronous) {
 
         //On resume to avoid out of sync resumes we run PP synchronous
         if (synchronous) {
-            var StreamData = Play_getStreamData(PlayExtra_data.data[6]);
+            var StreamData = Play_getStreamData(PlayExtra_data.data);
 
             //Do not check host on async, as both player may have endede with will cause a out of sync error
             //causing the player to stop in a black state
             if (StreamData) PlayExtra_ResumeResultEnd(JSON.parse(StreamData), false);
             else PlayExtra_End(false, 0);
         } else {
-            PlayHLS_GetPlayListAsync(true, PlayExtra_data.data[6], PlayExtra_ResumeId, null, PlayExtra_ResumeResult);
+            PlayHLS_GetPlayListAsync(true, PlayHLS_Id(PlayExtra_data.data), PlayExtra_ResumeId, null, PlayExtra_ResumeResult);
         }
     }
 }
@@ -185,7 +185,11 @@ function PlayExtra_SwitchPlayerResStoreOld() {
     PlayExtra_data = JSON.parse(JSON.stringify(PlayExtra_data_old));
 }
 
+//Swaps main and PiP: the Java players and the JS data/chats are always swapped together here,
+//a JS only swap leaves the video of one stream behind the title and chat of the other
 function PlayExtra_SwitchPlayer() {
+    if (Main_IsOn_OSInterface) OSInterface_mSwitchPlayer();
+
     PlayExtra_SwitchPlayerStoreOld();
     Play_data = JSON.parse(JSON.stringify(PlayExtra_data));
 
@@ -244,7 +248,6 @@ function PlayExtra_End_success(doSwitch, fail_type, errorCode) {
     //Some player ended switch and warn
     if (doSwitch) {
         //Main player has end switch and close
-        OSInterface_mSwitchPlayer();
         PlayExtra_SwitchPlayer();
     }
 
@@ -449,6 +452,14 @@ function PlayExtra_loadDataFail(Reason) {
     }
 }
 
+var PlayExtra_updateStreamInfoKickId;
 function PlayExtra_updateStreamInfo() {
+    if (KickApi_IsKickRow(PlayExtra_data.data)) {
+        PlayExtra_updateStreamInfoKickId = new Date().getTime();
+
+        Play_KickInfoGet(PlayExtra_data.data[6], -2, PlayExtra_updateStreamInfoKickId);
+        return;
+    }
+
     Play_updateStreamInfoGet(Main_helix_api + 'streams?user_id=' + PlayExtra_data.data[14], 0);
 }

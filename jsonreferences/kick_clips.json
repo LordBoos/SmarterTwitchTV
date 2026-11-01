@@ -1,0 +1,200 @@
+{
+ "clips": [
+  {
+   "id": "clip_01M6A8BAZBMSP58QVGEH8JXV5V",
+   "livestream_id": "135345088",
+   "category_id": "8",
+   "channel_id": 668,
+   "user_id": 11261425,
+   "title": "LOL",
+   "clip_url": "https://clips.kick.com/clips/57/clip_01M6A8BAZBMSP58QVGEH8JXV5V/playlist.m3u8",
+   "thumbnail_url": "https://clips.kick.com/clips/57/clip_01M6A8BAZBMSP58QVGEH8JXV5V/thumbnail.webp",
+   "privacy": "public",
+   "likes": 0,
+   "liked": false,
+   "views": 0,
+   "duration": 180,
+   "started_at": "0001-01-01T00:00:00Z",
+   "created_at": "2026-11-01T00:32:37.323692Z",
+   "vod_starts_at": 0,
+   "is_mature": true,
+   "video_url": "https://clips.kick.com/clips/57/clip_01M6A8BAZBMSP58QVGEH8JXV5V/playlist.m3u8",
+   "view_count": 0,
+   "likes_count": 0,
+   "category": {
+    "id": 8,
+    "name": "Grand Theft Auto V (GTA)",
+    "slug": "grand-theft-auto-v",
+    "parent_category": "games"
+   },
+   "creator": {
+    "id": 11261425,
+    "username": "AlmostSimpler",
+    "slug": "almostsimpler"
+   },
+   "channel": {
+    "id": 668,
+    "username": "xQc",
+    "slug": "xqc",
+    "profile_picture": "https://files.kick.com/images/user/676/profile_image/conversion/151f289a-5bff-4f31-b125-0c54c542519e-thumb.webp"
+   }
+  },
+  {
+   "id": "clip_01M6A7PF18W8N4EHYDS8WV3RRA",
+   "livestream_id": "135345088",
+   "category_id": "8",
+   "channel_id": 668,
+   "user_id": 97659717,
+   "title": "IT'S MY EX WIFE RUN",
+   "clip_url": "https://clips.kick.com/clips/9b/clip_01M6A7PF18W8N4EHYDS8WV3RRA/playlist.m3u8",
+   "thumbnail_url": "https://clips.kick.com/clips/9b/clip_01M6A7PF18W8N4EHYDS8WV3RRA/thumbnail.webp",
+   "privacy": "public",
+   "likes": 0,
+   "liked": false,
+   "views": 1,
+   "duration": 30,
+   "started_at": "0001-01-01T00:00:00Z",
+   "created_at": "2026-11-01T00:21:25.427961Z",
+   "vod_starts_at": 0,
+   "is_mature": true,
+   "video_url": "https://clips.kick.com/clips/9b/clip_01M6A7PF18W8N4EHYDS8WV3RRA/playlist.m3u8",
+   "view_count": 1,
+   "likes_count": 0,
+   "category": {
+    "id": 8,
+    "name": "Grand Theft Auto V (GTA)",
+    "slug": "grand-theft-auto-v",
+    "parent_category": "games"
+   },
+   "creator": {
+    "id": 97659717,
+    "username": "IsaacLOTA",
+    "slug": "isaaclota"
+   },
+   "channel": {
+    "id": 668,
+    "username": "xQc",
+    "slug": "xqc",
+    "profile_picture": "https://files.kick.com/images/user/676/profile_image/conversion/151f289a-5bff-4f31-b125-0c54c542519e-thumb.webp"
+   }
+  },
+  {
+   "id": "clip_01M6A6J231Y5A7WTCV0YP8K135",
+   "livestream_id": "135345088",
+   "category_id": "8",
+   "channel_id": 668,
+   "user_id": 7395723,
+   "title": "lmao",
+   "clip_url": "https://clips.kick.com/clips/d3/clip_01M6A6J231Y5A7WTCV0YP8K135/playlist.m3u8",
+   "thumbnail_url": "https://clips.kick.com/clips/d3/clip_01M6A6J231Y5A7WTCV0YP8K135/thumbnail.webp",
+   "privacy": "public",
+   "likes": 0,
+   "liked": false,
+   "views": 5,
+   "duration": 18,
+   "started_at": "0001-01-01T00:00:00Z",
+   "created_at": "2026-11-01T00:01:57.871617Z",
+   "vod_starts_at": 0,
+   "is_mature": true,
+   "video_url": "https://clips.kick.com/clips/d3/clip_01M6A6J231Y5A7WTCV0YP8K135/playlist.m3u8",
+   "view_count": 5,
+   "likes_count": 0,
+   "category": {
+    "id": 8,
+    "name": "Grand Theft Auto V (GTA)",
+    "slug": "grand-theft-auto-v",
+    "parent_category": "games"
+   },
+   "creator": {
+    "id": 7395723,
+    "username": "woodylfc",
+    "slug": "woodylfc"
+   },
+   "channel": {
+    "id": 668,
+    "username": "xQc",
+    "slug": "xqc",
+    "profile_picture": "https://files.kick.com/images/user/676/profile_image/conversion/151f289a-5bff-4f31-b125-0c54c542519e-thumb.webp"
+   }
+  },
+  {
+   "id": "clip_01M6A6HBEEG521KWKGXZED25JZ",
+   "livestream_id": "135345088",
+   "category_id": "8",
+   "channel_id": 668,
+   "user_id": 120471,
+   "title": "RPG",
+   "clip_url": "https://clips.kick.com/clips/e6/clip_01M6A6HBEEG521KWKGXZED25JZ/playlist.m3u8",
+   "thumbnail_url": "https://clips.kick.com/clips/e6/clip_01M6A6HBEEG521KWKGXZED25JZ/thumbnail.webp",
+   "privacy": "public",
+   "likes": 0,
+   "liked": false,
+   "views": 1,
+   "duration": 30,
+   "started_at": "0001-01-01T00:00:00Z",
+   "created_at": "2026-11-01T00:01:11.208519Z",
+   "vod_starts_at": 0,
+   "is_mature": true,
+   "video_url": "https://clips.kick.com/clips/e6/clip_01M6A6HBEEG521KWKGXZED25JZ/playlist.m3u8",
+   "view_count": 1,
+   "likes_count": 0,
+   "category": {
+    "id": 8,
+    "name": "Grand Theft Auto V (GTA)",
+    "slug": "grand-theft-auto-v",
+    "parent_category": "games"
+   },
+   "creator": {
+    "id": 120471,
+    "username": "coltonalex05",
+    "slug": "coltonalex05"
+   },
+   "channel": {
+    "id": 668,
+    "username": "xQc",
+    "slug": "xqc",
+    "profile_picture": "https://files.kick.com/images/user/676/profile_image/conversion/151f289a-5bff-4f31-b125-0c54c542519e-thumb.webp"
+   }
+  },
+  {
+   "id": "clip_01M6A6AT0MN25END6CDSZ9Z15R",
+   "livestream_id": "135345088",
+   "category_id": "8",
+   "channel_id": 668,
+   "user_id": 36049785,
+   "title": "Halloween with xqc",
+   "clip_url": "https://clips.kick.com/clips/ac/clip_01M6A6AT0MN25END6CDSZ9Z15R/playlist.m3u8",
+   "thumbnail_url": "https://clips.kick.com/clips/ac/clip_01M6A6AT0MN25END6CDSZ9Z15R/thumbnail.webp",
+   "privacy": "public",
+   "likes": 0,
+   "liked": false,
+   "views": 0,
+   "duration": 30,
+   "started_at": "0001-01-01T00:00:00Z",
+   "created_at": "2026-10-31T23:57:30.331151Z",
+   "vod_starts_at": 0,
+   "is_mature": true,
+   "video_url": "https://clips.kick.com/clips/ac/clip_01M6A6AT0MN25END6CDSZ9Z15R/playlist.m3u8",
+   "view_count": 0,
+   "likes_count": 0,
+   "category": {
+    "id": 8,
+    "name": "Grand Theft Auto V (GTA)",
+    "slug": "grand-theft-auto-v",
+    "parent_category": "games"
+   },
+   "creator": {
+    "id": 36049785,
+    "username": "NAP556",
+    "slug": "nap556"
+   },
+   "channel": {
+    "id": 668,
+    "username": "xQc",
+    "slug": "xqc",
+    "profile_picture": "https://files.kick.com/images/user/676/profile_image/conversion/151f289a-5bff-4f31-b125-0c54c542519e-thumb.webp"
+   }
+  }
+ ],
+ "nextCursor": "{\"view\":0,\"id\":\"clip_01M68S0A68059JVM6TYXQGX65Y\"}"
+}

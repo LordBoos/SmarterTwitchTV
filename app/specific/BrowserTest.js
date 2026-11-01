@@ -451,7 +451,10 @@ function BrowserTestFun() {
         if (Main_A_includes_B(id, 'main_dialog_user_first') && Users_RemoveCursor) {
             Users_RemoveCursor = 0;
             Users_UserCursorSet();
-        } else if (Main_A_includes_B(id, 'main_dialog_user_remove') && Users_RemoveCursor !== 2) {
+        } else if (Main_A_includes_B(id, 'main_dialog_user_remove') && Users_RemoveCursor !== 1) {
+            Users_RemoveCursor = 1;
+            Users_UserCursorSet();
+        } else if (Main_A_includes_B(id, 'main_dialog_user_kick') && Users_RemoveCursor !== 2) {
             Users_RemoveCursor = 2;
             Users_UserCursorSet();
         }

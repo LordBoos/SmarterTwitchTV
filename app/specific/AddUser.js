@@ -40,6 +40,7 @@ function AddUser_exit() {
     else Main_values.Main_Go = Main_values.Main_Before !== Main_Users ? Main_values.Main_Before : Main_Live;
 
     AddUser_RemoveinputFocus(false);
+    KickLogin_Hide();
     Main_removeEventListener('keydown', AddUser_handleKeyDown);
     Main_HideElement('add_user_scroll');
     Main_HideLoadDialog();
@@ -58,10 +59,19 @@ function AddUser_handleKeyBack() {
 function AddUser_handleKeyDown(event) {
     if (Main_values.Main_Go !== Main_addUser) return;
 
+    if (KickLogin_IsVisible()) {
+        KickLogin_HandleKeyDown(event);
+        return;
+    }
+
     switch (event.keyCode) {
         case KEY_KEYBOARD_BACKSPACE:
         case KEY_RETURN:
             AddUser_handleKeyBack();
+            break;
+        case KEY_ENTER:
+            //A held OK from the Users screen must not open the Kick sign in right away
+            if (!event.repeat) KickLogin_Show({link: -1});
             break;
         default:
             break;
@@ -106,7 +116,7 @@ function AddUser_getCodeSuccess(resultObj) {
 
         AddUser_DeviceCode = data.device_code;
 
-        Main_innerHTML('add_user_text', STR_ADD_USER_TEXT.replace('%site', urlDiv).replace('%code', codeDiv));
+        Main_innerHTML('add_user_text', STR_ADD_USER_TEXT.replace('%site', urlDiv).replace('%code', codeDiv) + STR_KICK_ADD_USER_HINT);
         Main_ShowElement('add_user_text_holder');
         Main_HideLoadDialog();
         AddUser_getCodeCheck(AddUser_DeviceCodeTimeout);
@@ -351,6 +361,9 @@ function AddUser_UpdateUserAllUsers() {
 }
 
 function AddUser_UpdateUser(position) {
+    //A Kick only user has no Twitch account to refresh
+    if (KickUser_IsKickOnly(AddUser_UsernameArray[position])) return;
+
     var theUrl = Main_helix_api + 'users?login=' + encodeURIComponent(AddUser_UsernameArray[position].name);
 
     BaseXmlHttpGet(theUrl, AddUser_UpdateUsersSuccess, noop_fun, position, null, true);
@@ -421,7 +434,9 @@ function AddUser_SaveNewUserRefreshTokens(position) {
     AddUser_UpdateSidePanel();
     OSInterface_UpdateUserId(AddUser_UsernameArray[position]);
     OSInterface_mCheckRefresh();
-    HttpGetSetUserHeader();
+    //A Kick only main user (after a token validation removal) keeps the anonymous headers, never an empty Twitch authorization
+    if (KickUser_IsKickOnly()) AddUser_SetUserHeaders();
+    else HttpGetSetUserHeader();
     if (Settings_notification_check_any_enable()) OSInterface_RunNotificationService();
 }
 
@@ -432,6 +447,8 @@ function AddUser_removeUser(position, skipInitUser) {
     if (index > -1) {
         AddUser_UsernameArrayRemoved[AddUser_UsernameArray[index].id] = JSON.parse(JSON.stringify(AddUser_UsernameArray[index]));
         AddUser_UsernameArrayRemoved[AddUser_UsernameArray[index].id].date = new Date().getTime();
+        //The removed list is stored and backed up but only its id and date are read: the Kick session never goes with it
+        delete AddUser_UsernameArrayRemoved[AddUser_UsernameArray[index].id].kick;
 
         Main_clearTimeout(AddUser_UsernameArray[position].timeout_id);
         AddUser_UsernameArray.splice(index, 1);
@@ -447,6 +464,7 @@ function AddUser_removeUser(position, skipInitUser) {
             AddUser_UpdateSidePanel();
 
             OSInterface_UpdateUserId(AddUser_UsernameArray[0]);
+            AddUser_SetUserHeaders();
         }
         Users_status = false;
         if (!skipInitUser) {
@@ -521,10 +539,21 @@ function AddUser_UserMakeOne(position, skipInit) {
     //Reset user emotes on change
     userEmote = {};
 
-    if (AddUser_UsernameArray[0].access_token) {
-        HttpGetSetUserHeader();
-    } else {
+    AddUser_SetUserHeaders();
+    if (!AddUser_UsernameArray[0].access_token && !KickUser_IsKickOnly()) {
         Main_showWarningDialog(STR_NO_TOKEN_WARNING, 5000);
+    }
+}
+
+//Twitch user headers follow the main user. A Kick only main user has no Twitch token: the anonymous headers of a start
+//without a user, so no Twitch token of an earlier main user stays in use (and no [1] lookup on an empty header list)
+function AddUser_SetUserHeaders() {
+    if (AddUser_UserHasToken()) {
+        HttpGetSetUserHeader();
+    } else if (KickUser_IsKickOnly()) {
+        Main_Bearer_User_Headers = [];
+        Main_OAuth_User_Headers = [];
+        Play_Headers = JSON.stringify([[clientIdHeader, Chat_token]]);
     }
 }
 

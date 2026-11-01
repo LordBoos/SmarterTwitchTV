@@ -1,0 +1,86 @@
+{
+ "data": [
+  {
+   "id": 8,
+   "is_mature": false,
+   "name": "Grand Theft Auto V (GTA)",
+   "slug": "grand-theft-auto-v",
+   "tags": [
+    "Shooter",
+    "Action",
+    "Open World"
+   ],
+   "thumbnail": {
+    "src": "https://files.kick.com/images/subcategories/8/banner/dfc3bcf9-6dd1-4f88-bdac-066f17b7d14d",
+    "srcset": "https://files.kick.com/images/subcategories/8/banner/responsives/dfc3bcf9-6dd1-4f88-bdac-066f17b7d14d___banner_600_600.webp 600w, https://files.kick.com/images/subcategories/8/banner/responsives/dfc3bcf9-6dd1-4f88-bdac-066f17b7d14d___banner_501_501.webp 501w, https://files.kick.com/images/subcategories/8/banner/responsives/dfc3bcf9-6dd1-4f88-bdac-066f17b7d14d___banner_420_420.webp 420w, https://files.kick.com/images/subcategories/8/banner/responsives/dfc3bcf9-6dd1-4f88-bdac-066f17b7d14d___banner_351_351.webp 351w, https://files.kick.com/images/subcategories/8/banner/responsives/dfc3bcf9-6dd1-4f88-bdac-066f17b7d14d___banner_294_294.webp 294w, https://files.kick.com/images/subcategories/8/banner/responsives/dfc3bcf9-6dd1-4f88-bdac-066f17b7d14d___banner_245_245.webp 245w"
+   },
+   "viewer_count": 69402
+  },
+  {
+   "id": 13155,
+   "is_mature": false,
+   "name": "Grand Theft Auto VI (GTA)",
+   "slug": "grand-theft-auto-vi",
+   "tags": [
+    "Shooter",
+    "Adventure",
+    "Open World"
+   ],
+   "thumbnail": {
+    "src": "https://files.kick.com/images/subcategories/13155/banner/96e48951-056a-41cc-8a3b-cbb7649cc074",
+    "srcset": "https://files.kick.com/images/subcategories/13155/banner/responsives/96e48951-056a-41cc-8a3b-cbb7649cc074___banner_285_285.webp 285w, https://files.kick.com/images/subcategories/13155/banner/responsives/96e48951-056a-41cc-8a3b-cbb7649cc074___banner_238_238.webp 238w"
+   },
+   "viewer_count": 1270
+  },
+  {
+   "id": 14915,
+   "is_mature": false,
+   "name": "GTR 2: FIA GT Racing Game",
+   "slug": "gtr-2-fia-gt-racing-game",
+   "tags": [
+    "Racing",
+    "Simulator",
+    "Sports Game",
+    "Non-fiction"
+   ],
+   "thumbnail": {
+    "src": "https://files.kick.com/images/subcategories/14915/banner/co86ce.jpg",
+    "srcset": "https://files.kick.com/images/subcategories/14915/banner/responsives/co86ce___banner_528_528.webp 528w, https://files.kick.com/images/subcategories/14915/banner/responsives/co86ce___banner_441_441.webp 441w, https://files.kick.com/images/subcategories/14915/banner/responsives/co86ce___banner_369_369.webp 369w, https://files.kick.com/images/subcategories/14915/banner/responsives/co86ce___banner_309_309.webp 309w, https://files.kick.com/images/subcategories/14915/banner/responsives/co86ce___banner_258_258.webp 258w"
+   },
+   "viewer_count": 0
+  },
+  {
+   "id": 13128,
+   "is_mature": false,
+   "name": "Dragon Ball GT: Transformation",
+   "slug": "dragon-ball-gt-transformation",
+   "tags": [
+    "Fantasy",
+    "Fighting",
+    "Action"
+   ],
+   "thumbnail": {
+    "src": "https://files.kick.com/images/subcategories/13128/banner/co408a.jpg",
+    "srcset": "https://files.kick.com/images/subcategories/13128/banner/responsives/co408a___banner_528_528.webp 528w, https://files.kick.com/images/subcategories/13128/banner/responsives/co408a___banner_441_441.webp 441w, https://files.kick.com/images/subcategories/13128/banner/responsives/co408a___banner_369_369.webp 369w, https://files.kick.com/images/subcategories/13128/banner/responsives/co408a___banner_309_309.webp 309w, https://files.kick.com/images/subcategories/13128/banner/responsives/co408a___banner_258_258.webp 258w, https://files.kick.com/images/subcategories/13128/banner/responsives/co408a___banner_216_216.webp 216w"
+   },
+   "viewer_count": 0
+  },
+  {
+   "id": 14859,
+   "is_mature": false,
+   "name": "GT Legends",
+   "slug": "gt-legends",
+   "tags": [
+    "Racing",
+    "Simulator",
+    "Sports Game"
+   ],
+   "thumbnail": {
+    "src": "https://files.kick.com/images/subcategories/14859/banner/co86cd.jpg",
+    "srcset": "https://files.kick.com/images/subcategories/14859/banner/responsives/co86cd___banner_528_528.webp 528w, https://files.kick.com/images/subcategories/14859/banner/responsives/co86cd___banner_441_441.webp 441w, https://files.kick.com/images/subcategories/14859/banner/responsives/co86cd___banner_369_369.webp 369w, https://files.kick.com/images/subcategories/14859/banner/responsives/co86cd___banner_309_309.webp 309w, https://files.kick.com/images/subcategories/14859/banner/responsives/co86cd___banner_258_258.webp 258w"
+   },
+   "viewer_count": 0
+  }
+ ],
+ "message": "success"
+}

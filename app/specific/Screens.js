@@ -446,6 +446,14 @@ function Screens_loadDataRequest(key) {
         ScreenObj[key].blocked_concatenate();
     } else if (ScreenObj[key].isHistory) {
         ScreenObj[key].history_concatenate();
+    } else if (ScreenObj[key].isKick && !ScreenObj[key].url) {
+        // No safe Kick url (invalid category slug): nothing is sent, the failure is silent
+        Screens_loadDataFail(key);
+    } else if (ScreenObj[key].isKick) {
+        // Public Kick screen: kick.com headers only, never a Twitch token
+        var kickTicket = {account: Navigation_Account(), id: ++Navigation_RequestSerial, kick: true};
+        ScreenObj[key].navigationRequest = kickTicket;
+        FullxmlHttpGet(ScreenObj[key].url, KickApi_Headers(''), Screens_HttpResultStatus, noop_fun, key, kickTicket.id, null, null);
     } else {
         var HeadersArray = AddUser_UserHasToken() ? Main_Bearer_User_Headers : Main_Bearer_Headers;
         var Method = null;
@@ -461,6 +469,19 @@ function Screens_loadDataRequest(key) {
 
         var ticket = {account: Navigation_Account(), id: ++Navigation_RequestSerial};
         ScreenObj[key].navigationRequest = ticket;
+
+        //A Kick only main user has no Twitch token: no Twitch request, the screen continues with its empty Twitch page
+        if (ScreenObj[key].kickOnlyResponse && KickUser_IsKickOnly()) {
+            Screens_HttpResultStatus({status: 200, responseText: ScreenObj[key].kickOnlyResponse}, key, ticket.id);
+            return;
+        }
+
+        //Kick has nothing for this screen (video search): with the platform switch on Kick no Twitch request is sent
+        if (ScreenObj[key].kickBrowseResponse && KickBrowse_On()) {
+            Screens_HttpResultStatus({status: 200, responseText: ScreenObj[key].kickBrowseResponse}, key, ticket.id);
+            return;
+        }
+
         FullxmlHttpGet(
             ScreenObj[key].url + (ScreenObj[key].useHelix || ScreenObj[key].isQuery ? '' : Main_TwitchV5Flag),
             HeadersArray,
@@ -478,6 +499,12 @@ function Screens_HttpResultStatus(resultObj, key, requestId) {
     // Native dispatch round-trips a named callback and checkResult, not a JavaScript closure.
     var request = ScreenObj[key].navigationRequest;
     if (!request || request.id !== Number(requestId) || request.account !== Navigation_Account()) return;
+    // Kick failure (WAF block, 401/403, 5xx) is silent and never touches the Twitch tokens
+    if (request.kick && resultObj.status !== 200) {
+        ScreenObj[key].navigationLoadState = 'error';
+        Screens_loadDataFail(key);
+        return;
+    }
     // A 401/403 on an account-scoped screen means the login needs reconnecting; on a public
     // screen it is a denial (rate limit or otherwise), not evidence of an expired token.
     if ((resultObj.status === 401 || resultObj.status === 403) && (ScreenObj[key].IsUser || ScreenObj[key].isHistory)) ScreenObj[key].navigationLoadState = 'auth';
@@ -789,6 +816,7 @@ function Screens_createCellChannel(id, idArray, valuesArray, key) {
         id +
         '" class="stream_info_channel_name">' +
         (valuesArray[5] ? '<i class="icon-circle channel_live_icon strokedeline" style="color: red;"></i>' : '') +
+        KickApi_CardIcon(valuesArray) +
         valuesArray[3] +
         (valuesArray[4]
             ? STR_SPACE_HTML +
@@ -868,6 +896,7 @@ function Screens_createCellClip(id, idArray, valuesArray, key, Extra_when, Extra
         idArray[2] +
         id +
         '" class="stream_info_live_name" style="width: 61%; display: inline-block;">' +
+        KickApi_CardIcon(valuesArray) +
         valuesArray[4] +
         '</div><div class="stream_info_live" style="width:38%; float: right; text-align: right; display: inline-block;">' +
         '<span id="' +
@@ -945,6 +974,7 @@ function Screens_createCellVod(id, idArray, valuesArray, key, Extra_when, Extra_
         idArray[2] +
         id +
         '" class="stream_info_live_name" style="width: 46%; display: inline-block;">' +
+        KickApi_CardIcon(valuesArray) +
         valuesArray[1] +
         '</div><div class="stream_info_live" style="width:53%; float: right; text-align: right; display: inline-block;">' +
         '<span id="' +
@@ -1033,6 +1063,7 @@ function Screens_createCellLive(id, idArray, valuesArray, key, Extra_when, Extra
         (Extra_vodimg || force_VOD
             ? '<div class="vodicon_text ' + (force_VOD ? '' : 'hideimp') + '" style="background: #00a94b;">&nbsp;&nbsp;VOD&nbsp;&nbsp;</div>&nbsp;'
             : '<div style="display: none;"></div>') + //empty div to prevent error when childNodes[2].classList.remove
+        KickApi_CardIcon(valuesArray) +
         valuesArray[1] +
         '</div><div class="stream_info_live" style="width:' +
         (ishosting ? 0 : 33) +
@@ -1507,13 +1538,13 @@ function Screens_LoadPreviewStart(key, obj) {
                     token = Play_vod_token;
                     link = Play_vod_links;
                 } else {
-                    id = obj[6];
+                    id = PlayHLS_Id(obj);
                 }
             } else {
-                id = obj[6];
+                id = PlayHLS_Id(obj);
             }
         } else {
-            id = obj[6];
+            id = PlayHLS_Id(obj);
         }
     }
 
@@ -3216,6 +3247,10 @@ function Screens_histhandleKeyDown(key, event) {
 var Screens_ThumbOptionPosY = 0;
 
 function Screens_ThumbOptionStart(key, click) {
+    // The platform switch row of Live, Games and their search results has no card options
+    if (ScreenObj[key].posY === -1 && (key === Main_Live || key === Main_games || key === Main_SearchLive || key === Main_SearchGames || key === Main_SearchChannels))
+        return;
+
     var obj_id = ScreenObj[key].posY + '_' + ScreenObj[key].posX;
 
     Screens_ThumbOptionSpecial = ScreenObj[key].histPosXName ? false : true;
@@ -3315,8 +3350,9 @@ function Screens_ThumbOptionStringSet(key) {
     //Screens_ThumbOption_Follow_ID = 0;
 
     if (AddUser_UserIsSet() && Screens_values_Play_data && Screens_values_Play_data.length) {
-        Screens_ThumbOption_CheckFollow(Screens_values_Play_data, key);
+        //The label first: a Kick card without a usable Kick account sets its own label synchronously
         Main_textContent(Screens_ThumbFollowCheckName, STR_CHECK_FOLLOW);
+        Screens_ThumbOption_CheckFollow(Screens_values_Play_data, key);
     } else {
         Main_textContent(Screens_ThumbFollowCheckName, STR_NOKEY + STR_CANT_FOLLOW);
     }
@@ -3431,6 +3467,20 @@ function Screens_ThumbOption_CheckFollow(data, key) {
 }
 
 function Screens_ThumbOption_RequestCheckFollow(channel_id, ID, key) {
+    if (KickApi_IsKickId(channel_id)) {
+        // The Kick follow state, a Kick channel is never asked from Twitch
+        if (
+            !KickFollow_Check(KickApi_Slug(channel_id), function (state) {
+                if (Screens_ThumbOption_CheckFollow_ID === ID) Screens_ThumbOption_RequestCheckFollowEnd(key, state);
+            })
+        ) {
+            // No Kick token or an unsafe slug: the sign in label of the Twitch no user branch, not Not Following
+            Screens_canFollow = false;
+            Main_textContent(Screens_ThumbFollowCheckName, STR_NOKEY + STR_CANT_FOLLOW);
+        }
+        return;
+    }
+
     var theUrl = Main_helix_api + 'channels/followed?user_id=' + AddUser_UsernameArray[0].id + '&broadcaster_id=' + channel_id;
 
     BaseXmlHttpGet(theUrl, Screens_ThumbOption_RequestCheckFollowSuccess, Screens_ThumbOption_RequestCheckFollowFail, key, ID, true);
@@ -3762,7 +3812,9 @@ function Screens_BlockUpdateAllIdsObj(isChannel) {
         return;
     }
 
-    var ids = Object.keys(Main_values_History_data[AddUser_UsernameArray[0].id].blocked[isChannel ? 'channel' : 'game']),
+    var ids = Object.keys(Main_values_History_data[AddUser_UsernameArray[0].id].blocked[isChannel ? 'channel' : 'game']).filter(function (id) {
+            return !KickApi_IsKickId(id);
+        }),
         i = 0,
         len = ids.length,
         chunkSize = 100,
@@ -3867,7 +3919,8 @@ function Screens_BlockGame(key) {
             Main_values_History_data[AddUser_UsernameArray[0].id].blocked.game[gameId].data[1] = gameName;
         }
 
-        Screens_BlockGameUpdateInfo(gameId);
+        // A Kick category is not a Twitch game, Helix must never see its id
+        if (!KickApi_IsKickId(gameId)) Screens_BlockGameUpdateInfo(gameId);
 
         Screens_BlockCheckDeleteGame(key);
 
@@ -4037,20 +4090,30 @@ function Screens_SetLangValue(position) {
 
 var Screens_ThumbOption_Follow_ID = 0;
 
+function Screens_FollowChannelId(key) {
+    if (ScreenObj[key].screenType === 4) return Screens_values_Play_data[1];
+
+    return ScreenObj[key].screenType < 2 ? Screens_values_Play_data[14] : Screens_values_Play_data[2];
+}
+
 function Screens_FollowUnfollow(key) {
-    if (Screens_canFollow && AddUser_UserHasToken()) {
+    // The data of the dialog exists only after the follow check
+    var channel_id = Screens_canFollow ? Screens_FollowChannelId(key) : '';
+
+    if (Screens_canFollow && KickApi_IsKickId(channel_id) && KickUser_Token()) {
+        var kickId = (Screens_ThumbOption_Follow_ID = new Date().getTime());
+
+        // A failed change (state null) leaves the dialog as it is
+        KickFollow_Set(KickApi_Slug(channel_id), !Screens_isFollowing, function (state) {
+            if (Screens_ThumbOption_Follow_ID === kickId && state !== null) Screens_FollowRequestEnd(key, state);
+        });
+    } else if (Screens_canFollow && !KickApi_IsKickId(channel_id) && AddUser_UserHasToken()) {
         var header = [
             [clientIdHeader, AddCode_backup_client_id],
             [Bearer_Header, Main_OAuth + AddUser_UsernameArray[0].access_token]
         ];
 
         Screens_ThumbOption_Follow_ID = new Date().getTime();
-
-        var channel_id = ScreenObj[key].screenType < 2 ? Screens_values_Play_data[14] : Screens_values_Play_data[2];
-
-        if (ScreenObj[key].screenType === 4) {
-            channel_id = Screens_values_Play_data[1];
-        }
 
         FullxmlHttpGet(
             PlayClip_BaseUrl,
@@ -4413,7 +4476,10 @@ function Screens_PlaybackTimeGetVodDuration(key) {
 var AGame_following = false;
 
 function AGame_follow(key) {
-    if (AddUser_UserIsSet()) {
+    // A Kick category has no Twitch follow
+    if (KickApi_IsKickId(Main_values.Main_gameSelected_id)) return;
+
+    if (AddUser_UserHasToken()) {
         Screens_FollowUnfollowGame();
     } else {
         Main_showWarningDialog(STR_NOKEY_WARN);
@@ -4425,7 +4491,9 @@ function AGame_follow(key) {
 }
 
 function AGame_CheckFollow() {
-    if (AddUser_UserIsSet()) {
+    if (KickApi_IsKickId(Main_values.Main_gameSelected_id)) return;
+
+    if (AddUser_UserHasToken()) {
         AGame_CheckFollowGame();
     } else {
         AGame_following = false;
@@ -4477,7 +4545,7 @@ function AGame_setFollow() {
             '<i class="icon-heart-o" style="color: #FFFFFF; font-size: 100%; "></i>' +
                 STR_SPACE_HTML +
                 STR_SPACE_HTML +
-                (AddUser_UserIsSet() ? STR_FOLLOW : STR_NOKEY)
+                (AddUser_UserHasToken() ? STR_FOLLOW : STR_NOKEY)
         );
     }
 }

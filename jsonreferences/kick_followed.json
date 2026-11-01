@@ -1,0 +1,60 @@
+{
+ "nextCursor": 5,
+ "channels": [
+  {
+   "is_live": true,
+   "profile_picture": "https://files.kick.com/images/user/1000001/profile_image/conversion/00000000-0000-4000-8000-000000000001-thumb.webp",
+   "channel_slug": "samplechannel1",
+   "viewer_count": 1234,
+   "show_view_count": true,
+   "category_name": "Just Chatting",
+   "user_username": "SampleChannel1",
+   "session_title": "Sample stream title",
+   "is_reserved": false
+  },
+  {
+   "is_live": false,
+   "profile_picture": "https://files.kick.com/images/user/1000002/profile_image/conversion/00000000-0000-4000-8000-000000000002-thumb.webp",
+   "channel_slug": "samplechannel2",
+   "viewer_count": 0,
+   "show_view_count": true,
+   "category_name": "",
+   "user_username": "SampleChannel2",
+   "session_title": null,
+   "is_reserved": false
+  },
+  {
+   "is_live": false,
+   "profile_picture": "https://files.kick.com/images/user/1000003/profile_image/conversion/00000000-0000-4000-8000-000000000003-thumb.webp",
+   "channel_slug": "samplechannel3",
+   "viewer_count": 0,
+   "show_view_count": true,
+   "category_name": "",
+   "user_username": "SampleChannel3",
+   "session_title": null,
+   "is_reserved": false
+  },
+  {
+   "is_live": false,
+   "profile_picture": "https://files.kick.com/images/user/1000004/profile_image/conversion/00000000-0000-4000-8000-000000000004-thumb.webp",
+   "channel_slug": "samplechannel4",
+   "viewer_count": 0,
+   "show_view_count": true,
+   "category_name": "",
+   "user_username": "SampleChannel4",
+   "session_title": null,
+   "is_reserved": false
+  },
+  {
+   "is_live": false,
+   "profile_picture": "https://files.kick.com/images/user/1000005/profile_image/conversion/00000000-0000-4000-8000-000000000005-thumb.webp",
+   "channel_slug": "samplechannel5",
+   "viewer_count": 0,
+   "show_view_count": true,
+   "category_name": "",
+   "user_username": "SampleChannel5",
+   "session_title": null,
+   "is_reserved": false
+  }
+ ]
+}

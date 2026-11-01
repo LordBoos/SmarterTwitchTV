@@ -798,6 +798,22 @@ function ChatLiveControls_CanSend() {
     ChatLiveControls_CanSendBool = true;
     var streamer = !ChatLiveControls_Channel ? Play_data.data[1] : PlayExtra_data.data[1];
 
+    //Kick chat: the Twitch room state, ban and follow state do not apply, it needs the Kick token and the chatroom
+    if (KickApi_IsKickId(ChatLive_selectedChannel_id[ChatLiveControls_Channel])) {
+        var kickState = ChatKick_State[ChatLiveControls_Channel];
+
+        if (KickUser_Token() && kickState && kickState.chatroom) {
+            ChatLiveControls_PreventInputClear();
+            return true;
+        }
+
+        ChatLiveControls_CanSendText = KickUser_Token() ? STR_CHAT_NOT_READY : STR_KICK_CHAT_NEEDS_USER;
+        ChatLiveControls_CanSendBool = false;
+        ChatLiveControls_PreventInput();
+
+        return false;
+    }
+
     if (ChatLive_Banned[ChatLiveControls_Channel]) {
         ChatLiveControls_CanSendText = STR_CHAT_BANNED + streamer;
         ChatLiveControls_CanSendBool = false;

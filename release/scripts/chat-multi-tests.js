@@ -5,7 +5,7 @@ const assert = require('assert');
 let checks = 0;
 function check(value, label) { assert.ok(value, label); checks++; }
 // Append later files (ChatMulti.js, ChatKick.js, ChatYouTube.js) here; missing ones are skipped.
-const FILES = ['ChatLink.js', 'ChatMulti.js', 'ChatKick.js', 'ChatYouTube.js', 'ChatLinkDialog.js'];
+const FILES = ['KickApi.js', 'ChatLink.js', 'ChatMulti.js', 'ChatKick.js', 'ChatYouTube.js', 'ChatLinkDialog.js'];
 function sandbox() {
     const store = {};
     const s = {
@@ -19,7 +19,7 @@ function sandbox() {
         const p = 'app/specific/' + f;
         if (fs.existsSync(p)) vm.runInContext(fs.readFileSync(p, 'utf8'), s, {filename: p});
     });
-    s.Chat_Id = [1, 0]; s.ChatLive_selectedChannel = ['', ''];
+    s.Chat_Id = [1, 0]; s.ChatLive_selectedChannel = ['', '']; s.ChatLive_selectedChannel_id = ['', ''];
     return {s, store};
 }
 const {s, store} = sandbox();
@@ -57,13 +57,38 @@ s.ChatLink_LookupResult({status: 200, responseText: '{"ok":true,"found":true,"st
 check(s.ChatLink_DirCache.robdiesalot.kickSlug === 'robdiesalot', '200 found cached');
 
 // cache hit resolves immediately, no request
-var requests = 0; s.FullxmlHttpGet = () => { requests++; };
+var requests = 0, lastLookup = ''; s.FullxmlHttpGet = u => { requests++; lastLookup = u; };
 var before = onLinksCalls;
 s.ChatLink_Lookup(0, 7);
 check(requests === 0 && onLinksCalls === before + 1, 'cache hit calls OnLinks without request');
 s.ChatLive_selectedChannel = ['other', '']; s.ChatLink_Lookup(0, 7);
-check(requests === 1, 'cache miss requests directory');
+check(requests === 1 && lastLookup === 'https://api.jouki.cz/streamers/lookup?platform=twitch&handle=other', 'cache miss requests directory, platform twitch for a twitch login');
 check(s.ChatLink_Current(0).kick === null, 'current resolves for channel without entry');
+
+// Kick channel as the main chat: links to Twitch and YouTube, keyed kick:<slug>
+check(s.ChatLink_NormalizeTwitch('https://www.twitch.tv/RobDiesALot') === 'robdiesalot' && s.ChatLink_NormalizeTwitch('a b') === null, 'twitch login');
+const kd = {twitchLogin: 'robdiesalot', youtubeChannelId: 'UCROnsopSryzM2WaxxeNICOA', kickSlug: 'robdiesalot'};
+let k = s.ChatLink_Resolve({enabled: true}, kd, 'kick');
+check(k.tw.value === 'robdiesalot' && k.tw.source === 'dir' && k.yt.value === 'UCROnsopSryzM2WaxxeNICOA' && k.kick === null, 'kick channel links twitch and youtube');
+check(s.ChatLink_Resolve({enabled: true, tw: ''}, kd, 'kick').tw === null, 'empty manual twitch disables it');
+check(s.ChatLink_Resolve({enabled: true, tw: 'twitch.tv/Other'}, kd, 'kick').tw.source === 'manual' && !s.ChatLink_Resolve({enabled: true, tw: 'x'}, null).tw, 'manual twitch only for a kick channel');
+check(s.ChatLink_Resolve({enabled: true}, kd).kick.value === 'robdiesalot', 'twitch channel resolution unchanged');
+s.ChatLive_selectedChannel = ['robdiesalot', '']; s.ChatLive_selectedChannel_id = ['kick:robdiesalot', ''];
+check(s.ChatLink_Key(0) === 'kick:robdiesalot', 'kick chat key');
+let url = ''; s.FullxmlHttpGet = u => { url = u; };
+s.ChatLink_Lookup(0, 7);
+check(url === 'https://api.jouki.cz/streamers/lookup?platform=kick&handle=robdiesalot', 'kick directory lookup');
+s.ChatLink_LookupResult({status: 200, responseText: JSON.stringify({ok: true, found: true, streamer: kd})}, 0, 7);
+check(s.ChatLink_DirCache['kick:robdiesalot'].twitchLogin === 'robdiesalot' && s.ChatLink_DirCache.robdiesalot.kickSlug === 'robdiesalot', 'kick directory answer cached under the kick key, twitch entry untouched');
+check(s.ChatLink_Current(0).tw.value === 'robdiesalot' && s.ChatLink_Current(0).kick === null, 'kick chat resolves the linked twitch login');
+Object.assign(s, {STR_CHAT_LINK_ENABLED: 'Link', STR_CHAT_LINK_RESET: 'Reset', STR_CLOSE: 'Close', STR_YES: 'Yes', STR_NO: 'No', STR_CHAT_LINK_TWITCH: 'Twitch'});
+check(s.ChatLinkDialog_Rows({enabled: true}, {tw: null, yt: null}, 'kick').map(r => r.kind).join() === 'tw,yt,enabled,close', 'dialog rows for kick');
+check(s.ChatLinkDialog_Rows({enabled: true, tw: ''}, {tw: null, yt: null}, 'kick').map(r => r.kind).join() === 'tw,yt,enabled,reset,close', 'kick dialog reset after a manual twitch value');
+check(s.ChatLinkDialog_Apply('kick:robdiesalot', 'tw', 'twitch.tv/RobDiesALot') && s.ChatLink_Get('kick:robdiesalot').tw === undefined, 'unchanged directory twitch login is not pinned');
+delete s.ChatLink_DirCache['kick:robdiesalot'];
+check(s.ChatLinkDialog_Apply('kick:robdiesalot', 'tw', 'twitch.tv/RobDiesALot') && s.ChatLink_Get('kick:robdiesalot').tw === 'robdiesalot', 'apply twitch link');
+check(!s.ChatLinkDialog_Apply('kick:robdiesalot', 'kick', 'abc') && !s.ChatLinkDialog_Apply('robdiesalot', 'tw', 'abc'), 'no kick link on a kick channel, no twitch link on a twitch channel');
+s.ChatLive_selectedChannel = ['other', '']; s.ChatLive_selectedChannel_id = ['', ''];
 
 // FullxmlHttpGet: omitted Method/postMessage must reach the native bridge as null, not undefined
 {
@@ -71,7 +96,7 @@ check(s.ChatLink_Current(0).kick === null, 'current resolves for channel without
     const start = src.indexOf('function FullxmlHttpGet(');
     const body = src.slice(start, src.indexOf('function Main_CheckFullxmlHttpGet'));
     let args = null;
-    const x = {Main_IsOn_OSInterface: true, DefaultHttpGetTimeout: 1, OSInterface_BaseXmlHttpGet: function () { args = Array.prototype.slice.call(arguments); }};
+    const x = {Main_IsOn_OSInterface: true, DefaultHttpGetTimeout: 1, Main_KickHelixBlocked: () => false, OSInterface_BaseXmlHttpGet: function () { args = Array.prototype.slice.call(arguments); }};
     vm.createContext(x); vm.runInContext(body, x);
     function cb() {}
     x.FullxmlHttpGet('u', null, cb, cb, 0, 1);
@@ -109,8 +134,8 @@ function coreSandbox() {
     const screens = fs.readFileSync('app/specific/Screens.js', 'utf8');
     const esc = screens.indexOf('function Screens_AriaEscape(');
     vm.runInContext(screens.slice(esc, screens.indexOf('\n}', esc) + 2), s);
-    ['thirdparty/punycode.js', 'thirdparty/twemoji.js', 'thirdparty/kapchat.js', 'specific/ChatVod.js', 'specific/ChatLive.js', 'specific/ChatLink.js']
-        .concat(FILES.slice(1).map(f => 'specific/' + f))
+    ['thirdparty/punycode.js', 'thirdparty/twemoji.js', 'thirdparty/kapchat.js', 'specific/ChatVod.js', 'specific/ChatLive.js']
+        .concat(FILES.map(f => 'specific/' + f))
         .forEach(f => {
             const p = 'app/' + f;
             if (fs.existsSync(p)) vm.runInContext(fs.readFileSync(p, 'utf8'), s, {filename: p});
@@ -287,6 +312,158 @@ function coreSandbox() {
     s.Chat_div[0].kids[0].chatTs = 10;
     s.ChatLive_ElementAdd({chat_number: 0, message: 'm', addToStart: true, historyTs: 20, extraMessage: 'x'});
     check(s.Chat_div[0].kids.map(k => k.chatTs || 0).join() === '10,20,20,0', 'ElementAdd inserts history and its extra line by time');
+}
+
+// Kick stream: Kick main chat, linked Twitch (read-only IRC) and YouTube
+{
+    const s = coreSandbox();
+    const calls = [], lookups = [];
+    s.ChatKick_Stop = s.ChatYouTube_Stop = () => {};
+    s.ChatKick_Start = (n, seq, slug, h) => calls.push('kick:' + slug + ':' + h);
+    s.ChatYouTube_Start = (n, seq, target, h) => calls.push('yt:' + target + ':' + h);
+    const realLinked = s.ChatLive_StartLinkedTwitch;
+    s.ChatLive_StartLinkedTwitch = (n, id, login, h) => calls.push('tw:' + n + ':' + id + ':' + login + ':' + h);
+    s.FullxmlHttpGet = url => lookups.push(url);
+    s.ChatLive_selectedChannel = ['robdiesalot', '']; s.ChatLive_selectedChannel_id = ['kick:robdiesalot', ''];
+
+    s.Settings_value.chat_multi.defaultValue = 0;
+    s.ChatMulti_Start(0, 7, true);
+    check(calls.join() === 'kick:robdiesalot:true' && lookups.length === 0 && !s.Chat_div[0].classes.has('chat_linked'), 'kick main chat runs with merged chat off, no lookup');
+    check(s.Chat_div[0].classes.has('chat_kick_main'), 'kick main chat marked: its kick icons hide while unlinked');
+    calls.length = 0;
+    s.Settings_value.chat_multi.defaultValue = 1;
+    s.ChatMulti_Start(0, 7, true);
+    check(calls.length === 0 && lookups.join() === 'https://api.jouki.cz/streamers/lookup?platform=kick&handle=robdiesalot', 'merged chat on: directory lookup of the kick channel');
+    s.ChatLink_LookupResult({status: 200, responseText: JSON.stringify({ok: true, found: true, streamer: kd})}, 0, 7);
+    check(calls.join() === 'kick:robdiesalot:true,tw:0:7:robdiesalot:true,yt:UCROnsopSryzM2WaxxeNICOA:true' && s.Chat_div[0].classes.has('chat_linked'), 'kick main chat with linked twitch and youtube');
+    check(s.Chat_div[0].classes.has('chat_kick_main'), 'linked kick main chat keeps its mark (icons visible through chat_linked)');
+    // Twitch channel unchanged: Kick only from a link, never a linked Twitch
+    calls.length = 0;
+    s.ChatLive_selectedChannel_id = ['160028137', ''];
+    s.ChatLink_DirCache.robdiesalot = kd;
+    s.ChatMulti_Start(0, 7, true);
+    check(calls.join() === 'kick:robdiesalot:true,yt:UCROnsopSryzM2WaxxeNICOA:true', 'twitch channel: kick and youtube from links only');
+    check(!s.Chat_div[0].classes.has('chat_kick_main') && s.Chat_div[0].classes.has('chat_linked'), 'twitch main chat: foreign kick lines keep their icon');
+    const indexHtml = fs.readFileSync('app/index.html', 'utf8');
+    check(/\.chat_kick_main \.chat_pi_kick \{\s*display: none;/.test(indexHtml) && /\.chat_kick_main\.chat_linked \.chat_pi_kick \{\s*display: inline-block;/.test(indexHtml), 'css: kick icon of a kick main chat only while linked');
+    s.Settings_value.chat_multi.defaultValue = 0;
+    calls.length = 0;
+    s.ChatMulti_Start(0, 7, true);
+    check(calls.length === 0, 'twitch channel with merged chat off starts nothing');
+    s.Settings_value.chat_multi.defaultValue = 1;
+
+    // ChatLive_StartLinkedTwitch: anonymous IRC of the linked login, never the Kick slug
+    const sockets = [], preloads = [];
+    s.WebSocket = function (u) { this.sent = []; this.readyState = 1; sockets.push(this); };
+    s.WebSocket.prototype.send = function (d) { this.sent.push(d); };
+    s.WebSocket.prototype.close = function () { this.readyState = 3; };
+    s.BaseXmlHttpGet = url => preloads.push(url);
+    s.ChatLive_StartLinkedTwitch = realLinked;
+    s.ChatLive_selectedChannel = ['kickname', '']; s.ChatLive_selectedChannel_id = ['kick:kickname', ''];
+    s.ChatLive_Logging = 1; s.ChatLive_Banned = [false, false];
+    s.AddUser_IsUserSet = () => true; s.AddUser_UsernameArray = [{name: 'me', access_token: 'secret'}];
+    s.ChatLive_StartLinkedTwitch(0, 6, 'twname', true);
+    s.ChatLive_StartLinkedTwitch(0, 7, 'a b', true);
+    check(sockets.length === 0 && preloads.length === 0 && !s.ChatLive_IrcChannel[0], 'stale or invalid linked twitch ignored');
+    s.ChatLive_StartLinkedTwitch(0, 7, 'twname', true);
+    sockets[0].onopen();
+    check(s.ChatLive_IrcChannel[0] === 'twname' && s.useToken[0] === false && sockets[0].sent.join('|').indexOf('JOIN #twname') !== -1 &&
+        sockets[0].sent.join('|').indexOf('NICK justinfan') !== -1 && sockets[0].sent.join('|').indexOf('secret') === -1, 'linked twitch joins anonymously');
+    check(preloads.length === 1 && preloads[0].indexOf('/recent-messages/twname?') !== -1, 'linked twitch history from its own channel');
+    s.ChatLive_loadChat(0, 7, true);
+    sockets[1].onopen();
+    check(s.useToken[0] === false && sockets[1].sent.join('|').indexOf('JOIN #twname') !== -1 && sockets[1].sent.join('|').indexOf('secret') === -1, 'reconnect stays anonymous on the linked login');
+    s.ChatLive_Close(0);
+    check(sockets[1].sent.pop() === 'PART #twname', 'part from the linked login');
+    // a restart of the merged sources closes the linked IRC; no Twitch IRC ever joins the Kick slug
+    s.ChatLive_StartLinkedTwitch(0, 7, 'twname', false);
+    s.ChatMulti_Stop(0);
+    check(sockets[2].readyState === 3 && !s.ChatLive_IrcChannel[0], 'stop closes the linked twitch');
+    s.ChatLive_loadChat(0, 7, true);
+    check(sockets.length === 3, 'kick chat without a linked login opens no IRC');
+    // global Twitch badges of linked lines: the class id kick:<slug> is escaped in the css selector
+    let css = ''; s.Chat_tagCSS = c => { css = c; }; s.ChatLive_loadBadgesChannel = () => {};
+    s.Chat_GlobalBadges = {0: '.amoderator%x-1 { background-image: url("https://x/1"); }'};
+    s.Chat_loadBadgesGlobalRequestWithChannel(0, 7, 'kick:kickname');
+    check(css.indexOf('.amoderatorkick\\:kickname-1 {') === 0 && s.Chat_GlobalBadges['kick:kickname'] === css, 'badge css selector escapes the kick id');
+    s.Chat_loadBadgesGlobalRequestWithChannel(0, 7, '160028137');
+    check(css.indexOf('.amoderator160028137-1 {') === 0, 'twitch badge css unchanged');
+    // per channel sets (subscriber, bits) have no css on a kick chat: no empty badge slot; twitch chat keeps them
+    s.ChatLive_ShowBadges = 1; s.ChatLive_isShared = [false, false];
+    let badges = s.ChatLive_GetBadges({badges: 'subscriber/12,bits/100,moderator/1'}, 0);
+    check(badges === '<span class="amoderatorkick:kickname-1 tag"></span>', 'kick chat skips per channel twitch badges');
+    s.ChatLive_selectedChannel_id = ['160028137', ''];
+    badges = s.ChatLive_GetBadges({badges: 'subscriber/12,bits/100,moderator/1'}, 0);
+    check(badges.indexOf('asubscriber160028137-12') !== -1 && badges.indexOf('abits160028137-100') !== -1, 'twitch chat keeps per channel badges');
+    // a shared chat flag left over from a Twitch chat does not turn the badge source into a Twitch room on a kick chat
+    s.ChatLive_selectedChannel_id = ['kick:kickname', '']; s.ChatLive_isShared = [true, false];
+    badges = s.ChatLive_GetBadges({'source-room-id': '999', 'source-badges': 'subscriber/3,moderator/1'}, 0);
+    check(badges.indexOf('subscriber') === -1 && badges.indexOf('amoderator') !== -1, 'kick chat check uses the chat id, not a shared room');
+    s.ChatLive_isShared = [false, false];
+
+    // fix round: history of a previous link is dropped (Chat_Id does not change on a restart)
+    const rendered = [], added = [], timers = [];
+    let warns = 0;
+    s.window = s.window || {};
+    s.window.parseIRC = raw => JSON.parse(raw);
+    s.ChatLive_loadChatSuccess = m => rendered.push(m.params[1]);
+    s.ChatLive_LineAdd = m => added.push(m.message);
+    s.ChatLive_Warn = () => warns++;
+    s.Main_setInterval = () => 0;
+    const hist = JSON.stringify({messages: [JSON.stringify({command: 'PRIVMSG', params: ['#a', 'old']})]});
+    s.ChatLive_StartLinkedTwitch(0, 7, 'aaa', true);
+    s.ChatMulti_Stop(0); s.ChatLive_StartLinkedTwitch(0, 7, 'bbb', false);
+    s.ChatLive_PreLoadChatSuccess(hist, 0, 7);
+    s.ChatMulti_Stop(0); s.ChatLive_StartLinkedTwitch(0, 7, 'kickname', true);
+    s.ChatMulti_Stop(0);
+    s.ChatLive_PreLoadChatSuccess(hist, 0, 7);
+    check(rendered.length === 0, 'history of a previous linked login is dropped after relink or unlink');
+    s.ChatLive_StartLinkedTwitch(0, 7, 'bbb', true);
+    s.ChatLive_PreLoadChatSuccess(hist, 0, 7);
+    check(rendered.join() === 'old', 'history of the current linked login renders');
+    s.ChatMulti_Stop(0);
+
+    // fix round: a linked login that never joins retries silently with a growing delay, then the link is dropped
+    s.Main_setTimeout = (fn, d) => { timers.push({fn, d}); return timers.length; };
+    let first = sockets.length;
+    s.ChatLive_StartLinkedTwitch(0, 7, 'ghost', false);
+    const delays = [];
+    for (let i = 0; i < 30 && timers.length; i++) { const t = timers.shift(); delays.push(t.d); t.fn(); }
+    const retryDelays = delays.filter(d => d !== s.ChatLive_SetCheckTimout);
+    check(added.length === 0 && warns === 0, 'linked twitch timeouts add no lines to the kick chat');
+    check(sockets.length - first === 1 + s.ChatLive_LinkedMaxTries && timers.length === 0 && !s.ChatLive_IrcChannel[0] && sockets[sockets.length - 1].readyState === 3,
+        'linked twitch gives up after a few attempts and closes');
+    check(retryDelays.length === s.ChatLive_LinkedMaxTries && retryDelays.every((d, i) => !i || d > retryDelays[i - 1]), 'linked retries back off');
+    // a remote close is silent too, a JOIN resets the attempts
+    s.ChatLive_StartLinkedTwitch(0, 7, 'ghost2', false);
+    timers.length = 0;
+    sockets[sockets.length - 1].onclose({code: 1006});
+    check(added.length === 0 && timers.length === 1 && s.ChatLive_LinkedTries[0] === 1, 'linked remote close: silent retry');
+    timers.shift().fn();
+    sockets[sockets.length - 1].onmessage({data: JSON.stringify({command: 'JOIN', params: ['#ghost2']})});
+    check(s.ChatLive_loaded[0] && s.ChatLive_LinkedTries[0] === 0 && added.length === 0, 'linked join resets attempts, no connected line');
+    // a notice that the channel cannot be joined drops the link; other notices of a linked chat are not shown
+    sockets[sockets.length - 1].onmessage({data: JSON.stringify({command: 'NOTICE', tags: {'msg-id': 'host_on'}, params: ['#ghost2', 'Now hosting x.']})});
+    check(warns === 0 && s.ChatLive_IrcChannel[0] === 'ghost2', 'linked notice not shown, link kept');
+    sockets[sockets.length - 1].onmessage({data: JSON.stringify({command: 'NOTICE', tags: {'msg-id': 'msg_channel_suspended'}, params: ['#ghost2', 'This channel does not exist or has been suspended.']})});
+    check(!s.ChatLive_IrcChannel[0] && sockets[sockets.length - 1].readyState === 3 && warns === 0 && added.length === 0, 'suspended linked channel: closed and unlinked silently');
+    // the Twitch main chat keeps its timeout lines
+    s.ChatLive_selectedChannel = ['twmain', '']; s.ChatLive_selectedChannel_id = ['160028137', ''];
+    s.STR_LOADING_FAIL = 'Connecting timeout'; s.STR_LOADING_CHAT = 'Loading chat'; s.STR_SPACE_HTML = ' '; s.STR_LIVE = 'LIVE'; s.Play_data = {data: [0, 'Main']};
+    timers.length = 0; s.ChatLive_loaded[0] = false;
+    s.ChatLive_loadChatRequest(0, 7, true);
+    timers.shift().fn(); timers.shift().fn();
+    check(added.join('|').indexOf('Connecting timeout') !== -1, 'twitch main chat timeout still shown');
+    s.ChatLive_PreLoadChat(0, 7); s.ChatLive_PreLoadChatSuccess(hist, 0, 7);
+    check(rendered.length === 2, 'twitch main chat history renders');
+
+    // fix round: a kick chat never sends with the Twitch token to the Twitch channel of its slug
+    s.ChatLive_socketSendJoin = true; s.ChatLive_socketSend = new s.WebSocket();
+    s.KickChat_Send = () => false; // no chatroom of this fake Kick chat (sending itself is covered in kick-tests.js)
+    s.ChatLive_selectedChannel = ['kickname', '']; s.ChatLive_selectedChannel_id = ['kick:kickname', ''];
+    check(!s.ChatLive_SendMessage('hi', 0) && s.ChatLive_socketSend.sent.length === 0, 'kick chat: sending blocked');
+    s.ChatLive_selectedChannel_id = ['160028137', ''];
+    check(s.ChatLive_SendMessage('hi', 0) && s.ChatLive_socketSend.sent[0] === 'PRIVMSG #kickname :hi', 'twitch chat sends as before');
 }
 
 // Kick source (ChatKick.js) with fixtures from the device probe

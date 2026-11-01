@@ -86,4 +86,91 @@ for (const intent of [false, true])
 check(s.Navigation_Startup({explicitScreen: s.Main_Clip, hasAccount: true}).screen === s.Main_Clip, 'explicit screen remains authoritative');
 check(s.Navigation_Startup({hasAccount: true, hasToken: false}).screen === s.Main_UserLive, 'username-only account is still an account');
 check(s.Navigation_Startup({hasAccount: false}).screen === null, 'onboarding does not invoke account loader');
+
+/* Rail -> Left -> followed side panel -> Right -> rail -> Right: the keys go back to the screen on view, never to the
+ * screen that opened the side panel earlier (that stale handler later switched screens without hiding the visible one). */
+const fs = require('fs'),
+    vm = require('vm'),
+    UglifyJS = require('uglify-js');
+vm.runInContext(fs.readFileSync('app/general/TVKeyValue.js', 'utf8'), s);
+UglifyJS.parse(fs.readFileSync('app/specific/Sidepannel.js', 'utf8')).body.forEach(node => {
+    if (node instanceof UglifyJS.AST_Defun && /^Sidepannel_(Start|StartMain|userLiveKeyRight)$/.test(node.name.name))
+        vm.runInContext(node.print_to_string(), s);
+});
+const keydown = new Set(),
+    noop = () => {};
+s.Main_addEventListener = (type, fun) => type === 'keydown' && keydown.add(fun);
+s.Main_removeEventListener = (type, fun) => type === 'keydown' && keydown.delete(fun);
+s.Main_getElementById = () => ({contains: () => false});
+s.document = {activeElement: null, body: {}, querySelectorAll: () => []};
+['Main_AddClass', 'Main_RemoveClass', 'Main_AddClassWithEle', 'Screens_LoadPreviewSTop', 'Navigation_Render', 'Navigation_Focus'].forEach(
+    n => (s[n] = noop)
+);
+['Sidepannel_HideEle', 'Sidepannel_Hidecenefeed', 'Sidepannel_ShowNoUserWarning'].forEach(n => (s[n] = noop));
+s.Sidepannel_StartFeed = () => {
+    s.Sidepannel_IsMain = false;
+    s.s_feedOpen = true;
+    s.Main_addEventListener('keydown', s.Sidepannel_handleKeyDown);
+};
+s.Sidepannel_handleKeyDown = function Sidepannel_handleKeyDown() {};
+s.AddUser_UserHasToken = () => true;
+s.KickUser_IsKickOnly = () => false;
+s.Settings_isVisible = () => false;
+s.Navigation_Tabs = () => ['live', 'front page'];
+s.Sidepannel_ThumbDoc = {};
+const usersKeys = function Users_handleKeyDown() {},
+    browseKeys = function BrowseKeys() {};
+s.ScreenObj = {};
+s.ScreenObj[s.Main_Live] = {key_fun: browseKeys};
+s.Main_values = {Main_Go: s.Main_Live};
+s.Navigation_Onboarding = false;
+s.Sidepannel_Callback = usersKeys; // the Account screen opened the side panel before the user went to Browse
+s.Sidepannel_IsMain = true;
+s.Navigation_State.destination = 'browse';
+s.UIFocus_Clear();
+keydown.add(browseKeys);
+const key = code => s.Navigation_Handle({keyCode: code, preventDefault: noop, stopImmediatePropagation: noop}, false);
+s.Navigation_Open(browseKeys, 'tabs');
+key(s.KEY_LEFT); // tabs -> rail
+key(s.KEY_LEFT); // rail -> followed side panel
+check(s.s_feedOpen && keydown.has(s.Sidepannel_handleKeyDown), 'Left from the rail opens the followed side panel');
+s.Main_removeEventListener('keydown', s.Sidepannel_handleKeyDown);
+s.Sidepannel_userLiveKeyRight(); // side panel -> rail
+key(s.KEY_RIGHT); // rail closes
+check(keydown.has(browseKeys) && !keydown.has(usersKeys), 'closing the rail restores the keys of the screen on view, not a stale one');
+check(keydown.size === 1, 'exactly one key handler after the side panel round trip');
+s.UIFocus_Clear();
+
+/* Settings and the search form have no grid: returning to them (side panel Back, exit dialog cancel) must not open the
+ * grid of Main_Go behind them (it was drawn over Settings and took its keys). */
+UglifyJS.parse(fs.readFileSync('app/specific/Main.js', 'utf8')).body.forEach(node => {
+    if (node instanceof UglifyJS.AST_Defun && node.name.name === 'Main_SwitchScreen') vm.runInContext(node.print_to_string(), s);
+});
+const opened = [];
+['Main_HideWarningDialog', 'Main_SaveValues'].forEach(n => (s[n] = noop));
+s.Settings_init = () => opened.push('settings');
+s.Search_init = () => opened.push('search');
+s.ScreenObj[s.Main_Live].init_fun = () => opened.push('live grid');
+s.ScreenObj[s.Main_UserLive] = {init_fun: () => opened.push('following grid')};
+s.Settings_isVisible = () => true;
+s.Main_values = {Main_Go: s.Main_UserLive};
+s.Main_SwitchScreen();
+check(opened.join() === 'settings', 'Settings on view: back to Settings, no grid behind it, got ' + opened);
+opened.length = 0;
+s.Settings_isVisible = () => false;
+let searchOnView = true;
+s.Main_isElementShowing = id => id === 'search_scroll' && searchOnView;
+s.Main_values = {Main_Go: s.Main_Search};
+s.Main_SwitchScreen();
+check(opened.join() === 'search', 'search form on view: back to the form, not the Live grid, got ' + opened);
+opened.length = 0;
+// Account entered from the form keeps Main_Search as its return target while the form is hidden: no form trap
+searchOnView = false;
+s.Main_values = {Main_Go: s.Main_Search};
+s.Main_SwitchScreen();
+check(opened.join() === 'live grid', 'stale Main_Search with the form hidden keeps the old Live fallback, got ' + opened);
+opened.length = 0;
+s.Main_values = {Main_Go: s.Main_UserLive};
+s.Main_SwitchScreen();
+check(opened.join() === 'following grid', 'a grid screen is still switched to as before');
 console.log(checks + ' production navigation checks passed');

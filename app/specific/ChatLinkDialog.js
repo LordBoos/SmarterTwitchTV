@@ -1,5 +1,6 @@
 /*
- * "Linked chats" player dialog: shows and overrides the YouTube / Kick channel linked to the Twitch streamer of chat 0.
+ * "Linked chats" player dialog: shows and overrides the YouTube / Kick channel linked to the Twitch streamer of chat 0,
+ * or the Twitch / YouTube channel linked to the Kick channel of chat 0 (store key kick:<slug>, see ChatLink_Key).
  * Rows and Apply are pure (no DOM); the rest drives the dialog with the TV remote.
  */
 
@@ -15,14 +16,16 @@ var ChatLinkDialog_PanelWasShowing = false;
 var ChatLinkDialog_OriginControl = -1;
 //Variable initialization end
 
-function ChatLinkDialog_Rows(entry, resolved) {
-    var rows = [
-        ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved),
-        ChatLinkDialog_PlatformRow('kick', 'Kick', entry, resolved),
-        {kind: 'enabled', label: STR_CHAT_LINK_ENABLED, value: entry.enabled === false ? STR_NO : STR_YES, source: ''}
-    ];
+//platform 'kick': rows of a Kick channel (Twitch and YouTube), else of a Twitch channel (YouTube and Kick)
+function ChatLinkDialog_Rows(entry, resolved, platform) {
+    var rows =
+        platform === 'kick'
+            ? [ChatLinkDialog_PlatformRow('tw', STR_CHAT_LINK_TWITCH, entry, resolved), ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved)]
+            : [ChatLinkDialog_PlatformRow('yt', 'YouTube', entry, resolved), ChatLinkDialog_PlatformRow('kick', 'Kick', entry, resolved)];
 
-    if (typeof entry.yt === 'string' || typeof entry.kick === 'string') {
+    rows.push({kind: 'enabled', label: STR_CHAT_LINK_ENABLED, value: entry.enabled === false ? STR_NO : STR_YES, source: ''});
+
+    if (typeof entry.yt === 'string' || typeof entry[platform === 'kick' ? 'tw' : 'kick'] === 'string') {
         rows.push({kind: 'reset', label: STR_CHAT_LINK_RESET, value: '', source: ''});
     }
     rows.push({kind: 'close', label: STR_CLOSE, value: '', source: ''});
@@ -44,28 +47,34 @@ function ChatLinkDialog_PlatformRow(kind, label, entry, resolved) {
     };
 }
 
+function ChatLinkDialog_Platform(login) {
+    return KickApi_IsKickId(login) ? 'kick' : '';
+}
+
 //Values of the dialog's own streamer, shown regardless of the enabled switch
 function ChatLinkDialog_Resolved(login) {
     var entry = ChatLink_Get(login);
 
     return ChatLink_Resolve(
-        {enabled: true, yt: entry.yt, kick: entry.kick},
-        ChatLink_DirCache.hasOwnProperty(login) ? ChatLink_DirCache[login] : null
+        {enabled: true, tw: entry.tw, yt: entry.yt, kick: entry.kick},
+        ChatLink_DirCache.hasOwnProperty(login) ? ChatLink_DirCache[login] : null,
+        ChatLinkDialog_Platform(login)
     );
 }
 
-//Saves a manual value: normalized, '' = do not link. Returns false (nothing saved) for unusable input
+//Saves a manual value: normalized, '' = do not link. Returns false (nothing saved) for unusable input.
+//login is the store key: a Kick channel links 'tw' and 'yt', a Twitch channel 'yt' and 'kick'
 function ChatLinkDialog_Apply(login, kind, rawInput) {
     var text = String(rawInput || '').replace(/^\s+|\s+$/g, ''),
         value,
         current,
         entry;
 
-    if (kind !== 'yt' && kind !== 'kick') return false;
+    if (kind !== 'yt' && kind !== (ChatLinkDialog_Platform(login) === 'kick' ? 'tw' : 'kick')) return false;
 
     if (text === '') value = '';
     else {
-        value = kind === 'yt' ? ChatLink_NormalizeYouTube(text) : ChatLink_NormalizeKick(text);
+        value = kind === 'yt' ? ChatLink_NormalizeYouTube(text) : kind === 'tw' ? ChatLink_NormalizeTwitch(text) : ChatLink_NormalizeKick(text);
         if (!value) return false;
     }
 
@@ -82,9 +91,12 @@ function ChatLinkDialog_Apply(login, kind, rawInput) {
     return true;
 }
 
-//Login of a chat from the player data, as ChatLive_SetOptions sets it (ChatLive_selectedChannel is stale while chat is force-disabled)
+//Store key of a chat from the player data, as ChatLink_Key gives it (ChatLive_selectedChannel is stale while chat is force-disabled)
 function ChatLinkDialog_ChatLogin(chat_number) {
-    return ((!chat_number ? Play_data : PlayExtra_data).data[6] || '').toLowerCase();
+    var data = (!chat_number ? Play_data : PlayExtra_data).data,
+        login = (data[6] || '').toLowerCase();
+
+    return login && KickApi_IsKickRow(data) ? KickApi_Id(login) : login;
 }
 
 function ChatLinkDialog_Restart() {
@@ -103,7 +115,11 @@ function ChatLinkDialog_Render() {
         div,
         text;
 
-    ChatLinkDialog_RowsData = ChatLinkDialog_Rows(ChatLink_Get(ChatLinkDialog_Login), ChatLinkDialog_Resolved(ChatLinkDialog_Login));
+    ChatLinkDialog_RowsData = ChatLinkDialog_Rows(
+        ChatLink_Get(ChatLinkDialog_Login),
+        ChatLinkDialog_Resolved(ChatLinkDialog_Login),
+        ChatLinkDialog_Platform(ChatLinkDialog_Login)
+    );
     if (ChatLinkDialog_Focus >= ChatLinkDialog_RowsData.length) ChatLinkDialog_Focus = ChatLinkDialog_RowsData.length - 1;
 
     Main_emptyWithEle(holder);
@@ -115,7 +131,7 @@ function ChatLinkDialog_Render() {
 
         //Only textContent: channel names and handles are untrusted
         text = row.label;
-        if (row.kind === 'yt' || row.kind === 'kick') {
+        if (row.kind === 'tw' || row.kind === 'yt' || row.kind === 'kick') {
             text += ': ' + (row.value ? row.value : row.source === 'manual' ? STR_CHAT_LINK_UNLINKED : STR_CHAT_LINK_NONE);
             if (row.value || row.source === 'manual') text += ' (' + ChatLinkDialog_SourceText(row.source) + ')';
             text += ' – ' + (row.action === 'edit' ? STR_CHAT_LINK_EDIT : STR_CHAT_LINK_ENTER);
@@ -216,6 +232,7 @@ function ChatLinkDialog_Activate() {
     if (!row) return;
 
     switch (row.kind) {
+        case 'tw':
         case 'yt':
         case 'kick':
             ChatLinkDialog_InputOpen(row);
@@ -230,6 +247,7 @@ function ChatLinkDialog_Activate() {
         case 'reset':
             //Back to the directory values, the enabled switch is kept
             entry = ChatLink_Get(ChatLinkDialog_Login);
+            delete entry.tw;
             delete entry.yt;
             delete entry.kick;
             ChatLink_Save(ChatLinkDialog_Login, entry);

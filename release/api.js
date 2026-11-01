@@ -75,6 +75,7 @@
         Main_CheckFullxmlHttpGet: Main_CheckFullxmlHttpGet,
         PlayHLS_GetTokenResult: PlayHLS_GetTokenResult,
         PlayHLS_PlayListUrlResult: PlayHLS_PlayListUrlResult,
+        PlayHLS_KickResult: PlayHLS_KickResult,
         PlayHLS_AdProbeResult: PlayHLS_AdProbeResult,
         Play_AdBlockReload: Play_AdBlockReload,
         AddCode_AppTokenResult: AddCode_AppTokenResult,

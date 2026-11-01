@@ -187,6 +187,11 @@ var Settings_value = {
         values: ['no', 'yes'],
         defaultValue: 1
     },
+    multi_hybrid: {
+        //Shown only when the device has 2 or 3 hardware decoder instances, 480p measured smooth, 720p not (Sony BRAVIA VH22)
+        values: ['off', '480p', '720p'],
+        defaultValue: 2
+    },
     single_clickExit: {
         values: ['no', 'yes'],
         defaultValue: 1
@@ -928,6 +933,8 @@ function Settings_init() {
     Main_ShowElement('settings_holder');
     Main_IconLoad('label_thumb', 'icon-return', STR_GOBACK);
     Main_HideElement('label_refresh');
+    // Re-init while Settings is on view (Main_SwitchScreen returning to it) must not leave the old row highlighted
+    if (Settings_value_keys[Settings_cursorY]) Settings_RemoveInputFocus();
     Settings_cursorY = 0;
     Settings_inputFocus(Settings_cursorY);
     Navigation_Render(Main_values.Main_Go);
@@ -1006,6 +1013,15 @@ function Settings_SetSettings() {
     div += Settings_Content('single_clickExit', array_no_yes, STR_SINGLE_EXIT, STR_SINGLE_EXIT_SUMMARY);
 
     div += Settings_Content('PP_workaround', dis_ena, STR_PP_WORKAROUND, STR_PP_WORKAROUND_SUMMARY);
+
+    if (Play_MultiHybridSupported) {
+        div += Settings_Content(
+            'multi_hybrid',
+            [STR_DISABLED, '480p', '720p'],
+            STR_MULTI_HYBRID,
+            STR_MULTI_HYBRID_SUMMARY.replace('%x', Play_MaxInstances)
+        );
+    }
 
     div += Settings_Content('vod_dialog', [STR_VOD_DIALOG_LAST, STR_VOD_DIALOG_SHOW, STR_VOD_DIALOG_START], STR_VOD_DIALOG, STR_VOD_DIALOG_SUMMARY);
 
@@ -1476,6 +1492,7 @@ function Settings_SetDefault(position) {
     else if (position === 'dpad_opacity') Settings_DpadOpacity();
     else if (position === 'dpad_position') Settings_DpadPOsition();
     else if (position === 'PP_workaround') Settings_PP_Workaround();
+    else if (position === 'multi_hybrid') Settings_SetMultiHybrid();
     else if (position === 'proxy_timeout') Settings_set_proxy_timeout();
     else if (position === 'ttv_lolProxy') Settings_set_all_proxy('ttv_lolProxy');
     else if (position === 'k_twitch') Settings_set_all_proxy('k_twitch');
@@ -1995,57 +2012,55 @@ function Settings_HideElem(elem, hide) {
     else Main_RemoveClass(elem, 'opacity_zero');
 }
 
-var Settings_CurY = 0;
+var Settings_ScrollY = 0;
+var Settings_ScrollAnim = 0;
 
-function Settings_ScrollDown() {
-    Settings_Do_ScrollDown('settings_scroll');
-}
+// Smallest scroll (px from the first row) that shows the whole focused row of a list of len rows in a view of height viewH,
+// measured from the rows themselves: a fixed row count breaks whenever the view or the rows change size.
+// pad keeps the focus outline, drawn outside the row, in view too. A list that fits never scrolls.
+function Settings_ScrollToShow(keys, len, pos, scroll, viewH) {
+    var first = Main_getElementById(keys[0] + '_div').offsetTop,
+        last = Main_getElementById(keys[len - 1] + '_div'),
+        row = Main_getElementById(keys[pos] + '_div'),
+        pad = BodyfontSize / 4,
+        top = row.offsetTop - first - pad,
+        bottom = top + row.offsetHeight + 2 * pad;
 
-function Settings_ScrollUp() {
-    Settings_Do_ScrollUp('settings_scroll');
-}
+    if (last.offsetTop - first + last.offsetHeight <= viewH) return 0;
 
-function Settings_Do_ScrollDown(docId) {
-    var doc = Main_getElementById(docId);
-    doc.scrollTop = doc.scrollHeight;
-    if (Settings_Obj_default('app_animations')) {
-        var position = doc.scrollTop;
-        doc.scrollTop = 0;
-        scrollTo(doc, position, 200);
-    }
-}
+    if (bottom > scroll + viewH) scroll = bottom - viewH;
+    if (top < scroll) scroll = top;
 
-function Settings_Do_ScrollUp(docId) {
-    var doc = Main_getElementById(docId);
-    if (Settings_Obj_default('app_animations')) scrollTo(doc, 0, 200);
-    else doc.scrollTop = 0;
+    return Math.max(0, scroll);
 }
 
 function Settings_ScrollTable() {
-    var scrolPos = 14,
-        offset = 1; //!Main_isTV || !Main_IsOn_OSInterface ? 1 : 0;
+    var doc = Main_getElementById('settings_scroll'),
+        to = Settings_ScrollToShow(Settings_value_keys, Settings_positions_length, Settings_cursorY, Settings_ScrollY, doc.clientHeight);
 
-    if (Settings_CurY < Settings_cursorY && Settings_cursorY === scrolPos + offset) {
-        Settings_ScrollDown();
-    } else if (Settings_CurY > Settings_cursorY && Settings_cursorY === scrolPos - 1 + offset) {
-        Settings_ScrollUp();
-    }
+    if (to === Settings_ScrollY) return;
 
-    Settings_CurY = Settings_cursorY;
+    Settings_ScrollY = to;
+    if (Settings_Obj_default('app_animations')) scrollTo(doc, to, 200);
+    else doc.scrollTop = to;
 }
 
 function Settings_ScrollTableReset() {
+    Settings_ScrollAnim++;
     Main_getElementById('settings_scroll').scrollTop = 0;
-    Settings_CurY = 0;
+    Settings_ScrollY = 0;
 }
 
 function scrollTo(element, to, duration) {
     var start = element.scrollTop,
         change = to - start,
         currentTime = 0,
-        increment = 3;
+        increment = 3,
+        id = ++Settings_ScrollAnim;
 
     var animateScroll = function () {
+        //a newer scroll (held key) takes over instead of both animations fighting
+        if (id !== Settings_ScrollAnim) return;
         currentTime += increment;
         var val = Math.easeInOutQuad(currentTime, start, change, duration);
         element.scrollTop = val;
@@ -2219,6 +2234,8 @@ function Settings_CodecsShow(click) {
     }
 
     Main_ShowElement('dialog_codecs');
+    Settings_CodecsScrollY = 0;
+    if (Settings_CodecsValue.length) Settings_DialogFit('settings_codec_container', 'dialog_codecs_text');
     Main_addEventListener('keydown', Settings_handleKeyDownCodecs);
 }
 
@@ -2296,17 +2313,33 @@ function Settings_handleKeyDownCodecs(event) {
     }
 }
 
+var Settings_CodecsScrollY = 0;
+
 function Settings_ScrollCodecs(pos) {
-    var center = 3,
-        doc = Main_getElementById('settings_codec_container_scroll'),
-        value = 0,
-        offset = 0;
+    var keys = Settings_CodecsValue.map(function (codec) {
+        return codec.nameType;
+    });
 
-    if (pos > center) {
-        value = Main_getElementById(Settings_CodecsValue[pos - center - offset].nameType).offsetTop;
-    }
+    Settings_CodecsScrollY = Settings_ScrollToShow(
+        keys,
+        keys.length,
+        pos,
+        Settings_CodecsScrollY,
+        Main_getElementById('settings_codec_container').clientHeight
+    );
+    Main_getElementById('settings_codec_container_scroll').style.transform = 'translateY(-' + Settings_CodecsScrollY + 'px)';
+}
 
-    doc.style.transform = 'translateY(-' + value / BodyfontSize + 'em)';
+// A centred dialog taller than the screen lost its first and last rows: its list gets the height left and scrolls instead.
+// A dialog that fits keeps its layout.
+function Settings_DialogFit(containerId, textId) {
+    var container = Main_getElementById(containerId),
+        dialog = Main_getElementById(textId).parentNode,
+        over;
+
+    container.style.height = '';
+    over = dialog.offsetHeight - window.innerHeight * 0.98;
+    if (over > 0) container.style.height = Math.max(container.offsetHeight - over, BodyfontSize * 2) + 'px';
 }
 
 function Settings_Codecs_isVisible() {
@@ -2410,6 +2443,18 @@ function Settings_SetMaxInstances() {
     if (!Play_MaxInstances && len) {
         Play_MaxInstances = Settings_CodecsValue[0].instances > -1 ? Settings_CodecsValue[0].instances : 10;
     }
+
+    Settings_SetMultiHybrid();
+}
+
+//4-way multistream with 2 or 3 hardware decoder instances: the other players decode in software, capped at 480p or 720p.
+//Devices with 4 or more instances never call the APK, older APKs without SetHybridDecoders keep 4-way blocked
+function Settings_SetMultiHybrid() {
+    var value = Settings_Obj_default('multi_hybrid');
+
+    Play_MultiHybridSupported =
+        Play_MaxInstances > 1 && Play_MaxInstances < 4 && OSInterface_SetHybridDecoders(value ? Play_MaxInstances : 0, value === 2 ? 720 : 480);
+    Play_MultiHybrid = Play_MultiHybridSupported && value > 0;
 }
 
 function Settings_SetCodecsValue() {
@@ -3601,12 +3646,7 @@ function Settings_DialogShowChat(click) {
         }
     };
 
-    //Use off set if there is too many options
-    //Ajust the value as per setting option by trying diff Global app font size offset
-    var fontOffset = Settings_Obj_default('global_font_offset') + 4,
-        offset = Object.keys(obj).length - fontOffset;
-
-    Settings_DialogShow(obj, STR_CHAT_OPTIONS, click, offset);
+    Settings_DialogShow(obj, STR_CHAT_OPTIONS, click);
 }
 
 function Settings_block_qualities(click) {
@@ -3687,9 +3727,9 @@ function Settings_Dialog_isVisible() {
 
 var Settings_DialogValue = [];
 var Settings_DialogPos = 0;
-var Settings_DialogScrollCenter = 0;
+var Settings_DialogScrollY = 0;
 
-function Settings_DialogShow(obj, title, click, scroll) {
+function Settings_DialogShow(obj, title, click) {
     Main_removeEventListener('keydown', Settings_handleKeyDown);
 
     //keyenter rows append to the main key list, drop any leftover from the previous
@@ -3700,9 +3740,7 @@ function Settings_DialogShow(obj, title, click, scroll) {
 
     var dialogContent = title + STR_BR,
         dialogScroollHolder =
-            '<div id="settings_scroll_container" class="' +
-            (scroll ? 'settings_scroll_container' : '') +
-            '"><div id="settings_scroll_container_scroll" class="side_panel_holder_ani">';
+            '<div id="settings_scroll_container" style="overflow: hidden;"><div id="settings_scroll_container_scroll" class="side_panel_holder_ani">';
 
     Settings_DialogValue = [];
 
@@ -3728,13 +3766,14 @@ function Settings_DialogShow(obj, title, click, scroll) {
             '</div>'
     );
 
-    Settings_DialogScrollCenter = scroll ? scroll : 0;
+    Settings_DialogScrollY = 0;
     Settings_DialogPos = 0;
     Main_AddClass(Settings_DialogValue[0], 'settings_value_focus');
     Main_AddClass(Settings_DialogValue[0] + '_div', 'settings_div_focus');
     Settings_SetarrowsKey(Settings_DialogValue[0]);
 
     Main_ShowElement('dialog_settings');
+    Settings_DialogFit('settings_scroll_container', 'dialog_settings_text');
     Main_addEventListener('keydown', Settings_DialoghandleKeyDown);
 }
 
@@ -3829,20 +3868,16 @@ function Settings_DialoghandleKeyDown(event) {
 }
 
 function Settings_ScrollConatiner(div, pos) {
-    if (!Settings_DialogScrollCenter) {
-        return;
-    }
+    Settings_DialogScrollY = Settings_ScrollToShow(
+        Settings_DialogValue,
+        Settings_DialogValue.length,
+        pos,
+        Settings_DialogScrollY,
+        Main_getElementById('settings_scroll_container').clientHeight
+    );
 
-    var center = Settings_DialogScrollCenter,
-        doc = Main_getElementById(div),
-        value = 0,
-        offset = 0;
-
-    if (pos > center) {
-        value = Main_getElementById(Settings_DialogValue[pos - center - offset] + '_div').offsetTop;
-    }
-
-    doc.style.transform = 'translateY(-' + value / BodyfontSize + 'em)';
+    //px, the list's own em is smaller than BodyfontSize (the dialog text is at 88%)
+    Main_getElementById(div).style.transform = 'translateY(-' + Settings_DialogScrollY + 'px)';
 }
 
 function Settings_DialogUpDown(offset) {

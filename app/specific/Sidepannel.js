@@ -280,7 +280,7 @@ function Sidepannel_CheckIfIsLive() {
     }
 
     if (!Main_isStopped && Sidepannel_ObjNotNull() && Sidepannel_isShowingUserLive()) {
-        var channel = UserLiveFeed_DataObj[UserLiveFeedobj_UserLivePos][Sidepannel_PosFeed][6];
+        var channel = PlayHLS_Id(UserLiveFeed_DataObj[UserLiveFeedobj_UserLivePos][Sidepannel_PosFeed]);
 
         PlayHLS_GetPlayListAsync(true, channel, Sidepannel_PosFeed % 100, 0, Sidepannel_CheckIfIsLiveResult);
     }
@@ -419,7 +419,8 @@ function Sidepannel_KeyEnterUser() {
     else if (Sidepannel_Sidepannel_Pos === 5) Sidepannel_Go(Main_UserVod);
     else if (Sidepannel_Sidepannel_Pos === 6) Sidepannel_Go(Main_UserChannels);
     else if (Sidepannel_Sidepannel_Pos === 7) {
-        Main_values.Main_selectedChannel_id = AddUser_UsernameArray[0].id;
+        //A Kick only user id is kick:<user id>, its channel is kick:<slug>
+        Main_values.Main_selectedChannel_id = KickUser_IsKickOnly() ? KickApi_Id(AddUser_UsernameArray[0].kick.slug) : AddUser_UsernameArray[0].id;
         Main_values.Main_selectedChannelDisplayname = AddUser_UsernameArray[0].display_name
             ? AddUser_UsernameArray[0].display_name
             : AddUser_UsernameArray[0].name;
@@ -516,7 +517,7 @@ function Sidepannel_Start(callback, forceFeed) {
     Sidepannel_Callback = callback;
     Main_removeEventListener('keydown', Sidepannel_Callback);
     if (!Sidepannel_IsMain || forceFeed) {
-        if (AddUser_UserHasToken()) {
+        if (AddUser_UserHasToken() || KickUser_IsKickOnly()) {
             Sidepannel_StartFeed();
         } else {
             Sidepannel_ShowNoUserWarning();
@@ -899,7 +900,7 @@ function Sidepannel_handleKeyDown(event) {
 }
 
 function Sidepannel_MainKeyLeft() {
-    if (AddUser_UserHasToken()) {
+    if (AddUser_UserHasToken() || KickUser_IsKickOnly()) {
         Main_removeEventListener('keydown', Sidepannel_handleKeyDownMain);
         Sidepannel_StartFeed();
     } else {

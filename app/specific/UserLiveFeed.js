@@ -297,7 +297,7 @@ function UserLiveFeed_Prepare() {
 
 function UserLiveFeed_RefreshLive() {
     //Main_Log('UserLiveFeed_RefreshLive');
-    if (AddUser_UserHasToken()) {
+    if (AddUser_UserHasToken() || KickUser_IsKickOnly()) {
         UserLiveFeedobj_loadDataPrepare(UserLiveFeedobj_UserLivePos);
         UserLiveFeedobj_CheckToken();
     }
@@ -790,7 +790,7 @@ function UserLiveFeed_CheckIfIsLive(obj) {
         //live
 
         isLive = true;
-        id = obj[6];
+        id = PlayHLS_Id(obj);
     }
 
     PlayHLS_GetPlayListAsync(isLive, id, UserLiveFeed_FeedPosY[UserLiveFeed_FeedPosX] % 100, UserLiveFeed_FeedPosX, UserLiveFeed_CheckIfIsLiveResult);

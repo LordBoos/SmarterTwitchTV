@@ -48,6 +48,7 @@ function PlayRaid_SetChannel(channelId) {
 
     if (
         !channelId ||
+        KickApi_IsKickId(channelId) ||
         !PlayRaid_Enabled() ||
         !AddUser_UserHasToken() ||
         Play_MultiEnable ||

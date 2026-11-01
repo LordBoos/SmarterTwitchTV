@@ -100,6 +100,9 @@ function PlayVod_Start() {
 
     Play_SetAudioIcon();
 
+    //The partner flag only comes from Twitch GQL, a Kick vod never is one
+    if (PlayClip_IsKick()) Main_values.Main_selectedChannelPartner = false;
+
     if (!Main_vodOffset) {
         //we have some vod info
 
@@ -1443,6 +1446,13 @@ var fullVodInfoQuery =
     '{"query":"{video(id:\\"%x\\"){seekPreviewsURL,creator{roles{isPartner},id,login,displayName,language,profileImageURL(width:300)},muteInfo{mutedSegmentConnection{nodes{duration,offset}}},game{displayName,id},duration,viewCount,language,title,animatedPreviewURL,createdAt,id,thumbnailURLs(width:640,height:360),creator{id,displayName,login},moments(momentRequestType:VIDEO_CHAPTER_MARKERS types:[GAME_CHANGE]) {edges{...VideoPlayerVideoMomentEdge}}}}fragment VideoPlayerVideoMomentEdge on VideoMomentEdge{node {...VideoPlayerVideoMoment}}fragment VideoPlayerVideoMoment on VideoMoment{durationMilliseconds positionMilliseconds type description details{...VideoPlayerGameChangeDetails}}fragment VideoPlayerGameChangeDetails on GameChangeMomentDetails{game{id displayName}}"}';
 
 function PlayVod_get_vod_info() {
+    if (KickApi_IsKickId(Main_values.ChannelVod_vodId)) {
+        //Kick: no GQL, previews or chapters, only the history entry and the progress bar
+        Main_Set_history('vod', Main_values_Play_data);
+        PlayVod_ProgressBarrUpdate(Main_vodOffset, Play_DurationSeconds, true);
+        return;
+    }
+
     FullxmlHttpGet(
         PlayClip_BaseUrl,
         Play_base_backup_headers_Array,

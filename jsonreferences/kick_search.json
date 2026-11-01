@@ -1,0 +1,110 @@
+{
+ "data": {
+  "categories": [],
+  "channels": [
+   {
+    "follower_count": 1464623,
+    "following": false,
+    "id": 668,
+    "is_live": true,
+    "is_verified": true,
+    "profile_picture": "https://files.kick.com/images/user/676/profile_image/conversion/931b4e8f-5445-427c-bd82-b473530390cc-medium.webp",
+    "slug": "xqc",
+    "username": "xQc"
+   },
+   {
+    "follower_count": 16,
+    "following": false,
+    "id": 1409128,
+    "is_live": false,
+    "is_verified": false,
+    "profile_picture": "",
+    "slug": "xqcu",
+    "username": "xqcu"
+   },
+   {
+    "follower_count": 16,
+    "following": false,
+    "id": 30505,
+    "is_live": false,
+    "is_verified": false,
+    "profile_picture": "",
+    "slug": "xqcl",
+    "username": "xqcl"
+   },
+   {
+    "follower_count": 11,
+    "following": false,
+    "id": 64775,
+    "is_live": false,
+    "is_verified": false,
+    "profile_picture": "",
+    "slug": "xqcs",
+    "username": "xqcs"
+   },
+   {
+    "follower_count": 8,
+    "following": false,
+    "id": 128220,
+    "is_live": false,
+    "is_verified": false,
+    "profile_picture": "",
+    "slug": "xqcy",
+    "username": "xqcy"
+   }
+  ],
+  "livestreams": [
+   {
+    "category": {
+     "id": 9184,
+     "name": "Karos",
+     "slug": "karos"
+    },
+    "channel": {
+     "id": 136321761,
+     "profile_picture": "https://kick.com/img/default-profile-pictures/default-avatar-1.webp",
+     "slug": "yioslot",
+     "username": "yioslot"
+    },
+    "id": "01a18ffc-d938-74bf-9725-959479760deb",
+    "is_mature": false,
+    "language": "en",
+    "show_view_count": false,
+    "start_time": "2026-10-31T03:24:35Z",
+    "tags": [],
+    "thumbnail": {
+     "src": "https://images.kick.com/video_thumbnails/JY2yuygxF6cG/HAH1IKEcoAhE/720.webp",
+     "srcset": "https://images.kick.com/video_thumbnails/JY2yuygxF6cG/HAH1IKEcoAhE/1080.webp 1920w, https://images.kick.com/video_thumbnails/JY2yuygxF6cG/HAH1IKEcoAhE/720.webp 1280w, https://images.kick.com/video_thumbnails/JY2yuygxF6cG/HAH1IKEcoAhE/480.webp 640w, https://images.kick.com/video_thumbnails/JY2yuygxF6cG/HAH1IKEcoAhE/360.webp 480w, https://images.kick.com/video_thumbnails/JY2yuygxF6cG/HAH1IKEcoAhE/160.webp 284w"
+    },
+    "title": "davooxeneize LACOBRAAA xQc Absi 3mr SXB szymool Kingteka Cuffem  kasino n3on cheesur adinross كازينو カジノ 賭場 Kumarhane  betting gta5 gta6",
+    "viewer_count": 2
+   },
+   {
+    "category": {
+     "id": 8,
+     "name": "Grand Theft Auto V (GTA)",
+     "slug": "grand-theft-auto-v"
+    },
+    "channel": {
+     "id": 668,
+     "profile_picture": "https://files.kick.com/images/user/676/profile_image/conversion/931b4e8f-5445-427c-bd82-b473530390cc-medium.webp",
+     "slug": "xqc",
+     "username": "xQc"
+    },
+    "id": "01a19418-9368-79e5-9f4a-cf9e1c0ea52d",
+    "is_mature": true,
+    "language": "en",
+    "show_view_count": true,
+    "start_time": "2026-10-31T22:33:21Z",
+    "tags": [],
+    "thumbnail": {
+     "src": "https://images.kick.com/video_thumbnails/DsuAwCgUc9Bh/fYjoSw6yJoKE/720.webp",
+     "srcset": "https://images.kick.com/video_thumbnails/DsuAwCgUc9Bh/fYjoSw6yJoKE/1080.webp 1920w, https://images.kick.com/video_thumbnails/DsuAwCgUc9Bh/fYjoSw6yJoKE/720.webp 1280w, https://images.kick.com/video_thumbnails/DsuAwCgUc9Bh/fYjoSw6yJoKE/480.webp 640w, https://images.kick.com/video_thumbnails/DsuAwCgUc9Bh/fYjoSw6yJoKE/360.webp 480w, https://images.kick.com/video_thumbnails/DsuAwCgUc9Bh/fYjoSw6yJoKE/160.webp 284w"
+    },
+    "title": "🐸LIVE🐸CLICK🐸HERE🐸GTA V🐸NOPIXEL V🐸VERY COOL🐸HALLOWEEN SPOOKY DAY🐸VESPOOKY MONKAW🐸ANYWAYS🐸LOCK IN🐸",
+    "viewer_count": 11295
+   }
+  ]
+ },
+ "message": "success"
+}

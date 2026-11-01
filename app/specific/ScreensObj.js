@@ -533,7 +533,7 @@ function ScreensObj_StartAllVars() {
                     Screens_createCellVod(
                         this.row_id + '_' + this.column_id,
                         this.ids,
-                        ScreensObj_VodCellArray(cell, this.isQuery, this.gameSelected_Id, this.gameSelected_name),
+                        cell.kickCell || ScreensObj_VodCellArray(cell, this.isQuery, this.gameSelected_Id, this.gameSelected_name),
                         this.screen
                     )
                 );
@@ -591,7 +591,7 @@ function ScreensObj_StartAllVars() {
             }
         },
         addCellTemp: function (cell) {
-            var id_cell = this.useHelix ? cell.user_id : cell.channel._id;
+            var id_cell = cell.kickCell ? cell.user_id : this.useHelix ? cell.user_id : cell.channel._id;
 
             //skip check if game is blocked as we are on the blocked game section
             var skipBlockedCheck = this.screen === Main_aGame && AddUser_IsUserSet() && Screens_getGameIsBlocked(this.gameSelected_Id);
@@ -606,7 +606,9 @@ function ScreensObj_StartAllVars() {
                 this.itemsCount++;
                 this.idObject[id_cell] = 1;
 
-                this.tempHtml.push(Screens_createCellLive(this.row_id + '_' + this.column_id, this.ids, ScreensObj_LiveCellArray(cell), this.screen));
+                this.tempHtml.push(
+                    Screens_createCellLive(this.row_id + '_' + this.column_id, this.ids, cell.kickCell || ScreensObj_LiveCellArray(cell), this.screen)
+                );
 
                 this.column_id++;
             } else {
@@ -747,7 +749,7 @@ function ScreensObj_StartAllVars() {
                     Screens_createCellClip(
                         this.row_id + '_' + this.column_id,
                         this.ids,
-                        ScreensObj_ClipCellArray(cell, this.isQuery, this.gameSelected_name),
+                        cell.kickCell || ScreensObj_ClipCellArray(cell, this.isQuery, this.gameSelected_name),
                         this.screen
                     )
                 );
@@ -802,6 +804,19 @@ function ScreensObj_StartAllVars() {
             }
         },
         addCell: function (cell) {
+            if (cell.kickCell) {
+                // Kick category, the row is built and escaped by KickApi_GameCell
+                if (!this.idObject[cell.id] && Screens_isNotBlocked(null, cell.id, this.IsUser)) {
+                    this.itemsCount++;
+                    this.idObject[cell.id] = 1;
+                    this.tempHtml.push(Screens_createCellGame(this.row_id + '_' + this.column_id, this.ids, cell.kickCell, this.screen));
+                    this.column_id++;
+                } else {
+                    this.skippedCellLoadMore = true;
+                }
+                return;
+            }
+
             var hasLive = this.isLive || this.screen === Main_games;
             var game = this.hasGameProp && !this.isQuery ? cell.game : cell;
 
@@ -911,7 +926,7 @@ function ScreensObj_StartAllVars() {
                     Screens_createCellChannel(
                         this.row_id + '_' + this.column_id,
                         this.ids,
-                        ScreensObj_ChannelCellArray(cell, this.isQuery),
+                        cell.kickCell || ScreensObj_ChannelCellArray(cell, this.isQuery),
                         this.screen
                     )
                 );
@@ -1124,8 +1139,10 @@ function ScreensObj_InitSearchVod() {
             HeadersArray: Main_base_array_header,
             ids: Screens_ScreenIds('SearchVod', key),
             ScreenName: 'SearchVod',
+            //Kick has no video search: with the platform switch on Kick the screen gets this empty answer and no request (Screens_loadDataRequest)
+            kickBrowseResponse: '{"data":{"searchFor":{"videos":{"items":[],"pageInfo":{"hasNextPage":false}}}}}',
             emptyContent_STR: function () {
-                return STR_SEARCH_RESULT_EMPTY;
+                return KickBrowse_On() ? STR_KICK_NOT_SUPPORTED : STR_SEARCH_RESULT_EMPTY;
             },
             table: 'stream_table_search_vod',
             screen: key,
@@ -1214,6 +1231,14 @@ function ScreensObj_InitChannelVod() {
             base_post: channelVodQuery,
             isQuery: true,
             set_url: function () {
+                this.isKick = KickApi_IsKickId(this.lastselectedChannel);
+
+                if (this.isKick) {
+                    // Kick lists one fixed page of videos, the highlight and period switches do not apply
+                    this.url = KickApi_Base + 'v2/channels/' + KickApi_SafeSlug(KickApi_Slug(this.lastselectedChannel)) + '/videos';
+                    return;
+                }
+
                 this.post = this.base_post
                     .replace('%c', this.lastselectedChannel)
                     .replace('%x', this.highlight ? 'HIGHLIGHT' : 'ARCHIVE')
@@ -1283,6 +1308,18 @@ function ScreensObj_InitChannelVod() {
     ScreenObj[key].Set_Scroll();
 
     ScreenObj[key].concatenate = function (responseObj) {
+        if (this.isKick) {
+            this.dataEnded = true;
+            this.cursor = null;
+            this.concatenateAfter({
+                edges: ScreensObj_KickVodItems(responseObj, {
+                    slug: KickApi_Slug(this.lastselectedChannel),
+                    name: Main_values.Main_selectedChannelDisplayname
+                })
+            });
+            return;
+        }
+
         var hasData = responseObj.data && responseObj.data.user && responseObj.data.user.videos && responseObj.data.user.videos.edges;
 
         if (hasData) {
@@ -1421,6 +1458,8 @@ function ScreensObj_InitUserVod() {
             object: 'edges',
             isQuery: true,
             useUserToken: true,
+            //Following Videos stays Twitch only: a Kick only main user gets the empty last page instead of a GQL request without a Twitch token
+            kickOnlyResponse: '{"data":{"currentUser":{"followedVideos":{"edges":[],"pageInfo":{"hasNextPage":false}}}}}',
             base_post: userVodQuery,
             set_url: function () {
                 this.post = this.base_post
@@ -1521,7 +1560,27 @@ function ScreensObj_InitLive() {
             ContentLang: '',
             base_post: liveQuery,
             base_url: Main_helix_api + 'streams?first=' + Main_ItemsLimitMax,
+            //The platform switch is the only item of the top row
+            HasSwitches: true,
+            SwitchesIcons: ['play'],
+            addSwitches: function () {
+                ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen);
+            },
             set_url: function () {
+                this.isKick = KickBrowse_On();
+
+                if (this.isKick) {
+                    // Kick top live streams: public page, same helix style paging as the Twitch list
+                    this.useHelix = true;
+                    this.isQuery = false;
+                    this.object = 'data';
+                    this.skipSetMax = false;
+                    this.ItemsLimitMax = Main_ItemsLimitMax;
+                    this.ItemsLimit = Main_ItemsLimitVideo;
+                    this.url = KickBrowse_LiveUrl(Main_ItemsLimitMax, Main_ContentLang, this.cursor, 0);
+                    return;
+                }
+
                 //Hybrid query helix
                 //If use Helix without a user it can fail as the app token has limited request
                 //too many user using it fail to show content
@@ -1534,6 +1593,8 @@ function ScreensObj_InitLive() {
                 }
 
                 if (this.isQuery) {
+                    //A query is posted to the GQL url, the Kick mode may have left its own url here
+                    this.url = PlayClip_BaseUrl;
                     this.object = 'edges';
                     this.skipSetMax = true;
                     this.ItemsLimitMax = 30;
@@ -1568,7 +1629,21 @@ function ScreensObj_InitLive() {
     ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Live_obj);
     ScreenObj[key].Set_Scroll();
 
+    ScreenObj[key].key_play = function () {
+        if (this.posY === -1) {
+            KickBrowse_Toggle(this.screen);
+            return;
+        }
+
+        Base_Live_obj.key_play.call(this);
+    };
+
     ScreenObj[key].concatenate = function (responseObj) {
+        if (this.isKick) {
+            this.concatenateAfter(KickBrowse_Items(responseObj));
+            return;
+        }
+
         if (!this.isQuery) {
             this.concatenateAfter(responseObj);
             return;
@@ -1617,7 +1692,29 @@ function ScreensObj_InitSearchLive() {
             object: 'items',
             isQuery: true,
             base_post: searchLiveQuery,
+            //The platform switch is the only item of the top row
+            HasSwitches: true,
+            SwitchesIcons: ['play'],
+            addSwitches: function () {
+                ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen);
+            },
             set_url: function () {
+                this.isKick = KickBrowse_On();
+
+                if (this.isKick) {
+                    // Kick search: public page, one result page, the helix style paging ends at once
+                    this.useHelix = true;
+                    this.isQuery = false;
+                    this.object = 'data';
+                    this.url = KickSearch_Url('live', Main_values.Search_data);
+                    return;
+                }
+
+                //A query is posted to the GQL url, the Kick mode replaced it with its own
+                this.url = PlayClip_BaseUrl;
+                delete this.useHelix;
+                this.isQuery = true;
+                this.object = 'items';
                 this.post = this.base_post
                     .replace('%x', Main_values.Search_data)
                     .replace('%y', this.cursor ? 'cursor: \\"' + this.cursor + '\\"' : '');
@@ -1642,7 +1739,21 @@ function ScreensObj_InitSearchLive() {
     ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Live_obj);
     ScreenObj[key].Set_Scroll();
 
+    ScreenObj[key].key_play = function () {
+        if (this.posY === -1) {
+            KickBrowse_Toggle(this.screen);
+            return;
+        }
+
+        Base_Live_obj.key_play.call(this);
+    };
+
     ScreenObj[key].concatenate = function (responseObj) {
+        if (this.isKick) {
+            this.concatenateAfter({data: KickSearch_Live(responseObj), pagination: {cursor: ''}});
+            return;
+        }
+
         var hasData =
             responseObj.data &&
             responseObj.data.searchFor &&
@@ -1684,6 +1795,8 @@ function ScreensObj_InitUserLive() {
             loadChannelOffsset: 0,
             followerChannels: [],
             followerChannelsDone: false,
+            //A Kick only main user has no Twitch follows: this empty page replaces the Twitch request (Screens_loadDataRequest)
+            kickOnlyResponse: '{"data":[],"pagination":{}}',
             set_url: function () {
                 this.url =
                     this.base_url +
@@ -1702,6 +1815,13 @@ function ScreensObj_InitUserLive() {
     );
 
     ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Live_obj);
+
+    //First page: the followed Kick live streams are merged in when they arrive (KickFollow_LiveResult)
+    ScreenObj[key].concatenate = function (responseObj) {
+        if (!this.data && KickFollow_Start(this.screen, responseObj)) return;
+
+        this.concatenateAfter(responseObj);
+    };
 
     ScreenObj[key].Set_Scroll();
 }
@@ -1727,12 +1847,38 @@ function ScreensObj_InitAGame() {
             hasBackupData: true,
             base_url: Main_helix_api + 'streams?game_id=',
             set_url: function () {
+                this.isKick = KickApi_IsKickId(this.gameSelected_Id);
+                this.HasSwitches = !this.isKick;
+                this.kickResolve = '';
+
+                if (this.isKick) {
+                    // Streams of a Kick category: no videos, clips or follow, the switches stay off
+                    var catId = KickBrowse_CatId(KickApi_Slug(this.gameSelected_Id));
+
+                    if (!catId) {
+                        // Unknown numeric id: the category itself is asked first, concatenate then asks the streams
+                        this.kickResolve = KickApi_Slug(this.gameSelected_Id);
+                        this.url = KickBrowse_CatUrl(this.kickResolve);
+                        return;
+                    }
+
+                    this.url = KickBrowse_LiveUrl(
+                        Main_ItemsLimitMax,
+                        Main_ContentLang !== '' && !this.LoadAllLangForced ? Main_ContentLang : '',
+                        this.cursor,
+                        catId
+                    );
+                    return;
+                }
+
                 var lang = Main_ContentLang !== '' && !this.LoadAllLangForced ? '&language=' + Main_ContentLang : '';
                 this.url =
                     this.base_url + this.gameSelected_Id + '&first=' + Main_ItemsLimitMax + (this.cursor ? '&after=' + this.cursor : '') + lang;
             },
             label_init: function () {
                 ScreensObj_TopLableAgameInit(this.screen);
+                // The top row (videos, clips, follow) is for Twitch games only
+                this.HasSwitches = !KickApi_IsKickId(this.gameSelected_Id);
 
                 if (Main_values.Search_isSearching) {
                     //Reset label as the app may be restoring from background
@@ -1771,6 +1917,16 @@ function ScreensObj_InitAGame() {
 
     ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Live_obj);
     ScreenObj[key].Set_Scroll();
+    ScreenObj[key].concatenate = function (responseObj) {
+        if (this.isKick && this.kickResolve) {
+            // Answer of the category lookup: keep the id and ask the streams through the normal path (new ticket), failure is silent
+            if (KickBrowse_CatResolve(responseObj, this.kickResolve)) Screens_loadDataRequest(this.screen);
+            else Screens_loadDataFail(this.screen);
+            return;
+        }
+
+        this.concatenateAfter(this.isKick ? KickBrowse_Items(responseObj) : responseObj);
+    };
     ScreenObj[key].key_play = function () {
         if (!Settings_value.enable_mature.defaultValue) {
             Main_showWarningDialog(STR_MATURE_DISABLED, 2000);
@@ -1924,6 +2080,14 @@ function ScreensObj_InitChannelClip() {
             base_post: channelClipQuery,
             isQuery: true,
             set_url: function () {
+                this.isKick = KickApi_IsKickId(this.lastselectedChannel);
+
+                if (this.isKick) {
+                    // The clip period switch does not apply, paging goes by the cursor string of the previous page
+                    this.url = ScreensObj_KickClipsUrl(KickApi_Slug(this.lastselectedChannel), this.cursor);
+                    return;
+                }
+
                 this.post = this.base_post
                     .replace('%c', this.lastselectedChannel)
                     .replace('%t', this.period[this.periodPos - 1])
@@ -1954,6 +2118,15 @@ function ScreensObj_InitChannelClip() {
     ScreenObj[key].Set_Scroll();
 
     ScreenObj[key].concatenate = function (responseObj) {
+        if (this.isKick) {
+            var page = ScreensObj_KickClipPage(responseObj, this.cursor);
+
+            this.dataEnded = page.dataEnded;
+            this.cursor = page.cursor;
+            this.concatenateAfter({edges: page.items});
+            return;
+        }
+
         var hasData = responseObj.data && responseObj.data.user && responseObj.data.user.clips && responseObj.data.user.clips.edges;
 
         if (hasData) {
@@ -2053,7 +2226,29 @@ function ScreensObj_InitGame() {
             object: 'edges',
             isQuery: true,
             base_post: gamesQuery,
+            //The platform switch is the only item of the top row, the padding keeps the taller category cards off it
+            HasSwitches: true,
+            SwitchesIcons: ['play'],
+            addSwitches: function () {
+                ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen, '0.7em');
+            },
             set_url: function () {
+                this.isKick = KickBrowse_On();
+
+                if (this.isKick) {
+                    // Kick categories: public page, numbered pages behind a helix style cursor
+                    this.useHelix = true;
+                    this.isQuery = false;
+                    this.object = 'data';
+                    this.url = KickBrowse_GamesUrl(this.cursor);
+                    return;
+                }
+
+                //A query is posted to the GQL url, the Kick mode replaced it with its own
+                this.url = PlayClip_BaseUrl;
+                delete this.useHelix;
+                this.isQuery = true;
+                this.object = 'edges';
                 this.post = this.base_post.replace('%y', this.cursor ? ', after: \\"' + this.cursor + '\\"' : '');
             },
             label_init: function () {
@@ -2074,7 +2269,21 @@ function ScreensObj_InitGame() {
         ScreensObj_CheckIsOpen(this.screen, preventRefresh);
     };
 
+    ScreenObj[key].key_play = function () {
+        if (this.posY === -1) {
+            KickBrowse_Toggle(this.screen);
+            return;
+        }
+
+        Base_Game_obj.key_play.call(this);
+    };
+
     ScreenObj[key].concatenate = function (responseObj) {
+        if (this.isKick) {
+            this.concatenateAfter(KickBrowse_Games(responseObj));
+            return;
+        }
+
         var hasData = responseObj.data && responseObj.data.games && responseObj.data.games.edges;
 
         if (hasData) {
@@ -2119,6 +2328,8 @@ function ScreensObj_InitUserGames() {
             IsUser: true,
             object: 'data',
             isQuery: true,
+            //A Kick only main user: an empty list, its kick:<id> never goes to Twitch GQL
+            kickOnlyResponse: '{"data":{"user":{"followedGames":{"nodes":[]}}}}',
             base_post: userGameQuery,
             set_url: function () {
                 this.dataEnded = true;
@@ -2185,7 +2396,29 @@ function ScreensObj_InitSearchGames() {
             object: 'items',
             isQuery: true,
             base_post: searchGamesQuery,
+            //The platform switch is the only item of the top row
+            HasSwitches: true,
+            SwitchesIcons: ['play'],
+            addSwitches: function () {
+                ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen, '0.7em');
+            },
             set_url: function () {
+                this.isKick = KickBrowse_On();
+
+                if (this.isKick) {
+                    // Kick search: public page, one result page, the helix style paging ends at once
+                    this.useHelix = true;
+                    this.isQuery = false;
+                    this.object = 'data';
+                    this.url = KickSearch_Url('categories', Main_values.Search_data);
+                    return;
+                }
+
+                //A query is posted to the GQL url, the Kick mode replaced it with its own
+                this.url = PlayClip_BaseUrl;
+                delete this.useHelix;
+                this.isQuery = true;
+                this.object = 'items';
                 this.post = this.base_post
                     .replace('%x', Main_values.Search_data)
                     .replace('%y', this.cursor ? 'cursor: \\"' + this.cursor + '\\"' : '');
@@ -2212,7 +2445,21 @@ function ScreensObj_InitSearchGames() {
     ScreenObj[key] = Screens_assign(ScreenObj[key], Base_Game_obj);
     ScreenObj[key].Set_Scroll();
 
+    ScreenObj[key].key_play = function () {
+        if (this.posY === -1) {
+            KickBrowse_Toggle(this.screen);
+            return;
+        }
+
+        Base_Game_obj.key_play.call(this);
+    };
+
     ScreenObj[key].concatenate = function (responseObj) {
+        if (this.isKick) {
+            this.concatenateAfter({data: KickSearch_Categories(responseObj), pagination: {cursor: ''}});
+            return;
+        }
+
         var hasData = responseObj.data && responseObj.data.searchFor && responseObj.data.searchFor.games && responseObj.data.searchFor.games.items;
 
         if (hasData) {
@@ -2247,6 +2494,7 @@ function ScreensObj_InitUserChannels() {
             object: 'edges',
             isQuery: true,
             useUserToken: true,
+            kickOnlyResponse: '{"data":{"currentUser":{"follows":{"edges":[],"pageInfo":{"hasNextPage":false}}}}}',
             base_post: userChannelQuery,
             set_url: function () {
                 this.post = this.base_post.replace('%y', this.cursor ? ', after: \\"' + this.cursor + '\\"' : '');
@@ -2273,6 +2521,27 @@ function ScreensObj_InitUserChannels() {
     ScreenObj[key].visiblerows = 5;
     ScreenObj[key].Set_Scroll();
 
+    ScreenObj[key].finishChannels = function () {
+        //sort
+        this.data.sort(function (a, b) {
+            if (!a || !b) {
+                return 0;
+            }
+            return a.node.login < b.node.login ? -1 : a.node.login > b.node.login ? 1 : 0;
+        });
+
+        var i = 0,
+            len = this.data.length;
+
+        for (i; i < len; i++) {
+            this.data[i] = this.data[i].node;
+        }
+
+        this.loadingData = false;
+
+        this.loadDataSuccess();
+    };
+
     ScreenObj[key].concatenate = function (responseObj) {
         var hasData =
             responseObj.data && responseObj.data.currentUser && responseObj.data.currentUser.follows && responseObj.data.currentUser.follows.edges;
@@ -2292,6 +2561,8 @@ function ScreensObj_InitUserChannels() {
             } else if (!this.data) {
                 this.dataEnded = true;
                 this.data = [];
+                //The followed Kick channels still join an empty Twitch list (KickFollow_ChannelsResult finishes)
+                if (KickFollow_ChannelsStart(this.screen)) return;
                 this.loadDataSuccess();
                 this.loadingData = false;
                 return;
@@ -2299,25 +2570,9 @@ function ScreensObj_InitUserChannels() {
 
             if (!this.dataEnded) {
                 Screens_loadDataRequest(this.screen);
-            } else {
-                //sort
-                this.data.sort(function (a, b) {
-                    if (!a || !b) {
-                        return 0;
-                    }
-                    return a.node.login < b.node.login ? -1 : a.node.login > b.node.login ? 1 : 0;
-                });
-
-                var i = 0,
-                    len = this.data.length;
-
-                for (i; i < len; i++) {
-                    this.data[i] = this.data[i].node;
-                }
-
-                this.loadingData = false;
-
-                this.loadDataSuccess();
+            } else if (!KickFollow_ChannelsStart(this.screen)) {
+                //The followed Kick channels are merged once, after the last Twitch page
+                this.finishChannels();
             }
         } else {
             this.dataEnded = true;
@@ -2342,7 +2597,29 @@ function ScreensObj_InitSearchChannels() {
             object: 'items',
             isQuery: true,
             base_post: searchCannelQuery,
+            //The platform switch is the only item of the top row
+            HasSwitches: true,
+            SwitchesIcons: ['play'],
+            addSwitches: function () {
+                ScreensObj_addSwitches([STR_SPACE_HTML + STR_SPACE_HTML + KickBrowse_SwitchLabel()], this.screen);
+            },
             set_url: function () {
+                this.isKick = KickBrowse_On();
+
+                if (this.isKick) {
+                    // Kick search: public page, one result page, the helix style paging ends at once
+                    this.useHelix = true;
+                    this.isQuery = false;
+                    this.object = 'data';
+                    this.url = KickSearch_Url('channels', Main_values.Search_data);
+                    return;
+                }
+
+                //A query is posted to the GQL url, the Kick mode replaced it with its own
+                this.url = PlayClip_BaseUrl;
+                delete this.useHelix;
+                this.isQuery = true;
+                this.object = 'items';
                 this.post = this.base_post
                     .replace('%x', Main_values.Search_data)
                     .replace('%y', this.cursor ? 'cursor: \\"' + this.cursor + '\\"' : '');
@@ -2360,6 +2637,11 @@ function ScreensObj_InitSearchChannels() {
                 if (!Main_values.Search_isSearching) Main_RestoreTopLabel();
             },
             key_play: function () {
+                if (this.posY === -1) {
+                    KickBrowse_Toggle(this.screen);
+                    return;
+                }
+
                 if (this.is_a_Banner()) return;
 
                 this.base_key_play(key, false);
@@ -2377,6 +2659,11 @@ function ScreensObj_InitSearchChannels() {
     ScreenObj[key].Set_Scroll();
 
     ScreenObj[key].concatenate = function (responseObj) {
+        if (this.isKick) {
+            this.concatenateAfter({data: KickSearch_Channels(responseObj), pagination: {cursor: ''}});
+            return;
+        }
+
         var hasData = responseObj.data && responseObj.data.searchFor && responseObj.data.searchFor.users && responseObj.data.searchFor.users.items;
 
         if (hasData) {
@@ -3266,6 +3553,9 @@ function ScreensObj_AnimateThumbId(screen) {
 var ScreensObj_getVodAnimatedUrlPost = '{"query":"{video(id:\\"%x\\"){animatedPreviewURL}}"}';
 
 function ScreensObj_getVodAnimatedUrl(screen) {
+    //A Kick VOD has no Twitch animated preview, its id never goes to Twitch GQL
+    if (KickApi_IsKickId(screen.DataObj[screen.posY + '_' + screen.posX][7])) return;
+
     FullxmlHttpGet(
         PlayClip_BaseUrl,
         Play_base_backup_headers_Array,
@@ -3293,6 +3583,9 @@ function ScreensObj_getVodAnimatedUrlResult(resultObj, key) {
 }
 
 function ScreensObj_UpdateGameInfo(PlayVodClip, key) {
+    // A Kick category is not a Twitch game
+    if (KickApi_IsKickId(Main_values.Main_gameSelected_id)) return;
+
     var theUrl = Main_helix_api + 'games?id=' + Main_values.Main_gameSelected_id;
 
     BaseXmlHttpGet(theUrl, ScreensObj_UpdateGameInfoSuccess, noop_fun, PlayVodClip, key, true);
@@ -3351,6 +3644,52 @@ function ScreensObj_UpdateGameInfoSuccess(response, PlayVodClip, key) {
     } else if (PlayVodClip === 3) {
         ScreensObj_SetTopLable(Main_values.Main_gameSelected, STR_CLIPS + STR_SPACE_HTML + Main_Periods[ScreenObj[key].periodPos - 1]);
     }
+}
+
+// Kick list rows: converted by the KickApi builders, rows with an unsafe id are skipped
+// json: videos array of v2/channels/<slug>/videos, ch: {slug, name}. The running stream (is_live, duration 0) is not a video.
+function ScreensObj_KickVodItems(json, ch) {
+    var items = [],
+        len = Array.isArray(json) ? json.length : 0,
+        i = 0,
+        cell;
+
+    for (i; i < len; i++) {
+        if (!json[i] || json[i].is_live) continue;
+
+        cell = KickApi_VodCell(json[i], ch);
+        if (cell) items.push(KickApi_Item(cell, cell[7], cell[14], json[i].is_mature));
+    }
+
+    return items;
+}
+
+// json: response of v2/channels/<slug>/clips
+function ScreensObj_KickClipItems(json) {
+    var items = [],
+        clips = json && Array.isArray(json.clips) ? json.clips : [],
+        len = clips.length,
+        i = 0,
+        cell;
+
+    for (i; i < len; i++) {
+        cell = clips[i] ? KickApi_ClipCell(clips[i]) : null;
+        if (cell) items.push(KickApi_Item(cell, cell[7], cell[2], false));
+    }
+
+    return items;
+}
+
+function ScreensObj_KickClipsUrl(slug, cursor) {
+    return KickApi_Base + 'v2/channels/' + KickApi_SafeSlug(slug) + '/clips' + (cursor ? '?cursor=' + encodeURIComponent(cursor) : '');
+}
+
+// Next page state of a clips response. No cursor, an empty page or a cursor that did not move ends the list.
+function ScreensObj_KickClipPage(json, prevCursor) {
+    var next = json && json.nextCursor && typeof json.nextCursor === 'object' ? JSON.stringify(json.nextCursor) : json && json.nextCursor,
+        items = ScreensObj_KickClipItems(json);
+
+    return {items: items, cursor: next || null, dataEnded: !next || !items.length || next === prevCursor};
 }
 
 function ScreensObj_CheckIsMature(cell) {
@@ -3418,7 +3757,7 @@ function ScreensObj_ThumbInfoUpdate(obj, checkResult, check_1, check_2, check_3)
 var ScreensObj_getStreamInfoCache = {};
 
 function ScreensObj_getStreamInfo(userId, checkResult, check_1, check_2, check_3, check_4, check_5, callBackSuccess, callBackError) {
-    if (!userId) {
+    if (!userId || KickApi_IsKickId(userId)) {
         return;
     }
 
@@ -3454,6 +3793,11 @@ function BaseXmlHttpGetFull(
     postMessage,
     Method
 ) {
+    if (Main_KickHelixBlocked(theUrl)) {
+        callBackError(check_1, checkResult, {status: 0, responseText: ''});
+        return;
+    }
+
     var headers;
 
     if (UseHeaders) {

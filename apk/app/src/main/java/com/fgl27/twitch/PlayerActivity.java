@@ -69,6 +69,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.media3.common.C;
 import androidx.media3.common.Format;
+import androidx.media3.common.MimeTypes;
 import androidx.media3.common.PlaybackException;
 import androidx.media3.common.PlaybackParameters;
 import androidx.media3.common.Player;
@@ -80,11 +81,17 @@ import androidx.media3.common.util.Util;
 import androidx.media3.exoplayer.DefaultLivePlaybackSpeedControl;
 import androidx.media3.exoplayer.DefaultRenderersFactory;
 import androidx.media3.exoplayer.ExoPlayer;
+import androidx.media3.exoplayer.Renderer;
 import androidx.media3.exoplayer.analytics.AnalyticsListener;
+import androidx.media3.exoplayer.mediacodec.MediaCodecInfo;
+import androidx.media3.exoplayer.mediacodec.MediaCodecSelector;
+import androidx.media3.exoplayer.mediacodec.MediaCodecUtil;
 import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.TrackGroupArray;
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector;
 import androidx.media3.exoplayer.trackselection.MappingTrackSelector;
+import androidx.media3.exoplayer.video.MediaCodecVideoRenderer;
+import androidx.media3.exoplayer.video.VideoRendererEventListener;
 import androidx.media3.ui.PlayerView;
 import com.fgl27.twitch.channels.ChannelsUtils;
 import com.fgl27.twitch.DataSource.AdPlaylistFilter;
@@ -248,6 +255,16 @@ public class PlayerActivity extends Activity {
     private final int PlayerAccount = 4;
     private final int PlayerAccountPlus = PlayerAccount + 1;
 
+    //The view (and its SurfaceView z-order) of a position never changes at runtime: the MTK hardware video planes keep their
+    //binding and ignore a runtime setZOrderMediaOverlay, so after a swap the small window was left behind the big one.
+    //Swaps move the players between the views instead
+    private final PlayerView[] FixedPlayerViews = new PlayerView[PlayerAccountPlus];
+
+    //MTK TV: the plane a window is drawn on follows its decoder, not the view, see VdpVideoRenderer
+    private static Boolean VdpDecoder;
+    private int VdpFixState; //0 idle, 1 releasing the decoders, 2 big window decoder starting, 3 small window decoder starting
+    private int VdpFixPending;
+
     private final ProgressBar[] loadingView = new ProgressBar[PlayerAccount + 3];
 
     private boolean IsUsingSurfaceView;
@@ -264,6 +281,27 @@ public class PlayerActivity extends Activity {
     private BlackListMediaCodecSelector BLACKLISTED_CODECS = null;
     private String[] BLACKLISTED_QUALITIES = null;
 
+    //Hybrid 4-way multistream for devices whose hardware decoder allows fewer instances than players (0 = off).
+    //A multistream player created while HybridHwMax hardware players are alive decodes in software, capped at HybridCapHeight.
+    //The decoder is chosen when the player is built and follows the player object when players move between positions
+    private int HybridHwMax = 0;
+    private int HybridCapHeight = 480;
+    //c2.android.avc fails (4003) in bursts of up to 3 within 2 s (measured), a software slot resets up to 7 times and the 8th error in a row closes it
+    private static final int SW_DECODER_ERROR_MAX = 8;
+
+    //Video in software only, other tracks (audio) keep the default list
+    private static final MediaCodecSelector SOFTWARE_VIDEO_CODECS = (mimeType, requiresSecureDecoder, requiresTunnelingDecoder) -> {
+        List<MediaCodecInfo> infos = MediaCodecUtil.getDecoderInfos(mimeType, requiresSecureDecoder, requiresTunnelingDecoder);
+        if (!MimeTypes.isVideo(mimeType)) return infos;
+
+        List<MediaCodecInfo> software = new ArrayList<>();
+        for (MediaCodecInfo info : infos) {
+            if (info.softwareOnly) software.add(info);
+        }
+
+        return software;
+    };
+
     private final PlayerObj[] PlayerObj = new PlayerObj[PlayerAccountPlus];
 
     private final boolean[] AudioEnabled = { true, false, false, false, true };
@@ -272,6 +310,7 @@ public class PlayerActivity extends Activity {
 
         boolean IsPlaying;
         boolean isScreenPreview;
+        boolean SwDecoder;
 
         DefaultTrackSelector trackSelector;
         int trackSelectorParametersPosition;
@@ -293,6 +332,7 @@ public class PlayerActivity extends Activity {
         PlayerView playerView;
 
         ExoPlayer player;
+        VdpVideoRenderer vdpRenderer;
 
         PlayerObj(
             boolean IsPlaying,
@@ -501,6 +541,7 @@ public class PlayerActivity extends Activity {
             PlayerObj[i].playerView = findViewById(idGone[i]);
             PlayerObj[i].playerView.setVisibility(View.GONE);
             PlayerObj[i].playerView = findViewById(idVisible[i]);
+            FixedPlayerViews[i] = PlayerObj[i].playerView;
         }
 
         PlayerObj[0].playerView.setVisibility(View.VISIBLE);
@@ -569,6 +610,12 @@ public class PlayerActivity extends Activity {
         ExoPlayer tempPlayer = PlayerObj[PlayerObjPosition].player;
         PlayerObj[PlayerObjPosition].player = PlayerObj[4].player;
         PlayerObj[4].player = tempPlayer;
+        VdpVideoRenderer tempRenderer = PlayerObj[PlayerObjPosition].vdpRenderer;
+        PlayerObj[PlayerObjPosition].vdpRenderer = PlayerObj[4].vdpRenderer;
+        PlayerObj[4].vdpRenderer = tempRenderer;
+        VdpCheckSmallWindow(PlayerObjPosition);
+        //The preview player is never software decoded
+        PlayerObj[PlayerObjPosition].SwDecoder = false;
 
         PlayerObj[PlayerObjPosition].playerView.setPlayer(PlayerObj[PlayerObjPosition].player);
         PlayerObj[PlayerObjPosition].player.setPlayWhenReady(true);
@@ -577,7 +624,7 @@ public class PlayerActivity extends Activity {
             setEnabledQualities(PlayerObjPosition);
         } else {
             PlayerObj[PlayerObjPosition].trackSelector.setParameters(
-                    trackSelectorParameters[PlayerObj[PlayerObjPosition].trackSelectorParametersPosition]
+                    TrackParameters(PlayerObjPosition, PlayerObj[PlayerObjPosition].trackSelectorParametersPosition)
                 );
         }
 
@@ -616,13 +663,19 @@ public class PlayerActivity extends Activity {
             );
 
         if (PlayerObj[PlayerObjPosition].player == null) {
+            PlayerObj[PlayerObjPosition].SwDecoder = UseSwDecoder(PlayerObjPosition);
+
             PlayerObj[PlayerObjPosition].trackSelector = new DefaultTrackSelector(this);
             PlayerObj[PlayerObjPosition].trackSelector.setParameters(
-                    trackSelectorParameters[PlayerObj[PlayerObjPosition].trackSelectorParametersPosition]
+                    TrackParameters(PlayerObjPosition, PlayerObj[PlayerObjPosition].trackSelectorParametersPosition)
                 );
 
-            DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(this);
-            if (BLACKLISTED_CODECS != null) renderersFactory.setMediaCodecSelector(BLACKLISTED_CODECS);
+            if (VdpDecoder == null) VdpDecoder = !Tools.DefectedCodecDontExist(new String[] { "omx.mtk.video.decoder" });
+            DefaultRenderersFactory renderersFactory = VdpDecoder
+                ? new VdpRenderersFactory(PlayerObj[PlayerObjPosition])
+                : new DefaultRenderersFactory(this);
+            if (PlayerObj[PlayerObjPosition].SwDecoder) renderersFactory.setMediaCodecSelector(SOFTWARE_VIDEO_CODECS);
+            else if (BLACKLISTED_CODECS != null) renderersFactory.setMediaCodecSelector(BLACKLISTED_CODECS);
 
             PlayerObj[PlayerObjPosition].player = new ExoPlayer.Builder(this, renderersFactory)
                 .setTrackSelector(PlayerObj[PlayerObjPosition].trackSelector)
@@ -643,6 +696,8 @@ public class PlayerActivity extends Activity {
             PlayerObj[PlayerObjPosition].player.addAnalyticsListener(new AnalyticsEventListener());
 
             PlayerObj[PlayerObjPosition].playerView.setPlayer(PlayerObj[PlayerObjPosition].player);
+
+            VdpCheckSmallWindow(PlayerObjPosition);
         }
 
         PlayerObj[PlayerObjPosition].player.setPlayWhenReady(true);
@@ -1077,12 +1132,182 @@ public class PlayerActivity extends Activity {
         }
     }
 
+    //Give every position back its own view and move the players into them (decoders keep running, only the output surface changes)
+    private void BindPlayersToFixedViews() {
+        boolean changed = false;
+
+        for (int i = 0; i < PlayerAccount; i++) {
+            if (PlayerObj[i].playerView != FixedPlayerViews[i]) changed = true;
+        }
+
+        if (!changed) return;
+
+        ExoPlayer[] players = new ExoPlayer[PlayerAccount];
+
+        for (int i = 0; i < PlayerAccount; i++) {
+            players[i] = PlayerObj[i].player;
+            PlayerObj[i].playerView = FixedPlayerViews[i];
+        }
+
+        //Set the players first: a view that still holds another player drops it only when that view is given its new player.
+        //Each player is briefly without a surface between its old view losing it and its new view setting it, all in one UI message
+        for (int i = 0; i < PlayerAccount; i++) {
+            if (players[i] != null) PlayerObj[i].playerView.setPlayer(players[i]);
+        }
+
+        for (int i = 0; i < PlayerAccount; i++) {
+            if (players[i] == null) PlayerObj[i].playerView.setPlayer(null);
+        }
+
+        //Visibility must follow the player: releasePlayer hides the view of its position, so a survivor bound to a hidden view
+        //(main ended, PiP player takes over) would play audio without video, and a view without a player must not stay visible
+        for (int i = 0; i < PlayerAccount; i++) {
+            PlayerObj[i].playerView.setVisibility(players[i] != null ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    //Same video renderer as DefaultRenderersFactory builds (extension renderers are off), with the decoder path tracking
+    private class VdpRenderersFactory extends DefaultRenderersFactory {
+
+        private final PlayerObj owner;
+
+        VdpRenderersFactory(PlayerObj owner) {
+            super(PlayerActivity.this);
+            this.owner = owner;
+        }
+
+        @Override
+        protected void buildVideoRenderers(
+            @NonNull Context context,
+            int extensionRendererMode,
+            @NonNull MediaCodecSelector mediaCodecSelector,
+            boolean enableDecoderFallback,
+            @NonNull Handler eventHandler,
+            @NonNull VideoRendererEventListener eventListener,
+            long allowedVideoJoiningTimeMs,
+            @NonNull ArrayList<Renderer> out
+        ) {
+            owner.vdpRenderer = new VdpVideoRenderer(
+                new MediaCodecVideoRenderer.Builder(context)
+                    .setCodecAdapterFactory(getCodecAdapterFactory())
+                    .setMediaCodecSelector(mediaCodecSelector)
+                    .setAllowedJoiningTimeMs(allowedVideoJoiningTimeMs)
+                    .setEnableDecoderFallback(enableDecoderFallback)
+                    .setEventHandler(eventHandler)
+                    .setEventListener(eventListener)
+                    .setMaxDroppedFramesToNotify(MAX_DROPPED_VIDEO_FRAME_COUNT_TO_NOTIFY),
+                VdpCallback
+            );
+            out.add(owner.vdpRenderer);
+        }
+    }
+
+    private final VdpVideoRenderer.Callback VdpCallback = new VdpVideoRenderer.Callback() {
+        @Override
+        public void onVdpCodecInitialized(VdpVideoRenderer renderer) {
+            MainThreadHandler.post(() -> VdpCodecInitialized(renderer));
+        }
+
+        @Override
+        public void onVdpCodecReleased(VdpVideoRenderer renderer) {
+            MainThreadHandler.post(() -> VdpCodecReleased(renderer));
+        }
+    };
+
+    private void SendVdp(int position, int messageType) {
+        if (PlayerObj[position].player != null && PlayerObj[position].vdpRenderer != null) {
+            PlayerObj[position].player.createMessage(PlayerObj[position].vdpRenderer).setType(messageType).send();
+        }
+    }
+
+    //Re-create the decoders of both windows, the big window first so it gets VDP0 (main plane) and the small one VDP1 (sub plane, on top).
+    //Call it BEFORE the players change views: the hold messages run on each player thread ahead of the surface change, so no window ever
+    //shows a frame from the other window's path. A window that does, even for a moment, takes over that plane in the hardware composer
+    //and when it leaves the plane is torn down, so the small window was hidden after some swaps.
+    //Costs both windows their video until the next key frame
+    private void VdpReorder() {
+        VdpFixCancel.run();
+
+        VdpFixPending = 0;
+        for (int i = 0; i < 2; i++) {
+            if (PlayerObj[i].player != null && PlayerObj[i].vdpRenderer != null) {
+                if (PlayerObj[i].vdpRenderer.vdpPath >= 0) VdpFixPending++;
+                SendVdp(i, VdpVideoRenderer.MSG_RELEASE_AND_HOLD);
+            }
+        }
+
+        if (BuildConfig.DEBUG) {
+            Log.i(TAG, "VdpReorder decoders to release " + VdpFixPending);
+        }
+
+        VdpFixState = 1;
+        MainThreadHandler.postDelayed(VdpFixCancel, 3000);
+        if (VdpFixPending == 0) VdpResume(0);
+    }
+
+    //A new small window while the big one holds VDP1 (it was the small one before): big window decoder first
+    private void VdpCheckSmallWindow(int position) {
+        if (
+            position == 1 &&
+            !MultiStreamEnable &&
+            PlayerObj[0].player != null &&
+            PlayerObj[0].vdpRenderer != null &&
+            PlayerObj[0].vdpRenderer.vdpPath == 1
+        ) VdpReorder();
+    }
+
+    private boolean VdpBothWindows() {
+        return (
+            !MultiStreamEnable &&
+            PlayerObj[0].player != null &&
+            PlayerObj[1].player != null &&
+            PlayerObj[0].vdpRenderer != null &&
+            PlayerObj[1].vdpRenderer != null &&
+            PlayerObj[0].vdpRenderer.vdpPath >= 0 &&
+            PlayerObj[1].vdpRenderer.vdpPath >= 0
+        );
+    }
+
+    private void VdpResume(int position) {
+        VdpFixState = position + 2;
+        if (PlayerObj[position].player != null) SendVdp(position, VdpVideoRenderer.MSG_RESUME);
+        else if (position == 0) VdpResume(1);
+        else VdpFixCancel.run();
+    }
+
+    private void VdpCodecReleased(VdpVideoRenderer renderer) {
+        if (VdpFixState != 1 || (renderer != PlayerObj[0].vdpRenderer && renderer != PlayerObj[1].vdpRenderer)) return;
+
+        if (--VdpFixPending <= 0) VdpResume(0);
+    }
+
+    private void VdpCodecInitialized(VdpVideoRenderer renderer) {
+        if (VdpFixState == 2 && renderer == PlayerObj[0].vdpRenderer) VdpResume(1);
+        else if (VdpFixState == 3 && renderer == PlayerObj[1].vdpRenderer) VdpFixCancel.run();
+    }
+
+    //Done or stalled: let both decoders start
+    private final Runnable VdpFixCancel = () -> {
+        if (VdpFixState == 0) return;
+
+        MainThreadHandler.removeCallbacks(this.VdpFixCancel);
+        VdpFixState = 0;
+        SendVdp(0, VdpVideoRenderer.MSG_RESUME);
+        SendVdp(1, VdpVideoRenderer.MSG_RESUME);
+    };
+
     private void SwitchPlayer() {
+        if (VdpBothWindows()) VdpReorder();
+        else VdpFixCancel.run();
+
         PlayerObj tempPlayerObj = PlayerObj[0];
         PlayerObj[0] = PlayerObj[1];
         PlayerObj[1] = tempPlayerObj;
 
-        //UpdatePosition before the rest as ResetPPView and PlayerObjUpdateTrackSelector can cause player errors
+        //PlayerObj[0] must keep the big (bottom) view and PlayerObj[1] the small (top) one, so no z-order change is needed
+        BindPlayersToFixedViews();
+
+        //UpdatePosition before the rest as PlayerObjUpdateTrackSelector can cause player errors
         for (int i = 0; i < 2; i++) {
             if (PlayerObj[i].Listener != null) PlayerObj[i].Listener.UpdatePosition(i);
         }
@@ -1090,14 +1315,12 @@ public class PlayerActivity extends Activity {
         if (isFullScreen) {
             PlayerObj[0].playerView.setLayoutParams(PlayerViewDefaultSize);
             PlayerObj[1].playerView.setLayoutParams(PlayerViewSmallSize[PicturePicturePosition][PicturePictureSize]);
-            ResetPPView();
 
             for (int i = 0; i < 2; i++) {
                 PlayerObjUpdateTrackSelector(i, i);
             }
         } else {
             updateVideSizePP(false);
-            ResetPPView();
         }
 
         ApplyAudioAll();
@@ -1126,9 +1349,33 @@ public class PlayerActivity extends Activity {
         PlayerObj[PlayerObjPos].trackSelectorParametersPosition = ParametersPos;
 
         if (PlayerObj[PlayerObjPos].trackSelector != null) {
-            if (BLACKLISTED_QUALITIES == null) PlayerObj[PlayerObjPos].trackSelector.setParameters(trackSelectorParameters[ParametersPos]);
+            if (BLACKLISTED_QUALITIES == null) PlayerObj[PlayerObjPos].trackSelector.setParameters(TrackParameters(PlayerObjPos, ParametersPos));
             else setEnabledQualities(ParametersPos);
         }
+    }
+
+    //Hybrid mode: a multistream player beyond the hardware decoder instances decodes in software
+    private boolean UseSwDecoder(int PlayerObjPosition) {
+        if (HybridHwMax < 1 || !MultiStreamEnable || PlayerObjPosition > 3) return false;
+
+        int hardware = 0;
+        for (int i = 0; i < PlayerAccountPlus; i++) {
+            if (i != PlayerObjPosition && PlayerObj[i].player != null && !PlayerObj[i].SwDecoder) hardware++;
+        }
+
+        return hardware >= HybridHwMax;
+    }
+
+    //Software decoded players never select a video above the hybrid cap
+    private DefaultTrackSelector.Parameters TrackParameters(int PlayerObjPos, int ParametersPos) {
+        DefaultTrackSelector.Parameters parameters = trackSelectorParameters[ParametersPos];
+        if (!PlayerObj[PlayerObjPos].SwDecoder) return parameters;
+
+        int height = HybridCapHeight + 10;
+        return parameters
+            .buildUpon()
+            .setMaxVideoSize(Math.min(parameters.maxVideoWidth, (height * 16) / 9), Math.min(parameters.maxVideoHeight, height))
+            .build();
     }
 
     public void SetAudio(int pos, float volume) {
@@ -1211,6 +1458,12 @@ public class PlayerActivity extends Activity {
     }
 
     public void UnSetMultiStream() {
+        //A rotation can leave the big window on VDP1, re-create the decoders before they change views
+        if (VdpBothWindows() && PlayerObj[0].vdpRenderer.vdpPath == 1) VdpReorder();
+
+        //A main big rotation moved the views with the players, give the positions their own views back
+        BindPlayersToFixedViews();
+
         ClearPlayer(2);
         ClearPlayer(3);
 
@@ -1229,6 +1482,21 @@ public class PlayerActivity extends Activity {
 
         PlayerObj[2].playerView.setVisibility(View.GONE);
         PlayerObj[3].playerView.setVisibility(View.GONE);
+
+        //Hybrid mode: a main big rotation can leave a software decoded player in position 0 or 1,
+        //rebuild it on the hardware decoder that positions 2 and 3 just released
+        for (int i = 0; i < 2; i++) {
+            if (PlayerObj[i].player != null && PlayerObj[i].SwDecoder) {
+                boolean playWhenReady = PlayerObj[i].player.getPlayWhenReady();
+
+                updateResumePosition(i);
+                SimpleReleasePlayer(i);
+                SetupPlayer(i);
+
+                //A paused multistream stays paused
+                if (PlayerObj[i].player != null) PlayerObj[i].player.setPlayWhenReady(playWhenReady);
+            }
+        }
 
         PlayerObjUpdateTrackSelector(0, 0);
     }
@@ -2108,7 +2376,9 @@ public class PlayerActivity extends Activity {
         if (PlayerObj[0].trackSelector != null) {
             IsInAutoMode = position == -1;
 
-            if (IsInAutoMode) {
+            //A software decoded main keeps the capped auto selection: leaving hybrid 4-way the web picks the quality
+            //before UnSetMultiStream rebuilds that player on the hardware decoder (this call is not on the UI thread)
+            if (IsInAutoMode || PlayerObj[0].SwDecoder) {
                 PlayerObjUpdateTrackSelector(0, 0);
 
                 return;
@@ -2143,8 +2413,10 @@ public class PlayerActivity extends Activity {
             if (mappedTrackInfo != null) {
                 for (int rendererIndex = 0; rendererIndex < mappedTrackInfo.getRendererCount(); rendererIndex++) {
                     if (mappedTrackInfo.getRendererType(rendererIndex) == C.TRACK_TYPE_VIDEO) {
-                        TrackSelectionParameters.Builder builder =
-                            trackSelectorParameters[PlayerObj[position].trackSelectorParametersPosition].buildUpon();
+                        TrackSelectionParameters.Builder builder = TrackParameters(
+                            position,
+                            PlayerObj[position].trackSelectorParametersPosition
+                        ).buildUpon();
 
                         builder.setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, false);
                         builder.clearOverridesOfType(C.TRACK_TYPE_VIDEO);
@@ -2153,6 +2425,7 @@ public class PlayerActivity extends Activity {
                         if (trackGroupArray.length > 0) {
                             int MaxBitrate = PlayerBitrate[PlayerObj[position].trackSelectorParametersPosition];
                             int MaxResolution = PlayerResolution[PlayerObj[position].trackSelectorParametersPosition];
+                            if (PlayerObj[position].SwDecoder) MaxResolution = Math.min(MaxResolution, HybridCapHeight + 10);
 
                             ArrayList<Integer> result = new ArrayList<>();
                             Format format;
@@ -2234,7 +2507,13 @@ public class PlayerActivity extends Activity {
         if (position < 4) {
             //Main players
 
-            if (PlayerObj[position].CheckCounter == 1) { //first check just reset
+            if (
+                PlayerObj[position].SwDecoder &&
+                errorCode == PlaybackException.ERROR_CODE_DECODING_FAILED &&
+                PlayerObj[position].CheckCounter < SW_DECODER_ERROR_MAX
+            ) { //software decoder burst, reset only
+                PlayerEventListenerCheckCounterEnd(position);
+            } else if (PlayerObj[position].CheckCounter == 1) { //first check just reset
                 PlayerEventListenerCheckCounterEnd(position);
             } else if (PlayerObj[position].CheckCounter < 4) {
                 if (
@@ -3521,6 +3800,15 @@ public class PlayerActivity extends Activity {
             BLACKLISTED_CODECS = CodecList != null && !CodecList.isEmpty()
                 ? new BlackListMediaCodecSelector(CodecList.toLowerCase(Locale.US).split(","))
                 : null;
+        }
+
+        //hwMax = hardware decoder instances (0 = hybrid off), capHeight = max video height of the software decoded players.
+        //Returns true so the web knows this APK supports it
+        @JavascriptInterface
+        public boolean SetHybridDecoders(int hwMax, int capHeight) {
+            HybridHwMax = hwMax;
+            HybridCapHeight = capHeight;
+            return true;
         }
 
         @JavascriptInterface

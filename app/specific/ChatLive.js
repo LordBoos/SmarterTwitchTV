@@ -116,6 +116,11 @@ var ChatLive_StartSharedId = [];
 var ChatLive_PingId = [];
 var ChatLive_SendPingId;
 var ChatLive_selectedChannel = [];
+var ChatLive_IrcChannel = []; //Linked Twitch login of a Kick chat, its IRC is anonymous and read-only
+var ChatLive_PreLoadLogin = []; //Login the history was requested for, a restart keeps Chat_Id
+var ChatLive_LinkedTries = []; //Failed connects of a linked Twitch chat since its last JOIN
+var ChatLive_LinkedMaxTries = 4;
+var ChatLive_LinkedFailRegex = /^(msg_channel_suspended|tos_ban)$/; //NOTICE msg-id: the linked channel cannot be joined
 var ChatLive_sub_replace = new RegExp('\\\\s', 'gi');
 var ChatLive_chat_line_class = '';
 
@@ -181,6 +186,27 @@ function ChatLive_Init(chat_number, SkipClear) {
         !chat_number ? Play_data.data[14] : PlayExtra_data.data[14],
         !chat_number ? Play_data.data[6] : PlayExtra_data.data[6]
     );
+
+    //Kick row: the Kick chat is the main source, never a Twitch IRC for a Twitch channel that happens to share the login.
+    //A linked Twitch channel is joined by ChatMulti (ChatLive_StartLinkedTwitch)
+    if (KickApi_IsKickRow(!chat_number ? Play_data.data : PlayExtra_data.data)) {
+        //Only ChatLive_StartShared resets it, a Kick chat never starts it
+        ChatLive_isShared[chat_number] = false;
+
+        if (!SkipClear) {
+            ChatLive_LineAdd({
+                chat_number: chat_number,
+                message:
+                    ChatLive_LineAddSimple(STR_LOADING_CHAT + STR_SPACE_HTML + (!chat_number ? Play_data.data[1] : PlayExtra_data.data[1])) +
+                    STR_SPACE_HTML +
+                    STR_LIVE
+            });
+        }
+
+        ChatMulti_Start(chat_number, Chat_Id[chat_number], !SkipClear);
+        return;
+    }
+
     ChatLive_StartShared(chat_number, Chat_Id[chat_number]);
 
     if (!SkipClear) {
@@ -273,6 +299,7 @@ function ChatLive_SetOptions(chat_number, Channel_id, selectedChannel) {
     ChatLive_CacheTouch(Channel_id);
     ChatLive_selectedChannel[chat_number] = selectedChannel;
     if (ChatLive_selectedChannel[chat_number]) ChatLive_selectedChannel[chat_number] = ChatLive_selectedChannel[chat_number].toLowerCase();
+    ChatLive_IrcChannel[chat_number] = '';
 
     ChatLive_User_Set = AddUser_IsUserSet();
 
@@ -316,11 +343,15 @@ function ChatLive_SetOptions(chat_number, Channel_id, selectedChannel) {
     ChatLive_sharedChannelBadgeLoaded[chat_number] = {};
 
     Chat_loadBadgesGlobalRequest(chat_number, Chat_Id[chat_number]);
-    ChatLive_loadCheersChannel(chat_number, Chat_Id[chat_number]);
 
-    ChatLive_loadEmotesChannelBTTV(chat_number, Chat_Id[chat_number]);
-    ChatLive_loadEmotesChannelFFZ(chat_number, Chat_Id[chat_number]);
-    ChatLive_loadEmotesChannelSeven_tv(chat_number, Chat_Id[chat_number]);
+    //Per channel Twitch loaders, never for a Kick channel id
+    if (!KickApi_IsKickId(Channel_id)) {
+        ChatLive_loadCheersChannel(chat_number, Chat_Id[chat_number]);
+
+        ChatLive_loadEmotesChannelBTTV(chat_number, Chat_Id[chat_number]);
+        ChatLive_loadEmotesChannelFFZ(chat_number, Chat_Id[chat_number]);
+        ChatLive_loadEmotesChannelSeven_tv(chat_number, Chat_Id[chat_number]);
+    }
 }
 
 function ChatLive_StartShared(chat_number, id) {
@@ -1130,10 +1161,10 @@ function ChatLive_seven_tv_srcset(emoteUrl, array) {
 }
 
 function ChatLive_PreLoadChat(chat_number, id) {
+    ChatLive_PreLoadLogin[chat_number] = ChatLive_IrcLogin(chat_number);
+
     BaseXmlHttpGet(
-        'https://recent-messages.robotty.de/api/v2/recent-messages/' +
-            ChatLive_selectedChannel[chat_number] +
-            '?limit=30&hide_moderation_messages=true',
+        'https://recent-messages.robotty.de/api/v2/recent-messages/' + ChatLive_IrcLogin(chat_number) + '?limit=30&hide_moderation_messages=true',
         ChatLive_PreLoadChatSuccess,
         noop_fun,
         chat_number,
@@ -1142,7 +1173,8 @@ function ChatLive_PreLoadChat(chat_number, id) {
 }
 
 function ChatLive_PreLoadChatSuccess(data, chat_number, id) {
-    if (id !== Chat_Id[chat_number]) return;
+    //A relinked or unlinked Twitch chat of a Kick stream keeps Chat_Id: drop the history of the old login
+    if (id !== Chat_Id[chat_number] || ChatLive_PreLoadLogin[chat_number] !== ChatLive_IrcLogin(chat_number)) return;
 
     var obj = JSON.parse(data),
         len = obj.messages.length,
@@ -1175,13 +1207,69 @@ function ChatLive_loadChat(chat_number, id, SkipStartLine) {
         });
     }
 
-    useToken[chat_number] = ChatLive_Logging && !ChatLive_Banned[chat_number] && AddUser_IsUserSet() && AddUser_UsernameArray[0].access_token;
+    //A linked Twitch chat is always anonymous
+    useToken[chat_number] =
+        !ChatLive_IrcChannel[chat_number] &&
+        ChatLive_Logging &&
+        !ChatLive_Banned[chat_number] &&
+        AddUser_IsUserSet() &&
+        AddUser_UsernameArray[0].access_token;
 
     ChatLive_loadChatRequest(chat_number, id, SkipStartLine);
 }
 
+//Twitch IRC channel of a chat: the linked Twitch login on a Kick chat, else the stream login
+function ChatLive_IrcLogin(chat_number) {
+    return ChatLive_IrcChannel[chat_number] || ChatLive_selectedChannel[chat_number];
+}
+
+//Linked Twitch chat of a Kick stream (ChatMulti_OnLinks): read-only anonymous IRC with the same lines, badges and moderation
+function ChatLive_StartLinkedTwitch(chat_number, id, login, withHistory) {
+    if (id !== Chat_Id[chat_number] || !/^\w{3,25}$/.test(login)) return;
+
+    ChatLive_IrcChannel[chat_number] = login;
+    ChatLive_LinkedTries[chat_number] = 0;
+    useToken[chat_number] = false;
+
+    if (withHistory) ChatLive_PreLoadChat(chat_number, id);
+    ChatLive_loadChatRequest(chat_number, id, true);
+}
+
+//Ends the linked Twitch chat (ChatMulti_Stop, a channel that cannot be joined); a pending reconnect or history must not outlive it
+function ChatLive_StopLinkedTwitch(chat_number) {
+    if (!ChatLive_IrcChannel[chat_number]) return;
+
+    ChatLive_CheckClear(chat_number);
+    ChatLive_Close(chat_number);
+    ChatLive_IrcChannel[chat_number] = '';
+    ChatLive_PreLoadLogin[chat_number] = '';
+}
+
+//A linked Twitch chat that does not connect (unknown login, network): silent retries with a growing delay, then the link is dropped.
+//It never adds the timeout / loading lines of a Twitch main chat to the Kick chat
+function ChatLive_LinkedRetry(chat_number, id) {
+    var tries = (ChatLive_LinkedTries[chat_number] || 0) + 1;
+
+    if (tries > ChatLive_LinkedMaxTries) {
+        ChatLive_StopLinkedTwitch(chat_number);
+        return;
+    }
+
+    ChatLive_LinkedTries[chat_number] = tries;
+    ChatLive_Close(chat_number);
+
+    ChatLive_CheckId[chat_number] = Main_setTimeout(
+        function () {
+            ChatLive_loadChatRequest(chat_number, id, true);
+        },
+        ChatLive_ReTryDelay * Math.pow(4, tries - 1), //1, 4, 16, 64 s
+        ChatLive_CheckId[chat_number]
+    );
+}
+
 function ChatLive_loadChatRequest(chat_number, id, SkipStartLine) {
-    if (id !== Chat_Id[chat_number]) return;
+    //A Kick chat without a linked Twitch login never joins the Twitch channel of the Kick slug
+    if (id !== Chat_Id[chat_number] || (KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number]) && !ChatLive_IrcChannel[chat_number])) return;
     //Main_Log('ChatLive_loadChatRequest');
 
     ChatLive_socket[chat_number] = new WebSocket('wss://irc-ws.chat.twitch.tv:443', 'irc');
@@ -1197,7 +1285,7 @@ function ChatLive_loadChatRequest(chat_number, id, SkipStartLine) {
             ChatLive_socket[chat_number].send('PASS blah');
             ChatLive_socket[chat_number].send('NICK justinfan12345');
             ChatLive_socket[chat_number].send('CAP REQ :twitch.tv/commands twitch.tv/tags');
-            ChatLive_socket[chat_number].send('JOIN #' + ChatLive_selectedChannel[chat_number]);
+            ChatLive_socket[chat_number].send('JOIN #' + ChatLive_IrcLogin(chat_number));
         }
     };
 
@@ -1234,7 +1322,7 @@ function ChatLive_loadChatRequest(chat_number, id, SkipStartLine) {
                     //Delay the joing so the cap get fully accepted
                     ChatLive_JoinID[chat_number] = Main_setTimeout(
                         function () {
-                            ChatLive_socket[chat_number].send('JOIN #' + ChatLive_selectedChannel[chat_number]);
+                            ChatLive_socket[chat_number].send('JOIN #' + ChatLive_IrcLogin(chat_number));
                         },
                         500,
                         ChatLive_JoinID[chat_number]
@@ -1245,6 +1333,7 @@ function ChatLive_loadChatRequest(chat_number, id, SkipStartLine) {
                 //Main_Log("JOIN");
                 if (!ChatLive_loaded[chat_number]) {
                     ChatLive_loaded[chat_number] = true;
+                    ChatLive_LinkedTries[chat_number] = 0;
 
                     if (!SkipStartLine) {
                         ChatLive_LineAdd({
@@ -1376,14 +1465,14 @@ function ChatLive_loadChatRequest(chat_number, id, SkipStartLine) {
 
     ChatLive_socket[chat_number].onclose = function (event) {
         //Main_Log(JSON.stringify(event) + ' onclose main ');
-        ChatLive_LineAddErro('Websocket closed remotely... ' + JSON.stringify(event), chat_number);
+        if (!ChatLive_IrcChannel[chat_number]) ChatLive_LineAddErro('Websocket closed remotely... ' + JSON.stringify(event), chat_number);
         ChatLive_loaded[chat_number] = false;
         ChatLive_Check(chat_number, id, ChatLive_ReTryDelay, true);
     };
 
     ChatLive_socket[chat_number].onerror = function (error) {
         //Main_Log(JSON.stringify(error) + ' erro main');
-        ChatLive_LineAddErro('Error... ' + JSON.stringify(error), chat_number);
+        if (!ChatLive_IrcChannel[chat_number]) ChatLive_LineAddErro('Error... ' + JSON.stringify(error), chat_number);
         ChatLive_loaded[chat_number] = false;
         ChatLive_Check(chat_number, id, ChatLive_ReTryDelay, true);
     };
@@ -1413,7 +1502,7 @@ function ChatLive_reset(chat_number) {
 
 function ChatLive_Close(chat_number) {
     if (ChatLive_socket[chat_number]) {
-        if (ChatLive_socket[chat_number].readyState === 1) ChatLive_socket[chat_number].send('PART #' + ChatLive_selectedChannel[chat_number]);
+        if (ChatLive_socket[chat_number].readyState === 1) ChatLive_socket[chat_number].send('PART #' + ChatLive_IrcLogin(chat_number));
 
         ChatLive_reset(chat_number);
         ChatLive_socket[chat_number].close(1000);
@@ -1424,6 +1513,11 @@ function ChatLive_Close(chat_number) {
 
 function ChatLive_Check(chat_number, id, timeout, silent) {
     if (!ChatLive_loaded[chat_number] && id === Chat_Id[chat_number]) {
+        if (ChatLive_IrcChannel[chat_number]) {
+            ChatLive_LinkedRetry(chat_number, id);
+            return;
+        }
+
         ChatLive_Close(chat_number);
 
         ChatLive_CheckId[chat_number] = Main_setTimeout(
@@ -1468,7 +1562,7 @@ function ChatLive_CheckRoomState(message, chat_number, retry) {
             //try a join again so the ROOMSTATE get send
             ChatLive_JoinID[chat_number] = Main_setTimeout(
                 function () {
-                    ChatLive_socket[chat_number].send('JOIN #' + ChatLive_selectedChannel[chat_number]);
+                    ChatLive_socket[chat_number].send('JOIN #' + ChatLive_IrcLogin(chat_number));
                 },
                 1000,
                 ChatLive_JoinID[chat_number]
@@ -1665,6 +1759,12 @@ function ChatLive_UserNoticeCheck(message, chat_number, id) {
     //Main_Log(JSON.stringify(message));
     var msgId = message.tags && message.tags.hasOwnProperty('msg-id');
 
+    //Linked Twitch chat of a Kick stream: read-only, its notices are not shown; a channel that cannot be joined drops the link
+    if (ChatLive_IrcChannel[chat_number]) {
+        if (msgId && ChatLive_LinkedFailRegex.test(message.tags['msg-id'] + '')) ChatLive_StopLinkedTwitch(chat_number);
+        return;
+    }
+
     if (msgId && Main_A_includes_B(message.tags['msg-id'] + '', 'host_on')) {
         ChatLive_UserNoticeWarn(message);
     } else if (msgId && useToken[chat_number] && Main_A_includes_B(message.tags['msg-id'] + '', 'msg_banned')) {
@@ -1700,6 +1800,9 @@ function ChatLive_Warn(message, time) {
 }
 
 function ChatLive_SendMessage(message, chat_number) {
+    //Kick chat: only the Kick main chat is written to, never the Twitch token to the Twitch channel of the Kick slug
+    if (KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number])) return KickChat_Send(chat_number, message);
+
     //Main_Log('ChatLive_SendMessage ' + ChatLive_socketSendJoin + ' msg ' + message);
 
     if (ChatLive_socketSendJoin && ChatLive_socketSend && ChatLive_socketSend.readyState === 1) {
@@ -1920,7 +2023,7 @@ function ChatLive_loadChatSuccess(message, chat_number, addToStart) {
 
     if (ChatLive_Highlight_AtStreamer && ChatLive_Channel_Regex_Search[chat_number].test(mmessage)) {
         atstreamer = true;
-    } else if (ChatLive_Highlight_FromStreamer && Main_A_equals_B(nickLower, ChatLive_selectedChannel[chat_number])) {
+    } else if (ChatLive_Highlight_FromStreamer && Main_A_equals_B(nickLower, ChatLive_IrcLogin(chat_number))) {
         fromstreamer = true;
     } else if (ChatLive_Highlight_Mod && tags.mod && tags.mod !== '0') {
         mod = true;
@@ -2090,7 +2193,8 @@ function ChatLive_GetBadges(tags, chat_number) {
     var ret = '',
         isShared = ChatLive_isShared[chat_number] && tags['source-room-id'],
         channelId = isShared ? tags['source-room-id'] : ChatLive_selectedChannel_id[chat_number],
-        badgeTag = isShared && tags['source-badges'] ? 'source-badges' : 'badges'; //shared support
+        badgeTag = isShared && tags['source-badges'] ? 'source-badges' : 'badges', //shared support
+        kickChat = KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number]);
 
     if (ChatLive_Show_Shared_Badge && ChatLive_isShared[chat_number] && ChatLive_sharedProfileImg[channelId]) {
         //TODO add a disable settings option shared chat badge
@@ -2105,7 +2209,13 @@ function ChatLive_GetBadges(tags, chat_number) {
             for (var i = 0, len = badges.length; i < len; i++) {
                 badge = badges[i].split('/');
 
-                if (!badge[0] || !badge[1] || !ChatLive_ShouldShowBadge(badge[0])) {
+                //Linked Twitch lines of a Kick chat: the per channel sets (subscriber, bits) are never loaded, skip their empty slot
+                if (
+                    !badge[0] ||
+                    !badge[1] ||
+                    !ChatLive_ShouldShowBadge(badge[0]) ||
+                    (kickChat && (badge[0] === 'subscriber' || badge[0] === 'bits'))
+                ) {
                     continue;
                 }
 

@@ -150,6 +150,7 @@ for (const rate of [20, 100]) for (const delay of [0, 5000, 30000]) {
     s.ChatLive_Close = noop; s.ChatLive_SendClose = noop; s.ChatLive_CheckClear = noop;
     s.ChatLive_resetChatters = noop; s.Main_emptyWithEle = noop;
     s.ChatMulti_Start = noop; s.ChatMulti_Stop = noop; //ChatMulti.js is covered by chat-multi-tests.js
+    s.KickApi_IsKickRow = d => !!d && d[19] === 'kick'; s.KickApi_IsKickId = id => /^kick:/.test(String(id));
     s.Play_data = {data: []}; s.PlayExtra_data = {data: []};
     s.Play_data.data[14] = 'first'; s.Play_data.data[6] = 'First';
     s.PlayExtra_data.data[14] = 'second'; s.PlayExtra_data.data[6] = 'Second';
@@ -193,6 +194,20 @@ for (const rate of [20, 100]) for (const delay of [0, 5000, 30000]) {
     s.extraEmotes[0] = {fixture: {}};
     s.ChatLive_Clear(0);
     check(Object.keys(s.extraEmotes[0]).length === 0 && Object.keys(s.ChatLive_CachePins[0]).length === 0, 'clear releases active emotes and pins');
+    let loadChatCalls = 0;
+    s.ChatLive_loadChat = () => loadChatCalls++;
+    s.Play_data.data[19] = 'kick'; s.Play_data.data[14] = 'kick:xqc'; s.Play_data.data[1] = 'xQc';
+    s.STR_LOADING_CHAT = 'Loading chat'; s.STR_SPACE_HTML = ' '; s.STR_LIVE = 'LIVE'; s.ChatLive_StartLinkedTwitch = noop;
+    const added = [], multi = [];
+    s.ChatLive_LineAdd = obj => added.push(obj.message);
+    s.ChatMulti_Start = (n, id, withHistory) => multi.push([n, id, withHistory]);
+    s.ChatLive_isShared[0] = true;
+    s.ChatLive_Init(0);
+    check(loadChatCalls === 0 && s.ChatLive_selectedChannel_id[0] === 'kick:xqc', 'kick row opens no Twitch IRC');
+    check(s.ChatLive_isShared[0] === false, 'kick row resets a shared chat flag left by a Twitch chat');
+    check(added.length === 1 && added[0].indexOf('Loading chat xQc') !== -1 && JSON.stringify(multi) === JSON.stringify([[0, s.Chat_Id[0], true]]), 'kick row: loading line, kick chat with history');
+    s.ChatLive_Init(0, true);
+    check(added.length === 1 && multi[1][2] === false, 'kick row SkipClear: no loading line, no history');
 }
 {
     const {s} = sandbox();

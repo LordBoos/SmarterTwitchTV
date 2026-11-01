@@ -43,6 +43,9 @@ var Play_EndDialogElem;
 var Play_MultiDialogElem;
 var Play_SkipStartAuto = false;
 var Play_MaxInstances = 0;
+//4-way multistream with fewer hardware decoder instances: the extra players decode in software (APK SetHybridDecoders)
+var Play_MultiHybrid = false;
+var Play_MultiHybridSupported = false;
 var Play_HasLive;
 var Play_HasVod;
 var Play_VodObj;
@@ -348,7 +351,7 @@ function Play_CheckIfIsLiveStart(callback) {
             //live
 
             isLive = true;
-            id = obj[6];
+            id = PlayHLS_Id(obj);
         }
 
         Play_PreviewCheckId = new Date().getTime();
@@ -492,8 +495,8 @@ function Play_ResumeAfterOnline() {
     Play_ResumeAfterOnlineCounter++;
 }
 
-function Play_getStreamData(channel_name) {
-    return PlayHLS_GetPlayListSync(true, channel_name);
+function Play_getStreamData(data) {
+    return PlayHLS_GetPlayListSync(true, PlayHLS_Id(data));
 }
 
 var streamTitle;
@@ -552,6 +555,22 @@ var Play_updateStreamInfoStartId;
 function Play_updateStreamInfoStart() {
     if (!Play_data.data[14]) return;
 
+    //Kick: the playlist info step has just fetched the channel, use its row synchronously so the history saved
+    //by Play_loadDataSuccessEnd carries the livestream id
+    if (KickApi_IsKickRow(Play_data.data)) {
+        //The partner flag only comes from Twitch GQL, a Kick row never is one
+        Main_values.Main_selectedChannelPartner = false;
+
+        var fresh = KickApi_LiveCache[Play_data.data[6]];
+
+        if (fresh) {
+            Play_data.data = Play_KickKeepThumb(Main_Slice(fresh), Play_data.data);
+            Play_UpdateMainStreamDiv();
+        }
+
+        return;
+    }
+
     var theUrl = Main_helix_api + 'streams?user_id=' + Play_data.data[14];
 
     Play_updateStreamInfoStartId = new Date().getTime();
@@ -595,7 +614,8 @@ function Play_isPlaying() {
 }
 
 function Play_CheckFollow(id) {
-    if (AddUser_UserIsSet() && id) {
+    // A Kick id needs the Kick account, the control stays hidden without it
+    if (AddUser_UserIsSet() && id && (!KickApi_IsKickId(id) || KickUser_Token())) {
         AddCode_PlayRequest = true;
         AddCode_Channel_id = id;
         AddCode_CheckFollow();
@@ -640,10 +660,106 @@ function Play_updateStreamInfo() {
         for (i; i < Play_MultiArray_length; i++) {
             Play_updateStreamInfoMulti(i);
         }
+    } else if (KickApi_IsKickRow(Play_data.data)) {
+        Play_updateStreamInfoGetId = new Date().getTime();
+
+        Play_KickInfoGet(Play_data.data[6], -1, Play_updateStreamInfoGetId);
     } else {
         //When update this also update PlayExtra_updateStreamInfo
         Play_updateStreamInfoGet(Main_helix_api + 'streams?user_id=' + Play_data.data[14], 1);
     }
+}
+
+function Play_KickInfoGet(slug, key, ID) {
+    FullxmlHttpGet(KickApi_Base + 'v2/channels/' + slug, KickApi_Headers(''), Play_KickInfoResult, noop_fun, key, ID, null, null);
+}
+
+//Replace the row of a player slot ({data}) with the fresh live row of its Kick channel (json of v2/channels/<slug>)
+//false when the slot holds another channel or the stream ended
+function Play_KickInfoApply(target, json) {
+    var cell = KickApi_ChannelLiveCell(json);
+
+    if (!cell || !target || !target.data || cell[14] !== target.data[14]) return false;
+
+    target.data = Play_KickKeepThumb(cell, target.data);
+
+    return true;
+}
+
+//v2/channels only gives a stream.kick.com thumbnail that answers 403: keep the working images.kick.com one of a list row
+//(the history saves this row), but only of the same livestream (a restream must not inherit it). A row opened from the channel page only ever has the channel one
+function Play_KickKeepThumb(cell, old) {
+    if (old && old[0] && old[7] === cell[7]) cell[0] = old[0];
+
+    return cell;
+}
+
+//key (the Java bridge only carries numbers): -1 main (Play_data), -2 picture in picture (PlayExtra_data), 0-3 multistream position
+function Play_KickInfoResult(obj, key, ID) {
+    if (!Play_isOn) return;
+
+    var slot, current, error;
+
+    key = parseInt(key, 10);
+
+    if (key === -1) {
+        slot = Play_data;
+        current = Play_updateStreamInfoGetId;
+        error = 1;
+    } else if (key === -2) {
+        slot = PlayExtra_data;
+        current = PlayExtra_updateStreamInfoKickId;
+        error = 0;
+    } else {
+        slot = Play_MultiArray[key];
+        current = Play_updateStreamInfoMultiId[key];
+    }
+
+    if (current !== ID || !slot || !slot.data || !slot.data.length) return;
+
+    var json = null;
+
+    try {
+        if (obj.status === 200) json = JSON.parse(obj.responseText);
+    } catch (e) {}
+
+    if (!KickApi_ChannelLiveCell(json)) {
+        //we fail or the stream just ended but we still watching so update the time
+        if (error === undefined) Play_updateStreamInfoMultiError(key);
+        else Play_updateStreamInfoGetError(error);
+        return;
+    }
+
+    if (!Play_KickInfoApply(slot, json)) return;
+
+    //The partner flag only comes from Twitch GQL, a Kick row never is one. It belongs to the main stream panel only
+    if (key === -1) Main_values.Main_selectedChannelPartner = false;
+    KickApi_LiveCache[slot.data[6]] = slot.data.slice();
+
+    if (key === -1) {
+        Play_UpdateMainStreamDiv();
+        Main_Set_history('live', Play_data.data, !Play_isPlaying());
+
+        if (PlayExtra_PicturePicture) PlayExtra_updateStreamInfo();
+    } else if (key === -2) {
+        Main_Set_history('live', PlayExtra_data.data, !Play_isPlaying());
+        PlayExtra_UpdatePanel();
+    } else {
+        Play_KickInfoMultiShow(key);
+        Main_Set_history('live', slot.data);
+    }
+}
+
+function Play_KickInfoMultiShow(pos) {
+    var data = Play_MultiArray[pos].data;
+
+    if (!pos) {
+        Play_controls[Play_controlsChanelCont].setLabel(data[1]);
+        Play_controls[Play_controlsGameCont].setLabel(data[3]);
+    }
+
+    Play_MultiUpdateInfo(pos, data[3], data[13], twemoji.parse(data[2], false, true), Play_Multi_MainBig ? '_big' : '');
+    Play_MultiUpdateStreamLogoEnd(pos, Play_Multi_MainBig ? '_big' : '');
 }
 
 var Play_updateStreamLogoValuesId;
@@ -791,12 +907,12 @@ function Play_loadData(synchronous) {
 
         //On resume to avoid out of sync resumes we run PP synchronous
         if (synchronous) {
-            var StreamData = Play_getStreamData(Play_data.data[6]);
+            var StreamData = Play_getStreamData(Play_data.data);
 
             if (StreamData) Play_loadDataResultEnd(JSON.parse(StreamData));
             else Play_loadDataErrorFinish();
         } else {
-            PlayHLS_GetPlayListAsync(true, Play_data.data[6], Play_loadDataId, null, Play_loadDataResult);
+            PlayHLS_GetPlayListAsync(true, PlayHLS_Id(Play_data.data), Play_loadDataId, null, Play_loadDataResult);
         }
     } else Play_loadDataSuccessFake();
 }
@@ -2106,7 +2222,6 @@ function Play_CloseBigAndSwich(error_410) {
     Play_showWarningMiddleDialog(error_410 ? STR_410_ERROR : Play_data.data[1] + ' ' + STR_LIVE + STR_IS_OFFLINE, 2500);
 
     if (PlayExtra_data.data.length > 0) {
-        if (Main_IsOn_OSInterface) OSInterface_mSwitchPlayer();
         PlayExtra_SwitchPlayer();
         Play_CloseSmall();
     } else {
