@@ -23,9 +23,13 @@ var version = {
     VersionBase: '3.0',
     publishVersionCode: 396, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
     ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/396/SmarterPurpleTV_3_0_396.apk',
-    WebVersion: 'November 1 2026',
-    WebTag: 773, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+    WebVersion: 'November 2 2026',
+    WebTag: 774, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
     changelog: [
+        {
+            title: 'November 2 2026 (Web 774)',
+            changes: ['YouTube nicks in the merged chat are shown without the leading @ of the YouTube handle']
+        },
         {
             title: 'November 1 2026 (Web 773)',
             changes: [

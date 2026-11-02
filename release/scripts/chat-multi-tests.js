@@ -711,6 +711,11 @@ function coreSandbox() {
     var msgs = acts.map(a => a.addChatItemAction && s.ChatYouTube_ToMsg(a.addChatItemAction.item, true)).filter(Boolean);
     check(msgs.length > 0 && msgs.every(m => m.history && m.ts > 1.7e12 && typeof m.ts === 'number'), 'initial actions become history with ms timestamps');
     check(msgs.filter(m => m.special).length === 2 && msgs.length === 74, 'text messages and the two gift view models render, banner does not');
+    check(
+        acts.some(a => a.addChatItemAction && /^@/.test(s.ChatYouTube_PlainText((a.addChatItemAction.item.liveChatTextMessageRenderer || {}).authorName))) &&
+            msgs.every(m => m.nick && m.nick.charAt(0) !== '@' && (!m.special || m.special.charAt(0) !== '@')),
+        'handle nicks are shown without the @'
+    );
     var gift = msgs.filter(m => m.special)[0];
     check(/savetoad521/.test(gift.special) && gift.special.indexOf('<') === -1, 'gift view model: escaped author and text');
     check(s.ChatYouTube_ToMsg({giftMessageViewModel: {id: 'g', text: {content: 'x'}}}, false) === null && s.ChatYouTube_ToMsg({giftMessageViewModel: {id: 'g', authorName: {content: 'a'}, text: {content: ' '}}}, false) === null, 'gift without author or text is ignored');

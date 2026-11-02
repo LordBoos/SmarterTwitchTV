@@ -475,7 +475,7 @@ function ChatYouTube_Msg(renderer, history, nick, tokens, text, badges) {
         platform: 'yt',
         msgId: renderer.id,
         authorId: renderer.authorExternalChannelId,
-        nick: nick,
+        nick: nick.replace(/^@/, ''), // YouTube names are handles (@name), the @ is noise in the chat
         color: null,
         role: badges.role,
         badges: badges.html,
@@ -571,14 +571,14 @@ function ChatYouTube_ToMsg(item, history) {
 
         nick = ChatYouTube_PlainText(badges.authorName);
         msg = ChatYouTube_Msg(renderer, history, nick, [], '', ChatYouTube_Badges(badges.authorBadges));
-        return ChatYouTube_Special(msg, nick, Screens_AriaEscape(ChatYouTube_PlainText(badges.primaryText) || STR_CHAT_YT_GIFT));
+        return ChatYouTube_Special(msg, msg.nick, Screens_AriaEscape(ChatYouTube_PlainText(badges.primaryText) || STR_CHAT_YT_GIFT));
     }
 
     renderer = item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer; // shape not yet seen live
     if (renderer) {
         nick = ChatYouTube_PlainText(renderer.authorName);
         msg = ChatYouTube_Msg(renderer, history, nick, [], '', ChatYouTube_Badges(renderer.authorBadges));
-        return ChatYouTube_Special(msg, nick, Screens_AriaEscape(ChatYouTube_PlainText(renderer.message) || STR_CHAT_YT_MEMBERSHIP));
+        return ChatYouTube_Special(msg, msg.nick, Screens_AriaEscape(ChatYouTube_PlainText(renderer.message) || STR_CHAT_YT_MEMBERSHIP));
     }
 
     // Gift (seen live): a view model without time or channel id, shown only with an author and a readable text
@@ -589,7 +589,7 @@ function ChatYouTube_ToMsg(item, history) {
         if (!nick || !text) return null;
 
         msg = ChatYouTube_Msg(renderer, history, nick, [], '', {html: '', role: ''});
-        msg.special = Screens_AriaEscape(nick + ' ' + text);
+        msg.special = Screens_AriaEscape(msg.nick + ' ' + text);
         return msg;
     }
 
