@@ -782,6 +782,9 @@ function en_USLang() {
     STR_CHAT_LINK_UNLINKED = 'not linked';
     STR_CHAT_LINK_ENTER = 'Enter';
     STR_CHAT_LINK_TWITCH = 'Twitch';
+    STR_CHAT_STATUS_NOT_FOUND = 'not found';
+    STR_CHAT_STATUS_ERROR = 'error';
+    STR_CHAT_STATUS_OFFLINE = 'offline';
     STR_KICK_NOT_SUPPORTED = 'Not available for Kick streams';
     STR_KICK_NO_VOD_CHAT = 'Chat replay is not available for Kick videos';
     STR_KICK_ADD_USER = 'Add Kick User';

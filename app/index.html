@@ -2627,6 +2627,78 @@
                 overflow: hidden;
             }
 
+            /* Status bar of a chat with linked platforms (ChatStatus.js): total, then platforms with count and link state */
+            .chat_status {
+                color: #ffffff;
+                text-shadow:
+                    -0.03em 0 0 #000,
+                    0.03em 0 0 #000,
+                    0 0.03em 0 #000,
+                    0 -0.03em 0 #000;
+                width: 100%;
+                height: 5.2vh;
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+
+            .chat_status_total {
+                font-size: 2.5vh;
+                height: 2.8vh;
+                line-height: 2.8vh;
+            }
+
+            .chat_status_row {
+                font-size: 2vh;
+                height: 2.4vh;
+                line-height: 2.4vh;
+            }
+
+            .chat_status_row .tag {
+                display: inline-block;
+                min-width: 0;
+                width: 1.8vh;
+                height: 1.8vh;
+                margin-right: 0.4vh;
+                vertical-align: -0.25vh;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+
+            .chat_status_sep {
+                color: #888888;
+                margin: 0 0.8vh;
+            }
+
+            .chat_status_label_bad {
+                color: #ff6b6b;
+            }
+
+            .chat_status_dot {
+                display: inline-block;
+                width: 0.9vh;
+                height: 0.9vh;
+                border-radius: 50%;
+                margin-left: 0.5vh;
+                vertical-align: 0.2vh;
+            }
+
+            .chat_status_ok {
+                background-color: #2ecc40;
+            }
+
+            .chat_status_wait {
+                background-color: #f5c400;
+            }
+
+            .chat_status_bad {
+                background-color: #ff3b3b;
+            }
+
+            .chat_status_off {
+                background-color: #888888;
+            }
+
             .chat_box_holder {
                 height: 100%;
                 transform: rotate(180deg);
@@ -4548,6 +4620,7 @@
                 <div id="chat_container0" class="chat_container hide">
                     <div id="chat_inner_container0" class="chat_size">
                         <div id="chat_loggedin0" class="chat_loggedin hide"></div>
+                        <div id="chat_status0" class="chat_status hide"></div>
                         <div id="chat_box_holder0" class="chat_box_holder">
                             <div style="transform: rotate(180deg)">
                                 <div id="chat_box0"></div>
@@ -4561,6 +4634,7 @@
                 <div id="chat_container1" class="chat_container1 hide">
                     <div id="chat_inner_container1" class="chat_size">
                         <div id="chat_loggedin1" class="chat_loggedin hide"></div>
+                        <div id="chat_status1" class="chat_status hide"></div>
                         <div id="chat_box_holder1" class="chat_box_holder">
                             <div style="transform: rotate(180deg)">
                                 <div id="chat_box1"></div>
@@ -5464,6 +5538,7 @@
         <script src="specific/ChatLive.js" defer></script>
         <script src="specific/ChatLink.js" defer></script>
         <script src="specific/ChatMulti.js" defer></script>
+        <script src="specific/ChatStatus.js" defer></script>
         <script src="specific/ChatKick.js" defer></script>
         <script src="specific/ChatYouTube.js" defer></script>
         <script src="specific/ChatLinkDialog.js" defer></script>

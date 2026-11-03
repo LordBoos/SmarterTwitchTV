@@ -45,6 +45,8 @@ function ChatMulti_IsActive(chat_number, seq) {
 
 // Only ChatLive_Clear stops the sources, a Twitch IRC reconnect (ChatLive_Close) keeps them
 function ChatMulti_Stop(chat_number) {
+    //First: closing the linked Twitch IRC below must not report into a bar that is going away
+    if (typeof ChatStatus_Stop === 'function') ChatStatus_Stop(chat_number);
     ChatMulti_State[chat_number] = null;
     ChatMulti_Seen[chat_number] = null;
     ChatMulti_SetLinked(chat_number, false);
@@ -66,13 +68,24 @@ function ChatMulti_OnLinks(chat_number, id) {
     state.started = true;
 
     var key = ChatLink_Key(chat_number),
-        links = {tw: null, yt: null, kick: null};
+        kick = KickApi_IsKickId(key),
+        links = Settings_value.chat_multi.defaultValue ? ChatLink_Current(chat_number) : {tw: null, yt: null, kick: null},
+        linked = !!(links.tw || links.yt || links.kick);
+
+    ChatMulti_SetLinked(chat_number, linked);
+
+    //Status bar before the sources start, so every report of theirs lands in it; the platform of the stream first
+    if (linked && typeof ChatStatus_Start === 'function') {
+        ChatStatus_Start(
+            chat_number,
+            state.seq,
+            (kick ? ['kick'] : ['tw']).concat(links.tw ? ['tw'] : [], links.kick ? ['kick'] : [], links.yt ? ['yt'] : []),
+            kick ? links.tw && links.tw.value : ChatLive_selectedChannel[chat_number]
+        );
+    }
 
     //Kick channel: its own chat always, the linked ones only with merged chat on
-    if (KickApi_IsKickId(key) && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, KickApi_Slug(key), state.withHistory);
-    if (Settings_value.chat_multi.defaultValue) links = ChatLink_Current(chat_number);
-
-    ChatMulti_SetLinked(chat_number, !!(links.tw || links.yt || links.kick));
+    if (kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, KickApi_Slug(key), state.withHistory);
 
     if (links.tw) ChatLive_StartLinkedTwitch(chat_number, state.id, links.tw.value, state.withHistory);
     if (links.kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, links.kick.value, state.withHistory);

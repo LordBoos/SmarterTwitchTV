@@ -24,8 +24,14 @@ var version = {
     publishVersionCode: 396, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
     ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/396/SmarterPurpleTV_3_0_396.apk',
     WebVersion: 'November 3 2026',
-    WebTag: 775, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+    WebTag: 776, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
     changelog: [
+        {
+            title: 'November 3 2026 (Web 776)',
+            changes: [
+                'Chat with linked YouTube or Kick chats: the bar above the chat shows the total viewers and, per platform, its viewers and whether its chat is connected, connecting, offline or failed (e.g. "not found" for a wrong channel in Linked chats)'
+            ]
+        },
         {
             title: 'November 3 2026 (Web 775)',
             changes: ['Fix: the YouTube chat of channels whose YouTube "live" page opens their Live tab instead of the stream is found again (e.g. TenSterakdary)']

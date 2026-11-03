@@ -525,6 +525,9 @@
         STR_CHAT_LINK_UNLINKED,
         STR_CHAT_LINK_ENTER,
         STR_CHAT_LINK_TWITCH,
+        STR_CHAT_STATUS_NOT_FOUND,
+        STR_CHAT_STATUS_ERROR,
+        STR_CHAT_STATUS_OFFLINE,
         STR_KICK_NOT_SUPPORTED,
         STR_KICK_NO_VOD_CHAT,
         STR_KICK_ADD_USER,
@@ -2235,6 +2238,9 @@
         STR_CHAT_LINK_UNLINKED = 'not linked';
         STR_CHAT_LINK_ENTER = 'Enter';
         STR_CHAT_LINK_TWITCH = 'Twitch';
+        STR_CHAT_STATUS_NOT_FOUND = 'not found';
+        STR_CHAT_STATUS_ERROR = 'error';
+        STR_CHAT_STATUS_OFFLINE = 'offline';
         STR_KICK_NOT_SUPPORTED = 'Not available for Kick streams';
         STR_KICK_NO_VOD_CHAT = 'Chat replay is not available for Kick videos';
         STR_KICK_ADD_USER = 'Add Kick User';
@@ -8444,8 +8450,14 @@
         publishVersionCode: 396, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
         ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/396/SmarterPurpleTV_3_0_396.apk',
         WebVersion: 'November 3 2026',
-        WebTag: 775, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+        WebTag: 776, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
         changelog: [
+            {
+                title: 'November 3 2026 (Web 776)',
+                changes: [
+                    'Chat with linked YouTube or Kick chats: the bar above the chat shows the total viewers and, per platform, its viewers and whether its chat is connected, connecting, offline or failed (e.g. "not found" for a wrong channel in Linked chats)'
+                ]
+            },
             {
                 title: 'November 3 2026 (Web 775)',
                 changes: [
@@ -13360,8 +13372,14 @@
             // Blocked by Cloudflare or CORS: let the native side try
             if (status === 0 || status === 403) FullxmlHttpGet(url, null, ChatKick_ChannelNative, noop_fun, chat_number, st.seq);
             else if (status === 200) ChatKick_Channel(chat_number, st, text);
-            else ChatKick_RetryChannel(chat_number, st);
+            else ChatKick_ChannelFailed(chat_number, st, status);
         });
+    }
+
+    // 404: the slug does not exist (a wrong manual link); anything else is an error. Both retry silently
+    function ChatKick_ChannelFailed(chat_number, st, status) {
+        ChatStatus_Set(chat_number, 'kick', status === 404 ? 'notfound' : 'error', st.seq);
+        ChatKick_RetryChannel(chat_number, st);
     }
 
     // Silent: no line in the chat, only a timer in st.timer so Stop clears it
@@ -13432,7 +13450,7 @@
         if (!st || st.seq !== seq || !ChatKick_Live(chat_number, st)) return;
 
         if (obj.status === 200) ChatKick_Channel(chat_number, st, obj.responseText);
-        else ChatKick_RetryChannel(chat_number, st);
+        else ChatKick_ChannelFailed(chat_number, st, obj.status);
     }
 
     function ChatKick_PositiveInt(value) {
@@ -13443,7 +13461,7 @@
     function ChatKick_Channel(chat_number, st, text) {
         var json = ChatKick_ParseJson(text);
         if (!json) {
-            ChatKick_RetryChannel(chat_number, st);
+            ChatKick_ChannelFailed(chat_number, st, 0);
             return;
         }
 
@@ -13451,9 +13469,11 @@
         st.channelId = ChatKick_PositiveInt(json.id);
         st.subBadges = Object.prototype.toString.call(json.subscriber_badges) === '[object Array]' ? json.subscriber_badges : [];
         if (!st.chatroom) {
-            ChatKick_RetryChannel(chat_number, st);
+            ChatKick_ChannelFailed(chat_number, st, 0);
             return;
         }
+
+        ChatKick_ViewersApply(chat_number, st, json);
 
         if (st.withHistory && st.channelId) ChatKick_History(chat_number, st);
         ChatKick_Open(chat_number, st);
@@ -13475,6 +13495,44 @@
                 if (msg) ChatMulti_Line(chat_number, st.seq, msg);
             }
         });
+    }
+
+    // Viewers of the channel answer: {viewers, live}; viewers only while live (validated by ChatStatus_SetViewers)
+    function ChatKick_ViewersOf(json) {
+        var live = !!(json && json.livestream);
+        return {viewers: live ? Number(json.livestream.viewer_count) : null, live: live};
+    }
+
+    function ChatKick_ViewersApply(chat_number, st, json) {
+        var v = ChatKick_ViewersOf(json);
+        ChatStatus_SetViewers(chat_number, 'kick', v.viewers, v.live, st.seq);
+    }
+
+    // Status bar refresh: the channel answer again, once the chat knows its channel; failures keep the last count
+    function ChatKick_Viewers(chat_number) {
+        var st = ChatKick_State[chat_number];
+        if (!st || !st.chatroom || !ChatKick_Live(chat_number, st)) return;
+
+        var url = ChatKick_ChannelUrl + encodeURIComponent(st.slug);
+        ChatKick_Xhr(url, function (status, text) {
+            if (!ChatKick_Live(chat_number, st)) return;
+
+            if (status === 0 || status === 403) FullxmlHttpGet(url, null, ChatKick_ViewersNative, noop_fun, chat_number, st.seq);
+            else if (status === 200) ChatKick_ViewersText(chat_number, st, text);
+        });
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name
+    function ChatKick_ViewersNative(obj, chat_number, seq) {
+        var st = ChatKick_State[chat_number];
+        if (!st || st.seq !== seq || !ChatKick_Live(chat_number, st)) return;
+
+        if (obj.status === 200) ChatKick_ViewersText(chat_number, st, obj.responseText);
+    }
+
+    function ChatKick_ViewersText(chat_number, st, text) {
+        var json = ChatKick_ParseJson(text);
+        if (json && typeof json === 'object') ChatKick_ViewersApply(chat_number, st, json);
     }
 
     // Gets the Pusher key (cached after the first good one) and connects
@@ -13519,6 +13577,8 @@
         ws.onclose = function (e) {
             if (st.ws !== ws) return;
             st.ws = null;
+            // Three reconnects without a subscription (Pusher blocked, a dead key): red; a subscription resets retry
+            ChatStatus_Set(chat_number, 'kick', st.retry >= 3 ? 'error' : 'connecting', st.seq);
             if (e && e.code === 4001) ChatKick_Key = null;
             ChatKick_Reconnect(chat_number, st);
         };
@@ -13560,6 +13620,7 @@
             ChatKick_Send(ws, 'pusher:pong', {});
         } else if (frame.event === 'pusher_internal:subscription_succeeded') {
             st.retry = 0;
+            ChatStatus_Set(chat_number, 'kick', 'ok', st.seq);
         } else if (frame.event === 'pusher:error') {
             // The shared key was replaced by Kick, fetch the current one on the reconnect
             if (data && data.code === 4001) ChatKick_Key = null;
@@ -15534,6 +15595,7 @@
 
         if (tries > ChatLive_LinkedMaxTries) {
             ChatLive_StopLinkedTwitch(chat_number);
+            ChatStatus_Set(chat_number, 'tw', 'error'); //after the stop: its close reports connecting
             return;
         }
 
@@ -15616,6 +15678,7 @@
                     if (!ChatLive_loaded[chat_number]) {
                         ChatLive_loaded[chat_number] = true;
                         ChatLive_LinkedTries[chat_number] = 0;
+                        ChatStatus_Set(chat_number, 'tw', 'ok');
 
                         if (!SkipStartLine) {
                             ChatLive_LineAdd({
@@ -15791,6 +15854,8 @@
         }
         ChatLive_loaded[chat_number] = false;
         Main_clearInterval(ChatLive_PingId[chat_number]);
+        //Reconnects close first; a teardown has stopped the status bar already
+        ChatStatus_Set(chat_number, 'tw', 'connecting');
     }
 
     function ChatLive_Check(chat_number, id, timeout, silent) {
@@ -16043,7 +16108,10 @@
 
         //Linked Twitch chat of a Kick stream: read-only, its notices are not shown; a channel that cannot be joined drops the link
         if (ChatLive_IrcChannel[chat_number]) {
-            if (msgId && ChatLive_LinkedFailRegex.test(message.tags['msg-id'] + '')) ChatLive_StopLinkedTwitch(chat_number);
+            if (msgId && ChatLive_LinkedFailRegex.test(message.tags['msg-id'] + '')) {
+                ChatLive_StopLinkedTwitch(chat_number);
+                ChatStatus_Set(chat_number, 'tw', 'error'); //after the stop: its close reports connecting
+            }
             return;
         }
 
@@ -18039,6 +18107,8 @@
 
     // Only ChatLive_Clear stops the sources, a Twitch IRC reconnect (ChatLive_Close) keeps them
     function ChatMulti_Stop(chat_number) {
+        //First: closing the linked Twitch IRC below must not report into a bar that is going away
+        if (typeof ChatStatus_Stop === 'function') ChatStatus_Stop(chat_number);
         ChatMulti_State[chat_number] = null;
         ChatMulti_Seen[chat_number] = null;
         ChatMulti_SetLinked(chat_number, false);
@@ -18060,14 +18130,24 @@
         state.started = true;
 
         var key = ChatLink_Key(chat_number),
-            links = {tw: null, yt: null, kick: null};
+            kick = KickApi_IsKickId(key),
+            links = Settings_value.chat_multi.defaultValue ? ChatLink_Current(chat_number) : {tw: null, yt: null, kick: null},
+            linked = !!(links.tw || links.yt || links.kick);
+
+        ChatMulti_SetLinked(chat_number, linked);
+
+        //Status bar before the sources start, so every report of theirs lands in it; the platform of the stream first
+        if (linked && typeof ChatStatus_Start === 'function') {
+            ChatStatus_Start(
+                chat_number,
+                state.seq,
+                (kick ? ['kick'] : ['tw']).concat(links.tw ? ['tw'] : [], links.kick ? ['kick'] : [], links.yt ? ['yt'] : []),
+                kick ? links.tw && links.tw.value : ChatLive_selectedChannel[chat_number]
+            );
+        }
 
         //Kick channel: its own chat always, the linked ones only with merged chat on
-        if (KickApi_IsKickId(key) && typeof ChatKick_Start === 'function')
-            ChatKick_Start(chat_number, state.seq, KickApi_Slug(key), state.withHistory);
-        if (Settings_value.chat_multi.defaultValue) links = ChatLink_Current(chat_number);
-
-        ChatMulti_SetLinked(chat_number, !!(links.tw || links.yt || links.kick));
+        if (kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, KickApi_Slug(key), state.withHistory);
 
         if (links.tw) ChatLive_StartLinkedTwitch(chat_number, state.id, links.tw.value, state.withHistory);
         if (links.kick && typeof ChatKick_Start === 'function') ChatKick_Start(chat_number, state.seq, links.kick.value, state.withHistory);
@@ -18208,6 +18288,212 @@
     function ChatMulti_DeleteAuthor(chat_number, platform, authorId) {
         var safe = ChatMulti_SafeId(authorId);
         if (safe) ChatLive_CleanUser(chat_number, {tags: {'target-user-id': platform + '_' + safe}});
+    }
+    /*
+     * Status bar above a chat with linked platforms: total viewers, then per platform its icon, viewers and a dot for the
+     * chat connection (green connected, yellow connecting, grey not live without a chat, red failed with a short reason).
+     * The sources report through ChatStatus_Set / ChatStatus_SetViewers and fetch their own counts on ChatStatus_Refresh.
+     * A failed count refresh never changes the dot: the last known count stays.
+     */
+
+    //Variable initialization
+    var ChatStatus_State = []; // per chat_number {seq, order, twLogin, p: {code: {state, viewers, live}}, timer}
+    var ChatStatus_RefreshMs = 60000;
+    //Variable initialization end
+
+    // order: platform codes 'tw' | 'kick' | 'yt', the platform of the stream first; twLogin: Twitch login of the chat or of its link
+    function ChatStatus_Start(chat_number, seq, order, twLogin) {
+        ChatStatus_Stop(chat_number);
+
+        var st = {seq: seq, order: order, twLogin: twLogin, p: {}, timer: 0, twChecked: false},
+            i = 0;
+
+        for (i; i < order.length; i++) st.p[order[i]] = {state: 'connecting', viewers: null, live: null};
+        if (st.p.tw && ChatLive_loaded[chat_number]) st.p.tw.state = 'ok';
+
+        ChatStatus_State[chat_number] = st;
+        ChatStatus_Layout(chat_number, true);
+        ChatStatus_Render(chat_number);
+
+        st.timer = Main_setInterval(
+            function () {
+                ChatStatus_Refresh(chat_number);
+            },
+            ChatStatus_RefreshMs,
+            st.timer
+        );
+        ChatStatus_Refresh(chat_number);
+    }
+
+    function ChatStatus_Stop(chat_number) {
+        var st = ChatStatus_State[chat_number];
+        ChatStatus_State[chat_number] = null;
+        if (!st) return;
+
+        Main_clearInterval(st.timer);
+        ChatStatus_Layout(chat_number, false);
+    }
+
+    // The entry of a platform of the running session, null for an old session (seq given and different) or no bar
+    function ChatStatus_Entry(chat_number, platform, seq) {
+        var st = ChatStatus_State[chat_number];
+        if (!st || (seq !== undefined && seq !== st.seq) || !st.p.hasOwnProperty(platform)) return null;
+        return st.p[platform];
+    }
+
+    // A channel that does not exist stays not found for the session: an IRC join of an unknown login must not turn it green
+    function ChatStatus_Set(chat_number, platform, state, seq) {
+        var entry = ChatStatus_Entry(chat_number, platform, seq);
+        //Unchanged: no redraw (a working YouTube poll reports ok every second)
+        if (!entry || entry.state === 'notfound' || entry.state === state) return;
+
+        entry.state = state;
+        ChatStatus_Render(chat_number);
+    }
+
+    // viewers: kept only as a whole number >= 0, else the last known count stays; live: stored when it is a boolean
+    function ChatStatus_SetViewers(chat_number, platform, viewers, live, seq) {
+        var entry = ChatStatus_Entry(chat_number, platform, seq);
+        if (!entry) return;
+
+        if (typeof viewers === 'number' && isFinite(viewers) && viewers >= 0 && viewers % 1 === 0) entry.viewers = viewers;
+        if (typeof live === 'boolean') entry.live = live;
+        ChatStatus_Render(chat_number);
+    }
+
+    function ChatStatus_Refresh(chat_number) {
+        var st = ChatStatus_State[chat_number];
+        if (!st) return;
+
+        if (st.p.tw) ChatStatus_TwitchViewers(chat_number, st.seq);
+        //A linked Twitch login (Kick chat) may not exist and an IRC join does not tell: checked until Helix answers
+        if (st.p.tw && st.order[0] === 'kick' && !st.twChecked) ChatStatus_TwitchExists(chat_number, st.seq);
+        if (st.p.yt) ChatYouTube_Viewers(chat_number);
+        if (st.p.kick) ChatKick_Viewers(chat_number);
+    }
+
+    function ChatStatus_TwitchUrl(chat_number, path) {
+        var st = ChatStatus_State[chat_number];
+        return st && /^\w{3,25}$/.test(st.twLogin) ? Main_helix_api + path + encodeURIComponent(st.twLogin) : null;
+    }
+
+    function ChatStatus_TwitchViewers(chat_number, seq) {
+        var url = ChatStatus_TwitchUrl(chat_number, 'streams?user_login=');
+        if (url) BaseXmlHttpGet(url, ChatStatus_TwitchViewersResult, noop_fun, chat_number, seq, true);
+    }
+
+    // Named top-level because BaseXmlHttpGet resolves callbacks by name; unreadable answers keep the last count
+    function ChatStatus_TwitchViewersResult(responseText, chat_number, seq) {
+        var data = ChatStatus_HelixData(responseText);
+        if (!data) return;
+
+        if (data.length) ChatStatus_SetViewers(chat_number, 'tw', Number(data[0].viewer_count), true, seq);
+        else ChatStatus_SetViewers(chat_number, 'tw', null, false, seq);
+    }
+
+    function ChatStatus_TwitchExists(chat_number, seq) {
+        var url = ChatStatus_TwitchUrl(chat_number, 'users?login=');
+        if (url) BaseXmlHttpGet(url, ChatStatus_TwitchExistsResult, noop_fun, chat_number, seq, true);
+    }
+
+    function ChatStatus_TwitchExistsResult(responseText, chat_number, seq) {
+        var st = ChatStatus_State[chat_number],
+            data = ChatStatus_HelixData(responseText);
+        if (!data || !st || st.seq !== seq) return;
+
+        st.twChecked = true;
+        if (!data.length) ChatStatus_Set(chat_number, 'tw', 'notfound', seq);
+    }
+
+    // Helix `data` array or null
+    function ChatStatus_HelixData(responseText) {
+        var json;
+        try {
+            json = JSON.parse(responseText);
+        } catch (e) {
+            return null;
+        }
+        return json && Object.prototype.toString.call(json.data) === '[object Array]' ? json.data : null;
+    }
+
+    function ChatStatus_Label(entry) {
+        if (entry.state === 'notfound') return STR_CHAT_STATUS_NOT_FOUND;
+        if (entry.state === 'error') return STR_CHAT_STATUS_ERROR;
+        if (entry.state === 'offline' || entry.live === false) return STR_CHAT_STATUS_OFFLINE;
+        return entry.viewers !== null ? Main_formatNumber(entry.viewers) : '...';
+    }
+
+    function ChatStatus_Dot(entry) {
+        if (entry.state === 'ok') return 'ok';
+        if (entry.state === 'connecting') return 'wait';
+        if (entry.state === 'offline') return 'off';
+        return 'bad';
+    }
+
+    // Sum of the known counts of live platforms with a working chat, null when none is known
+    function ChatStatus_Total(st) {
+        var total = null,
+            i = 0,
+            entry;
+
+        for (i; i < st.order.length; i++) {
+            entry = st.p[st.order[i]];
+            if (entry.viewers !== null && entry.live !== false && (entry.state === 'ok' || entry.state === 'connecting'))
+                total = (total || 0) + entry.viewers;
+        }
+
+        return total;
+    }
+
+    function ChatStatus_Render(chat_number) {
+        var st = ChatStatus_State[chat_number];
+        if (!st) return;
+
+        var total = ChatStatus_Total(st),
+            row = '',
+            i = 0,
+            code,
+            dot;
+
+        for (i; i < st.order.length; i++) {
+            code = st.order[i];
+            dot = ChatStatus_Dot(st.p[code]);
+            row +=
+                (i ? '<span class="chat_status_sep">|</span>' : '') +
+                ChatMulti_Icon(code) +
+                '<span class="chat_status_label' +
+                (dot === 'bad' ? ' chat_status_label_bad' : '') +
+                '">' +
+                ChatStatus_Label(st.p[code]) +
+                '</span><span class="chat_status_dot chat_status_' +
+                dot +
+                '"></span>';
+        }
+
+        Main_innerHTML(
+            'chat_status' + chat_number,
+            '<div class="chat_status_total">' +
+                (total === null ? '...' : Main_formatNumber(total) + STR_SPACE_HTML + Main_GetViewerStrings(total)) +
+                '</div><div class="chat_status_row">' +
+                row +
+                '</div>'
+        );
+    }
+
+    // active: two-row bar instead of the one-line counter; else back to the one-line counter of a Twitch chat when the setting shows it
+    function ChatStatus_Layout(chat_number, active) {
+        var oneLine = !active && Settings_value.show_chatters.defaultValue && !KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number]);
+
+        if (active) {
+            Main_AddClass('chat_loggedin' + chat_number, 'hide');
+            Main_RemoveClass('chat_status' + chat_number, 'hide');
+        } else {
+            Main_AddClass('chat_status' + chat_number, 'hide');
+            if (oneLine) Main_RemoveClass('chat_loggedin' + chat_number, 'hide');
+        }
+
+        Main_getElementById('chat_box_holder' + chat_number).style.height = active ? 'calc(100% - 5.3vh)' : oneLine ? 'calc(100% - 2.9vh)' : '';
+        if (!chat_number) Main_getElementById('chat_container_name' + chat_number).style.top = active ? '5.4vh' : oneLine ? '3vh' : '';
     }
     /*
      * Copyright (c) 2017–present Felipe de Leon <fglfgl27@gmail.com>
@@ -19172,12 +19458,16 @@
     var ChatYouTube_TargetRegex = /^(UC[\w-]{20,30}|@[^\s\/\\?#&"'<>%]{1,60})$/;
     var ChatYouTube_PageUrl = 'https://www.youtube.com/live_chat?is_popout=1&v=';
     var ChatYouTube_PollUrl = 'https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?prettyPrint=false&key=';
+    var ChatYouTube_ViewersUrl = 'https://www.youtube.com/youtubei/v1/updated_metadata?prettyPrint=false&key=';
     var ChatYouTube_Badge_Icons = {OWNER: 'owner', MODERATOR: 'mod', VERIFIED: 'verified'};
     //Variable initialization end
 
     function ChatYouTube_Start(chat_number, seq, target, withHistory) {
         ChatYouTube_Stop(chat_number);
-        if (!ChatYouTube_TargetRegex.test(target)) return;
+        if (!ChatYouTube_TargetRegex.test(target)) {
+            ChatStatus_Set(chat_number, 'yt', 'error', seq);
+            return;
+        }
 
         var st = {
             seq: seq,
@@ -19267,8 +19557,14 @@
             videoId = st && obj.status === 200 ? ChatYouTube_ParseLive(obj.responseText) : null;
         if (!st) return;
 
-        if (videoId) ChatYouTube_FetchPage(chat_number, st, videoId);
-        else ChatYouTube_Retry(chat_number, st);
+        if (videoId) {
+            ChatYouTube_FetchPage(chat_number, st, videoId);
+            return;
+        }
+
+        // 404: the channel does not exist (a wrong manual handle); 200 without a live video: it does not stream now
+        ChatStatus_Set(chat_number, 'yt', obj.status === 404 ? 'notfound' : obj.status === 200 ? 'offline' : 'error', seq);
+        ChatYouTube_Retry(chat_number, st);
     }
 
     function ChatYouTube_FetchPage(chat_number, st, videoId) {
@@ -19349,6 +19645,7 @@
 
         var page = obj.status === 200 ? ChatYouTube_ParseChatPage(obj.responseText) : null;
         if (!page) {
+            ChatStatus_Set(chat_number, 'yt', 'error', seq);
             ChatYouTube_Retry(chat_number, st);
             return;
         }
@@ -19362,6 +19659,7 @@
         st.loaded = true;
         st.polled = false;
 
+        ChatYouTube_Viewers(chat_number);
         ChatYouTube_Poll(chat_number, st);
     }
 
@@ -19398,6 +19696,7 @@
         var poll = obj.status === 200 ? ChatYouTube_ParsePoll(obj.responseText) : null;
 
         if (!poll || !poll.continuation) {
+            ChatStatus_Set(chat_number, 'yt', 'connecting', seq);
             // Chain broken or stream ended. Reload the chat page only when a poll worked since the last load, else a persistent
             // failure would reload every second: wait for the retry timer (live detection again)
             if (!st.polled) {
@@ -19419,6 +19718,7 @@
 
         st.polled = true;
         st.continuation = poll.continuation;
+        ChatStatus_Set(chat_number, 'yt', 'ok', seq);
         // Next poll first: a render exception must not end the session
         ChatYouTube_Later(
             chat_number,
@@ -19429,6 +19729,46 @@
             ChatYouTube_PollMs
         );
         ChatYouTube_Render(chat_number, st, poll.actions, 'live');
+    }
+
+    // Viewers of the live video for the status bar, once the chat page gave the innertube key and context
+    function ChatYouTube_Viewers(chat_number) {
+        var st = ChatYouTube_State[chat_number];
+        if (!st || !st.loaded || !st.key || !st.videoId) return;
+
+        FullxmlHttpGet(
+            ChatYouTube_ViewersUrl + encodeURIComponent(st.key),
+            ChatYouTube_Headers.concat([['Content-Type', 'application/json']]),
+            ChatYouTube_ViewersResult,
+            noop_fun,
+            chat_number,
+            st.seq,
+            'POST',
+            JSON.stringify({context: st.context, videoId: st.videoId})
+        );
+    }
+
+    // originalViewCount is a plain number string; the viewCount texts are localized ('Právě sleduje: 513')
+    function ChatYouTube_ParseViewers(text) {
+        var json = ChatYouTube_ParseJson(text),
+            actions = json && json.actions,
+            i = 0,
+            view;
+        if (Object.prototype.toString.call(actions) !== '[object Array]') return null;
+
+        for (i; i < actions.length; i++) {
+            view = actions[i] && actions[i].updateViewershipAction;
+            view = view && view.viewCount && view.viewCount.videoViewCountRenderer;
+            if (view && /^\d{1,12}$/.test(view.originalViewCount)) return Number(view.originalViewCount);
+        }
+
+        return null;
+    }
+
+    // Named top-level because FullxmlHttpGet resolves callbacks by name; a failed refresh keeps the last count
+    function ChatYouTube_ViewersResult(obj, chat_number, seq) {
+        var viewers = ChatYouTube_Current(chat_number, seq) && obj.status === 200 ? ChatYouTube_ParseViewers(obj.responseText) : null;
+        if (viewers !== null) ChatStatus_SetViewers(chat_number, 'yt', viewers, true, seq);
     }
 
     // Moderation action -> {del: itemId} | {ban: channelId} | null

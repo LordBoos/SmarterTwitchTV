@@ -47,8 +47,14 @@ function ChatKick_FetchChannel(chat_number, st) {
         // Blocked by Cloudflare or CORS: let the native side try
         if (status === 0 || status === 403) FullxmlHttpGet(url, null, ChatKick_ChannelNative, noop_fun, chat_number, st.seq);
         else if (status === 200) ChatKick_Channel(chat_number, st, text);
-        else ChatKick_RetryChannel(chat_number, st);
+        else ChatKick_ChannelFailed(chat_number, st, status);
     });
+}
+
+// 404: the slug does not exist (a wrong manual link); anything else is an error. Both retry silently
+function ChatKick_ChannelFailed(chat_number, st, status) {
+    ChatStatus_Set(chat_number, 'kick', status === 404 ? 'notfound' : 'error', st.seq);
+    ChatKick_RetryChannel(chat_number, st);
 }
 
 // Silent: no line in the chat, only a timer in st.timer so Stop clears it
@@ -119,7 +125,7 @@ function ChatKick_ChannelNative(obj, chat_number, seq) {
     if (!st || st.seq !== seq || !ChatKick_Live(chat_number, st)) return;
 
     if (obj.status === 200) ChatKick_Channel(chat_number, st, obj.responseText);
-    else ChatKick_RetryChannel(chat_number, st);
+    else ChatKick_ChannelFailed(chat_number, st, obj.status);
 }
 
 function ChatKick_PositiveInt(value) {
@@ -130,7 +136,7 @@ function ChatKick_PositiveInt(value) {
 function ChatKick_Channel(chat_number, st, text) {
     var json = ChatKick_ParseJson(text);
     if (!json) {
-        ChatKick_RetryChannel(chat_number, st);
+        ChatKick_ChannelFailed(chat_number, st, 0);
         return;
     }
 
@@ -138,9 +144,11 @@ function ChatKick_Channel(chat_number, st, text) {
     st.channelId = ChatKick_PositiveInt(json.id);
     st.subBadges = Object.prototype.toString.call(json.subscriber_badges) === '[object Array]' ? json.subscriber_badges : [];
     if (!st.chatroom) {
-        ChatKick_RetryChannel(chat_number, st);
+        ChatKick_ChannelFailed(chat_number, st, 0);
         return;
     }
+
+    ChatKick_ViewersApply(chat_number, st, json);
 
     if (st.withHistory && st.channelId) ChatKick_History(chat_number, st);
     ChatKick_Open(chat_number, st);
@@ -162,6 +170,44 @@ function ChatKick_History(chat_number, st) {
             if (msg) ChatMulti_Line(chat_number, st.seq, msg);
         }
     });
+}
+
+// Viewers of the channel answer: {viewers, live}; viewers only while live (validated by ChatStatus_SetViewers)
+function ChatKick_ViewersOf(json) {
+    var live = !!(json && json.livestream);
+    return {viewers: live ? Number(json.livestream.viewer_count) : null, live: live};
+}
+
+function ChatKick_ViewersApply(chat_number, st, json) {
+    var v = ChatKick_ViewersOf(json);
+    ChatStatus_SetViewers(chat_number, 'kick', v.viewers, v.live, st.seq);
+}
+
+// Status bar refresh: the channel answer again, once the chat knows its channel; failures keep the last count
+function ChatKick_Viewers(chat_number) {
+    var st = ChatKick_State[chat_number];
+    if (!st || !st.chatroom || !ChatKick_Live(chat_number, st)) return;
+
+    var url = ChatKick_ChannelUrl + encodeURIComponent(st.slug);
+    ChatKick_Xhr(url, function (status, text) {
+        if (!ChatKick_Live(chat_number, st)) return;
+
+        if (status === 0 || status === 403) FullxmlHttpGet(url, null, ChatKick_ViewersNative, noop_fun, chat_number, st.seq);
+        else if (status === 200) ChatKick_ViewersText(chat_number, st, text);
+    });
+}
+
+// Named top-level because FullxmlHttpGet resolves callbacks by name
+function ChatKick_ViewersNative(obj, chat_number, seq) {
+    var st = ChatKick_State[chat_number];
+    if (!st || st.seq !== seq || !ChatKick_Live(chat_number, st)) return;
+
+    if (obj.status === 200) ChatKick_ViewersText(chat_number, st, obj.responseText);
+}
+
+function ChatKick_ViewersText(chat_number, st, text) {
+    var json = ChatKick_ParseJson(text);
+    if (json && typeof json === 'object') ChatKick_ViewersApply(chat_number, st, json);
 }
 
 // Gets the Pusher key (cached after the first good one) and connects
@@ -205,6 +251,8 @@ function ChatKick_Connect(chat_number, st) {
     ws.onclose = function (e) {
         if (st.ws !== ws) return;
         st.ws = null;
+        // Three reconnects without a subscription (Pusher blocked, a dead key): red; a subscription resets retry
+        ChatStatus_Set(chat_number, 'kick', st.retry >= 3 ? 'error' : 'connecting', st.seq);
         if (e && e.code === 4001) ChatKick_Key = null;
         ChatKick_Reconnect(chat_number, st);
     };
@@ -246,6 +294,7 @@ function ChatKick_OnFrame(chat_number, st, ws, raw) {
         ChatKick_Send(ws, 'pusher:pong', {});
     } else if (frame.event === 'pusher_internal:subscription_succeeded') {
         st.retry = 0;
+        ChatStatus_Set(chat_number, 'kick', 'ok', st.seq);
     } else if (frame.event === 'pusher:error') {
         // The shared key was replaced by Kick, fetch the current one on the reconnect
         if (data && data.code === 4001) ChatKick_Key = null;

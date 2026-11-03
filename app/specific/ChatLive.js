@@ -1252,6 +1252,7 @@ function ChatLive_LinkedRetry(chat_number, id) {
 
     if (tries > ChatLive_LinkedMaxTries) {
         ChatLive_StopLinkedTwitch(chat_number);
+        ChatStatus_Set(chat_number, 'tw', 'error'); //after the stop: its close reports connecting
         return;
     }
 
@@ -1334,6 +1335,7 @@ function ChatLive_loadChatRequest(chat_number, id, SkipStartLine) {
                 if (!ChatLive_loaded[chat_number]) {
                     ChatLive_loaded[chat_number] = true;
                     ChatLive_LinkedTries[chat_number] = 0;
+                    ChatStatus_Set(chat_number, 'tw', 'ok');
 
                     if (!SkipStartLine) {
                         ChatLive_LineAdd({
@@ -1509,6 +1511,8 @@ function ChatLive_Close(chat_number) {
     }
     ChatLive_loaded[chat_number] = false;
     Main_clearInterval(ChatLive_PingId[chat_number]);
+    //Reconnects close first; a teardown has stopped the status bar already
+    ChatStatus_Set(chat_number, 'tw', 'connecting');
 }
 
 function ChatLive_Check(chat_number, id, timeout, silent) {
@@ -1761,7 +1765,10 @@ function ChatLive_UserNoticeCheck(message, chat_number, id) {
 
     //Linked Twitch chat of a Kick stream: read-only, its notices are not shown; a channel that cannot be joined drops the link
     if (ChatLive_IrcChannel[chat_number]) {
-        if (msgId && ChatLive_LinkedFailRegex.test(message.tags['msg-id'] + '')) ChatLive_StopLinkedTwitch(chat_number);
+        if (msgId && ChatLive_LinkedFailRegex.test(message.tags['msg-id'] + '')) {
+            ChatLive_StopLinkedTwitch(chat_number);
+            ChatStatus_Set(chat_number, 'tw', 'error'); //after the stop: its close reports connecting
+        }
         return;
     }
 

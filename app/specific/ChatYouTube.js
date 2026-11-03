@@ -17,12 +17,16 @@ var ChatYouTube_ImageHostRegex = /^(yt3\.ggpht\.com|yt4\.ggpht\.com|[a-z0-9-]+\.
 var ChatYouTube_TargetRegex = /^(UC[\w-]{20,30}|@[^\s\/\\?#&"'<>%]{1,60})$/;
 var ChatYouTube_PageUrl = 'https://www.youtube.com/live_chat?is_popout=1&v=';
 var ChatYouTube_PollUrl = 'https://www.youtube.com/youtubei/v1/live_chat/get_live_chat?prettyPrint=false&key=';
+var ChatYouTube_ViewersUrl = 'https://www.youtube.com/youtubei/v1/updated_metadata?prettyPrint=false&key=';
 var ChatYouTube_Badge_Icons = {OWNER: 'owner', MODERATOR: 'mod', VERIFIED: 'verified'};
 //Variable initialization end
 
 function ChatYouTube_Start(chat_number, seq, target, withHistory) {
     ChatYouTube_Stop(chat_number);
-    if (!ChatYouTube_TargetRegex.test(target)) return;
+    if (!ChatYouTube_TargetRegex.test(target)) {
+        ChatStatus_Set(chat_number, 'yt', 'error', seq);
+        return;
+    }
 
     var st = {
         seq: seq,
@@ -112,8 +116,14 @@ function ChatYouTube_LiveResult(obj, chat_number, seq) {
         videoId = st && obj.status === 200 ? ChatYouTube_ParseLive(obj.responseText) : null;
     if (!st) return;
 
-    if (videoId) ChatYouTube_FetchPage(chat_number, st, videoId);
-    else ChatYouTube_Retry(chat_number, st);
+    if (videoId) {
+        ChatYouTube_FetchPage(chat_number, st, videoId);
+        return;
+    }
+
+    // 404: the channel does not exist (a wrong manual handle); 200 without a live video: it does not stream now
+    ChatStatus_Set(chat_number, 'yt', obj.status === 404 ? 'notfound' : obj.status === 200 ? 'offline' : 'error', seq);
+    ChatYouTube_Retry(chat_number, st);
 }
 
 function ChatYouTube_FetchPage(chat_number, st, videoId) {
@@ -194,6 +204,7 @@ function ChatYouTube_PageResult(obj, chat_number, seq) {
 
     var page = obj.status === 200 ? ChatYouTube_ParseChatPage(obj.responseText) : null;
     if (!page) {
+        ChatStatus_Set(chat_number, 'yt', 'error', seq);
         ChatYouTube_Retry(chat_number, st);
         return;
     }
@@ -207,6 +218,7 @@ function ChatYouTube_PageResult(obj, chat_number, seq) {
     st.loaded = true;
     st.polled = false;
 
+    ChatYouTube_Viewers(chat_number);
     ChatYouTube_Poll(chat_number, st);
 }
 
@@ -243,6 +255,7 @@ function ChatYouTube_PollResult(obj, chat_number, seq) {
     var poll = obj.status === 200 ? ChatYouTube_ParsePoll(obj.responseText) : null;
 
     if (!poll || !poll.continuation) {
+        ChatStatus_Set(chat_number, 'yt', 'connecting', seq);
         // Chain broken or stream ended. Reload the chat page only when a poll worked since the last load, else a persistent
         // failure would reload every second: wait for the retry timer (live detection again)
         if (!st.polled) {
@@ -264,6 +277,7 @@ function ChatYouTube_PollResult(obj, chat_number, seq) {
 
     st.polled = true;
     st.continuation = poll.continuation;
+    ChatStatus_Set(chat_number, 'yt', 'ok', seq);
     // Next poll first: a render exception must not end the session
     ChatYouTube_Later(
         chat_number,
@@ -274,6 +288,46 @@ function ChatYouTube_PollResult(obj, chat_number, seq) {
         ChatYouTube_PollMs
     );
     ChatYouTube_Render(chat_number, st, poll.actions, 'live');
+}
+
+// Viewers of the live video for the status bar, once the chat page gave the innertube key and context
+function ChatYouTube_Viewers(chat_number) {
+    var st = ChatYouTube_State[chat_number];
+    if (!st || !st.loaded || !st.key || !st.videoId) return;
+
+    FullxmlHttpGet(
+        ChatYouTube_ViewersUrl + encodeURIComponent(st.key),
+        ChatYouTube_Headers.concat([['Content-Type', 'application/json']]),
+        ChatYouTube_ViewersResult,
+        noop_fun,
+        chat_number,
+        st.seq,
+        'POST',
+        JSON.stringify({context: st.context, videoId: st.videoId})
+    );
+}
+
+// originalViewCount is a plain number string; the viewCount texts are localized ('Právě sleduje: 513')
+function ChatYouTube_ParseViewers(text) {
+    var json = ChatYouTube_ParseJson(text),
+        actions = json && json.actions,
+        i = 0,
+        view;
+    if (Object.prototype.toString.call(actions) !== '[object Array]') return null;
+
+    for (i; i < actions.length; i++) {
+        view = actions[i] && actions[i].updateViewershipAction;
+        view = view && view.viewCount && view.viewCount.videoViewCountRenderer;
+        if (view && /^\d{1,12}$/.test(view.originalViewCount)) return Number(view.originalViewCount);
+    }
+
+    return null;
+}
+
+// Named top-level because FullxmlHttpGet resolves callbacks by name; a failed refresh keeps the last count
+function ChatYouTube_ViewersResult(obj, chat_number, seq) {
+    var viewers = ChatYouTube_Current(chat_number, seq) && obj.status === 200 ? ChatYouTube_ParseViewers(obj.responseText) : null;
+    if (viewers !== null) ChatStatus_SetViewers(chat_number, 'yt', viewers, true, seq);
 }
 
 // Moderation action -> {del: itemId} | {ban: channelId} | null
