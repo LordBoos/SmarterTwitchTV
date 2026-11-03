@@ -1,11 +1,21 @@
 # Smarter Purple TV
 
-A Twitch client for Android TV. This is a fork of [SmartTwitchTV](https://github.com/fgl27/SmartTwitchTV) by Felipe de Leon — same app you know, slowly getting a mind of its own.
+A Twitch and Kick client for Android TV. This is a fork of [SmartTwitchTV](https://github.com/fgl27/SmartTwitchTV) by Felipe de Leon – same app you know, slowly getting a mind of its own.
 
-Same two-part architecture as upstream — a web app (UI and most features) loaded by an Android APK (players and platform glue) — same features, same remote-friendly navigation. The differences are listed below.
+Same two-part architecture as upstream – a web app (UI and most features) loaded by an Android APK (players and platform glue) – same features, same remote-friendly navigation. The differences are listed below.
 
 ## What's different from SmartTwitchTV
 
+- **Kick as a second platform.** Kick streams play like Twitch ones: live streams, VODs and clips, channel pages, history, quality choice and low latency.
+  - Kick accounts: add a Kick account on its own or link it to a Twitch user by scanning a QR code with the Kick app (Users → Add Kick User), no password typed on the TV,
+  - Following lists live Twitch and Kick channels together, told apart by platform icons, also in the player and side panels,
+  - Live, Games and Search have a Twitch / Kick switch, and Kick channels can be followed and unfollowed,
+  - on a Kick stream the Kick chat with its history is the main chat, the streamer's Twitch and YouTube chats can be linked to it, and you can write in it once signed in to Kick,
+  - 50/50, picture-in-picture and 4-way multistream take any mix of Twitch and Kick streams,
+  - not available for Kick: video search, chat replay of Kick videos and the phone chat.
+
+  Design notes: [docs/kick-design.md](docs/kick-design.md).
+- **4-way multistream on TVs with only two hardware video decoders.** Two of the four streams are decoded in software, at 480p by default (Settings → Player → 4-way multistream with software decoding, also 720p or off). The option shows up only on TVs that need it. Requires APK 3.0.396.
 - **Ad blocking, no proxy needed.** Ads stitched into live streams are removed directly from the playback playlists, using only Twitch's own servers. Ad breaks that can no longer be hidden freeze the picture on the last live frame until the break is over, and a pre-playback probe checks every stream quality so stitched ads can't slip into playback. On by default, can be turned off in Settings → Player → Block ads. (Requires an APK built from this fork.)
 - **Follow raids.** When the watched streamer raids, the player switches to the raided channel automatically (optional, requires login).
 - **A new default look.** Purple accent throughout: focused items get a purple outline and glow, the Following hearts are purple, and so are the loading spinners. Same dark base, own identity.
