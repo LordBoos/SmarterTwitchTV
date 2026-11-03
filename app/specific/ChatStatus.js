@@ -189,9 +189,9 @@ function ChatStatus_Render(chat_number) {
     );
 }
 
-// active: two-row bar instead of the one-line counter; else back to the one-line counter of a Twitch chat when the setting shows it
+// active: two-row bar instead of the one-line counter; else back to the one-line counter when the setting shows it (Twitch and Kick)
 function ChatStatus_Layout(chat_number, active) {
-    var oneLine = !active && Settings_value.show_chatters.defaultValue && !KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number]);
+    var oneLine = !active && Settings_value.show_chatters.defaultValue;
 
     if (active) {
         Main_AddClass('chat_loggedin' + chat_number, 'hide');

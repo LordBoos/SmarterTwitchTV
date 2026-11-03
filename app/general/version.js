@@ -24,8 +24,12 @@ var version = {
     publishVersionCode: 396, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
     ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/396/SmarterPurpleTV_3_0_396.apk',
     WebVersion: 'November 3 2026',
-    WebTag: 776, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+    WebTag: 777, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
     changelog: [
+        {
+            title: 'November 3 2026 (Web 777)',
+            changes: ['Kick streams show the viewers counter above the chat too (Kick has no chatters count, so it always shows viewers)']
+        },
         {
             title: 'November 3 2026 (Web 776)',
             changes: [

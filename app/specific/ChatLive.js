@@ -201,6 +201,8 @@ function ChatLive_Init(chat_number, SkipClear) {
                     STR_SPACE_HTML +
                     STR_LIVE
             });
+            //Kick has no chatters count: its counter shows the viewers of the Kick channel
+            ChatLive_loadChatters(chat_number, Chat_Id[chat_number]);
         }
 
         ChatMulti_Start(chat_number, Chat_Id[chat_number], !SkipClear);
@@ -593,7 +595,11 @@ function ChatLive_loadChatters(chat_number, id) {
         Main_innerHTML(
             'chat_loggedin' + chat_number,
             '...' +
-                (Settings_value.show_chatters.defaultValue === 1 ? (ChatLive_isShared[chat_number] ? STR_IN_SHARED_CHAT : STR_IN_CHAT) : STR_VIEWERS)
+                (Settings_value.show_chatters.defaultValue === 1 && !KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number])
+                    ? ChatLive_isShared[chat_number]
+                        ? STR_IN_SHARED_CHAT
+                        : STR_IN_CHAT
+                    : STR_VIEWERS)
         );
         Main_RemoveClass('chat_loggedin' + chat_number, 'hide');
 
@@ -608,8 +614,7 @@ function ChatLive_loadChatters(chat_number, id) {
 }
 
 function ChatLive_loadChattersCheckType(chat_number, id) {
-    if (Settings_value.show_chatters.defaultValue === 1) ChatLive_loadChattersLoad(chat_number, id);
-    else ChatLive_loadChattersViewers(chat_number, id);
+    ChatLive_loadChattersCheckTypeRun(chat_number, id);
 
     ChatLive_loadChattersId[chat_number] = Main_setInterval(
         function () {
@@ -621,10 +626,40 @@ function ChatLive_loadChattersCheckType(chat_number, id) {
 }
 
 function ChatLive_loadChattersCheckTypeRun(chat_number, id) {
-    if (Settings_value.show_chatters.defaultValue === 1) {
+    if (KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number])) {
+        ChatLive_loadKickViewers(chat_number, id);
+    } else if (Settings_value.show_chatters.defaultValue === 1) {
         ChatLive_loadChattersLoad(chat_number, id);
     } else {
         ChatLive_loadChattersViewers(chat_number, id);
+    }
+}
+
+function ChatLive_loadKickViewers(chat_number, id) {
+    FullxmlHttpGet(
+        KickApi_Base + 'v2/channels/' + encodeURIComponent(KickApi_Slug(ChatLive_selectedChannel_id[chat_number])),
+        KickApi_Headers(''),
+        ChatLive_loadKickViewersResult,
+        noop_fun,
+        chat_number,
+        id
+    );
+}
+
+//Named top-level because FullxmlHttpGet resolves callbacks by name; failed or unreadable answers keep the last count
+function ChatLive_loadKickViewersResult(obj, chat_number, id) {
+    if (id !== Chat_Id[chat_number] || obj.status !== 200) return;
+
+    var json, viewers;
+    try {
+        json = JSON.parse(obj.responseText);
+    } catch (e) {
+        return;
+    }
+
+    viewers = json && json.livestream ? Number(json.livestream.viewer_count) : NaN;
+    if (isFinite(viewers) && viewers >= 0 && viewers % 1 === 0) {
+        Main_innerHTML('chat_loggedin' + chat_number, Main_formatNumber(viewers) + STR_SPACE_HTML + Main_GetViewerStrings(viewers));
     }
 }
 

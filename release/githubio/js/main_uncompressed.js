@@ -8450,8 +8450,12 @@
         publishVersionCode: 396, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
         ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/396/SmarterPurpleTV_3_0_396.apk',
         WebVersion: 'November 3 2026',
-        WebTag: 776, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+        WebTag: 777, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
         changelog: [
+            {
+                title: 'November 3 2026 (Web 777)',
+                changes: ['Kick streams show the viewers counter above the chat too (Kick has no chatters count, so it always shows viewers)']
+            },
             {
                 title: 'November 3 2026 (Web 776)',
                 changes: [
@@ -14531,6 +14535,8 @@
                         STR_SPACE_HTML +
                         STR_LIVE
                 });
+                //Kick has no chatters count: its counter shows the viewers of the Kick channel
+                ChatLive_loadChatters(chat_number, Chat_Id[chat_number]);
             }
 
             ChatMulti_Start(chat_number, Chat_Id[chat_number], !SkipClear);
@@ -14932,7 +14938,7 @@
             Main_innerHTML(
                 'chat_loggedin' + chat_number,
                 '...' +
-                    (Settings_value.show_chatters.defaultValue === 1
+                    (Settings_value.show_chatters.defaultValue === 1 && !KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number])
                         ? ChatLive_isShared[chat_number]
                             ? STR_IN_SHARED_CHAT
                             : STR_IN_CHAT
@@ -14951,8 +14957,7 @@
     }
 
     function ChatLive_loadChattersCheckType(chat_number, id) {
-        if (Settings_value.show_chatters.defaultValue === 1) ChatLive_loadChattersLoad(chat_number, id);
-        else ChatLive_loadChattersViewers(chat_number, id);
+        ChatLive_loadChattersCheckTypeRun(chat_number, id);
 
         ChatLive_loadChattersId[chat_number] = Main_setInterval(
             function () {
@@ -14964,10 +14969,40 @@
     }
 
     function ChatLive_loadChattersCheckTypeRun(chat_number, id) {
-        if (Settings_value.show_chatters.defaultValue === 1) {
+        if (KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number])) {
+            ChatLive_loadKickViewers(chat_number, id);
+        } else if (Settings_value.show_chatters.defaultValue === 1) {
             ChatLive_loadChattersLoad(chat_number, id);
         } else {
             ChatLive_loadChattersViewers(chat_number, id);
+        }
+    }
+
+    function ChatLive_loadKickViewers(chat_number, id) {
+        FullxmlHttpGet(
+            KickApi_Base + 'v2/channels/' + encodeURIComponent(KickApi_Slug(ChatLive_selectedChannel_id[chat_number])),
+            KickApi_Headers(''),
+            ChatLive_loadKickViewersResult,
+            noop_fun,
+            chat_number,
+            id
+        );
+    }
+
+    //Named top-level because FullxmlHttpGet resolves callbacks by name; failed or unreadable answers keep the last count
+    function ChatLive_loadKickViewersResult(obj, chat_number, id) {
+        if (id !== Chat_Id[chat_number] || obj.status !== 200) return;
+
+        var json, viewers;
+        try {
+            json = JSON.parse(obj.responseText);
+        } catch (e) {
+            return;
+        }
+
+        viewers = json && json.livestream ? Number(json.livestream.viewer_count) : NaN;
+        if (isFinite(viewers) && viewers >= 0 && viewers % 1 === 0) {
+            Main_innerHTML('chat_loggedin' + chat_number, Main_formatNumber(viewers) + STR_SPACE_HTML + Main_GetViewerStrings(viewers));
         }
     }
 
@@ -18480,9 +18515,9 @@
         );
     }
 
-    // active: two-row bar instead of the one-line counter; else back to the one-line counter of a Twitch chat when the setting shows it
+    // active: two-row bar instead of the one-line counter; else back to the one-line counter when the setting shows it (Twitch and Kick)
     function ChatStatus_Layout(chat_number, active) {
-        var oneLine = !active && Settings_value.show_chatters.defaultValue && !KickApi_IsKickId(ChatLive_selectedChannel_id[chat_number]);
+        var oneLine = !active && Settings_value.show_chatters.defaultValue;
 
         if (active) {
             Main_AddClass('chat_loggedin' + chat_number, 'hide');

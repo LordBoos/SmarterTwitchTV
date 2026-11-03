@@ -1314,6 +1314,41 @@ function statusSandbox() {
     s.ChatKick_Connect(0, kst); subscribed(sockets[sockets.length - 1]);
     check(kick().state === 'ok' && kst.retry === 0, 'kick: a later subscription is connected again');
 }
+// Kick stream without links: the one-line counter shows the Kick viewers (Kick has no chatters count)
+{
+    const {s, el, intervals} = statusSandbox();
+    const http = [];
+    s.FullxmlHttpGet = (url, h, ok, err, key, chk) => http.push({url, ok: ok.name, key, chk});
+    Object.assign(s, {STR_IN_CHAT: ' In Chat', STR_IN_SHARED_CHAT: ' In Shared Chat', STR_VIEWERS: 'viewers', STR_LOADING_CHAT: 'Loading', STR_LIVE: 'LIVE'});
+    s.ChatLive_isShared = [false, false];
+    s.ChatLive_selectedChannel = ['sxb', '']; s.ChatLive_selectedChannel_id = ['kick:sxb', ''];
+    const kickRow = []; kickRow[1] = 'sxb'; kickRow[6] = 'sxb'; kickRow[14] = 'kick:sxb'; kickRow[19] = 'kick';
+    Object.assign(s, {ChatLive_Clear: () => {}, ChatLive_SetOptions: () => {}, ChatLive_LineAdd: () => {}, Main_values: {Play_ChatForceDisable: false},
+        Main_IsOn_OSInterface: true, Play_data: {data: kickRow}});
+    const loggedin = () => el('chat_loggedin0').html;
+
+    s.Settings_value.show_chatters.defaultValue = 1;
+    s.ChatLive_Init(0);
+    const kv = http.filter(h => h.ok === 'ChatLive_loadKickViewersResult');
+    check(kv.length === 1 && kv[0].url === 'https://kick.com/api/v2/channels/sxb' && kv[0].key === 0 && kv[0].chk === 7, 'kick stream: viewers requested from the kick channel');
+    check(loggedin() === '...viewers' && el('chat_box_holder0').style.height === 'calc(100% - 2.9vh)', 'kick stream: one-line counter shown with a viewers label, not In Chat');
+    check(intervals.filter(x => x.live && x.ms === 5 * 60 * 1000).length === 1, 'kick stream: the counter refreshes like the twitch one');
+    s.ChatLive_loadKickViewersResult({status: 200, responseText: JSON.stringify({livestream: {viewer_count: 135980}})}, 0, 7);
+    check(loggedin() === '135,980 viewers', 'kick stream: one-line counter shows the kick viewers');
+    s.ChatLive_loadKickViewersResult({status: 200, responseText: JSON.stringify({livestream: {viewer_count: 9}})}, 0, 6);
+    s.ChatLive_loadKickViewersResult({status: 0, responseText: ''}, 0, 7);
+    s.ChatLive_loadKickViewersResult({status: 200, responseText: '<html>'}, 0, 7);
+    check(loggedin() === '135,980 viewers', 'kick stream: stale, failed or unreadable answers keep the count');
+    s.ChatLive_loadChattersCheckTypeRun(0, 7);
+    check(http.filter(h => h.ok === 'ChatLive_loadKickViewersResult').length === 2, 'kick stream: refresh asks kick, not twitch');
+
+    // a linked kick chat: the status bar takes over, and stopping it brings the kick one-line counter back
+    s.links = {tw: {value: 'robtw'}, yt: null, kick: null};
+    s.ChatMulti_Start(0, 7, true);
+    check(el('chat_loggedin0').classes.has('hide') && !el('chat_status0').classes.has('hide'), 'kick stream with links: status bar instead of the one-line counter');
+    s.ChatMulti_Stop(0);
+    check(!el('chat_loggedin0').classes.has('hide') && el('chat_box_holder0').style.height === 'calc(100% - 2.9vh)', 'kick stream: stop brings the one-line counter back');
+}
 
 // Linked chats dialog: pure rows and apply
 {
