@@ -91,12 +91,18 @@ function ChatYouTube_FindLive(chat_number, st) {
     FullxmlHttpGet(ChatYouTube_LiveUrl(st.target), ChatYouTube_Headers, ChatYouTube_LiveResult, noop_fun, chat_number, st.seq);
 }
 
-// A live stream needs a live marker, a bare videoId is also on pages of ended or upcoming streams
+// A live stream needs a live marker, a bare videoId is also on pages of ended or upcoming streams. Some channels answer
+// /live with their Live (streams) tab instead of the watch page: there the live video is the item with the LIVE badge
 function ChatYouTube_ParseLive(html) {
-    var text = String(html || '');
-    if (text.indexOf('"isLiveNow":true') === -1 && text.indexOf('"isLive":true') === -1) return null;
+    var text = String(html || ''),
+        match;
 
-    var match = /"videoId":"([\w-]{11})"/.exec(text);
+    if (text.indexOf('"isLiveNow":true') === -1 && text.indexOf('"isLive":true') === -1) {
+        match = /"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE"[^}]*?"animationActivationTargetId":"([\w-]{11})"/.exec(text);
+        return match ? match[1] : null;
+    }
+
+    match = /"videoId":"([\w-]{11})"/.exec(text);
     return match ? match[1] : null;
 }
 

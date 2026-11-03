@@ -706,6 +706,10 @@ function coreSandbox() {
     check(s.ChatYouTube_ParseLive('..."isLiveNow":true..."videoId":"-a9764YAN_8"...') === '-a9764YAN_8', 'live detected');
     check(s.ChatYouTube_ParseLive('..."isLive":true..."videoId":"-a9764YAN_8"...') === '-a9764YAN_8', 'second live marker works');
     check(s.ChatYouTube_ParseLive('..."videoId":"-a9764YAN_8"...') === null, 'not live without marker');
+    // Some channels answer /live with their Live (streams) tab instead of the watch page (TenSterakdary, 2026-11-03)
+    const tab = (style, id) => '"videoId":"39Dm7hRsUHY"...{"lockupViewModel":{"contentImage":{"thumbnailViewModel":{"overlays":[{"thumbnailBottomOverlayViewModel":{"badges":[{"thumbnailBadgeViewModel":{"icon":{"sources":[{"clientResource":{"imageName":"LIVE"}}]},"text":"LIVE","badgeStyle":"' + style + '","animationActivationTargetId":"' + id + '","lot';
+    check(s.ChatYouTube_ParseLive(tab('THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE', '7t1LtJJDNEI')) === '7t1LtJJDNEI', 'live item of the streams tab detected');
+    check(s.ChatYouTube_ParseLive(tab('THUMBNAIL_OVERLAY_BADGE_STYLE_DEFAULT', '7t1LtJJDNEI')) === null, 'streams tab without a live item is not live');
 
     // fixtures: history, ms timestamps, every renderer type is handled or ignored
     var msgs = acts.map(a => a.addChatItemAction && s.ChatYouTube_ToMsg(a.addChatItemAction.item, true)).filter(Boolean);

@@ -8443,9 +8443,15 @@
         VersionBase: '3.0',
         publishVersionCode: 396, //Always update (+1 to current value) Main_version_java after update publishVersionCode or a major update of the apk is released
         ApkUrl: 'https://github.com/LordBoos/SmarterTwitchTV/releases/download/396/SmarterPurpleTV_3_0_396.apk',
-        WebVersion: 'November 2 2026',
-        WebTag: 774, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
+        WebVersion: 'November 3 2026',
+        WebTag: 775, //Always update (+1 to current value) Main_version_web after update Main_minversion or a major update of the web part of the app
         changelog: [
+            {
+                title: 'November 3 2026 (Web 775)',
+                changes: [
+                    'Fix: the YouTube chat of channels whose YouTube "live" page opens their Live tab instead of the stream is found again (e.g. TenSterakdary)'
+                ]
+            },
             {
                 title: 'November 2 2026 (Web 774)',
                 changes: ['YouTube nicks in the merged chat are shown without the leading @ of the YouTube handle']
@@ -19240,12 +19246,18 @@
         FullxmlHttpGet(ChatYouTube_LiveUrl(st.target), ChatYouTube_Headers, ChatYouTube_LiveResult, noop_fun, chat_number, st.seq);
     }
 
-    // A live stream needs a live marker, a bare videoId is also on pages of ended or upcoming streams
+    // A live stream needs a live marker, a bare videoId is also on pages of ended or upcoming streams. Some channels answer
+    // /live with their Live (streams) tab instead of the watch page: there the live video is the item with the LIVE badge
     function ChatYouTube_ParseLive(html) {
-        var text = String(html || '');
-        if (text.indexOf('"isLiveNow":true') === -1 && text.indexOf('"isLive":true') === -1) return null;
+        var text = String(html || ''),
+            match;
 
-        var match = /"videoId":"([\w-]{11})"/.exec(text);
+        if (text.indexOf('"isLiveNow":true') === -1 && text.indexOf('"isLive":true') === -1) {
+            match = /"THUMBNAIL_OVERLAY_BADGE_STYLE_LIVE"[^}]*?"animationActivationTargetId":"([\w-]{11})"/.exec(text);
+            return match ? match[1] : null;
+        }
+
+        match = /"videoId":"([\w-]{11})"/.exec(text);
         return match ? match[1] : null;
     }
 
